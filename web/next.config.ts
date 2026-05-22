@@ -1,5 +1,23 @@
 import type { NextConfig } from 'next'
 
+/* Derive Strapi remote pattern from NEXT_PUBLIC_STRAPI_URL so the same
+   next.config works for both local (http://127.0.0.1:1337) and Railway
+   (https://xxx.railway.app) without any manual updates. */
+function getStrapiRemotePattern() {
+  const raw = process.env.NEXT_PUBLIC_STRAPI_URL ?? 'http://127.0.0.1:1337'
+  try {
+    const u = new URL(raw)
+    return {
+      protocol: u.protocol.replace(':', '') as 'http' | 'https',
+      hostname: u.hostname,
+      ...(u.port ? { port: u.port } : {}),
+      pathname: '/uploads/**',
+    }
+  } catch {
+    return { protocol: 'http' as const, hostname: '127.0.0.1', port: '1337', pathname: '/uploads/**' }
+  }
+}
+
 const legacyRedirects = [
   { source: '/about.html', destination: '/about', permanent: true },
   { source: '/how-it-works.html', destination: '/how-it-works', permanent: true },
@@ -101,12 +119,7 @@ const nextConfig: NextConfig = {
   skipTrailingSlashRedirect: true,
   images: {
     remotePatterns: [
-      {
-        protocol: 'http',
-        hostname: '127.0.0.1',
-        port: '1337',
-        pathname: '/uploads/**',
-      },
+      getStrapiRemotePattern(),
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
