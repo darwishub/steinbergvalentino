@@ -106,6 +106,8 @@ export default async function HomePage() {
           fill
           sizes="100vw"
           priority
+          fetchPriority="high"
+          quality={75}
           style={{ objectFit: 'cover', objectPosition: 'center 20%' }}
         />
 

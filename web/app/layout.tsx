@@ -56,8 +56,16 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       ? globalSettings.primary_navigation
       : DEFAULT_GLOBAL_SETTINGS.primary_navigation
 
+  /* Preconnect to Strapi origin so hero image fetch starts immediately */
+  const strapiOrigin = process.env.NEXT_PUBLIC_STRAPI_URL
+    ? new URL(process.env.NEXT_PUBLIC_STRAPI_URL).origin
+    : null
+
   return (
     <html lang="en" data-scroll-behavior="smooth" className={`${cormorant.variable} ${manrope.variable} antialiased`}>
+      <head>
+        {strapiOrigin && <link rel="preconnect" href={strapiOrigin} />}
+      </head>
       <body className="flex min-h-screen flex-col">
         <Nav items={navigation} phone={globalSettings?.contact_phone} />
         <main className="flex-1">{children}</main>
