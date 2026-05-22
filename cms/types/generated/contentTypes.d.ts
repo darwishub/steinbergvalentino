@@ -496,6 +496,7 @@ export interface ApiExchangePageExchangePage
     hero_heading: Schema.Attribute.String;
     hero_image: Schema.Attribute.Media<'images'>;
     hero_subheading: Schema.Attribute.String;
+    key_facts: Schema.Attribute.JSON;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -559,6 +560,7 @@ export interface ApiGlobalSettingGlobalSetting extends Struct.SingleTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    utility_bar_tagline: Schema.Attribute.String;
   };
 }
 
@@ -582,8 +584,10 @@ export interface ApiHomepageHomepage extends Struct.SingleTypeSchema {
     hero_cta_primary_url: Schema.Attribute.String;
     hero_cta_secondary_label: Schema.Attribute.String;
     hero_cta_secondary_url: Schema.Attribute.String;
+    hero_eyebrow: Schema.Attribute.String;
     hero_heading: Schema.Attribute.String;
     hero_subheading: Schema.Attribute.String;
+    keyword_band: Schema.Attribute.JSON;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -594,6 +598,7 @@ export interface ApiHomepageHomepage extends Struct.SingleTypeSchema {
     meta_title: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     sections: Schema.Attribute.Component<'shared.content-section', true>;
+    testimonials: Schema.Attribute.Component<'shared.testimonial', true>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -664,6 +669,7 @@ export interface ApiIndustryExpertisePageIndustryExpertisePage
     meta_title: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     sections: Schema.Attribute.Component<'shared.content-section', true>;
+    sectors: Schema.Attribute.Component<'shared.sector', true>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
