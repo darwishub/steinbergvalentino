@@ -1,0 +1,33 @@
+{
+  "name": "steinbergvalentino-cms",
+  "private": true,
+  "version": "0.0.1",
+  "description": "SteinbergValentino Group — Strapi v5 CMS",
+  "scripts": {
+    "dev": "strapi develop",
+    "start": "strapi start",
+    "build": "strapi build",
+    "deploy": "strapi deploy"
+  },
+  "dependencies": {
+    "@strapi/plugin-cloud": "5.9.0",
+    "@strapi/plugin-users-permissions": "5.9.0",
+    "@strapi/strapi": "5.9.0",
+    "better-sqlite3": "9.4.3",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^6.0.0",
+    "styled-components": "^6.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "strapi": {
+    "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+  },
+  "engines": {
+    "node": ">=18.0.0 <=22.x.x",
+    "npm": ">=6.0.0"
+  }
+}

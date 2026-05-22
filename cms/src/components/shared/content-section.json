@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_shared_content_sections",
+  "info": {
+    "displayName": "Content Section",
+    "icon": "layout"
+  },
+  "attributes": {
+    "heading": { "type": "string" },
+    "subheading": { "type": "string" },
+    "body": { "type": "blocks" },
+    "image": { "type": "media", "multiple": false, "required": false, "allowedTypes": ["images"] }
+  }
+}

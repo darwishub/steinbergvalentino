@@ -1,0 +1,23 @@
+{
+  "kind": "singleType",
+  "collectionName": "capabilities_pages",
+  "info": {
+    "singularName": "capabilities-page",
+    "pluralName": "capabilities-pages",
+    "displayName": "Capabilities Page"
+  },
+  "options": { "draftAndPublish": false },
+  "attributes": {
+    "hero_heading":    { "type": "string" },
+    "hero_subheading": { "type": "string" },
+    "hero_image":      { "type": "media", "multiple": false, "allowedTypes": ["images"] },
+    "body_content":    { "type": "blocks" },
+    "sections": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.content-section"
+    },
+    "meta_title":       { "type": "string" },
+    "meta_description": { "type": "text" }
+  }
+}

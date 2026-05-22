@@ -1,0 +1,122 @@
+{
+  "success": [
+    {
+      "file": "about.html",
+      "endpoint": "/about-page",
+      "documentId": "p99xz3ooablzbe6thog3pswu"
+    },
+    {
+      "file": "advisory.html",
+      "endpoint": "/service-pages",
+      "documentId": "z30uakseavnsfz6y1zlo4q8r"
+    },
+    {
+      "file": "canadian-cse.html",
+      "endpoint": "/exchange-pages",
+      "documentId": "urlc1d2c0p56ivhtpm41d4xx"
+    },
+    {
+      "file": "canadian-tsx.html",
+      "endpoint": "/exchange-pages",
+      "documentId": "fujuprkpz2v1pl6k4bkavk6s"
+    },
+    {
+      "file": "capabilities.html",
+      "endpoint": "/capabilities-page",
+      "documentId": "i7ouhdwp1oigbusq5ea0bt7m"
+    },
+    {
+      "file": "capital-formation.html",
+      "endpoint": "/service-pages",
+      "documentId": "moumrwj9yb656qqokuwgzb8o"
+    },
+    {
+      "file": "contact.html",
+      "endpoint": "/contact-page",
+      "documentId": "bc0m3ddol3ejpdpwf12yrbp7"
+    },
+    {
+      "file": "crises-management.html",
+      "endpoint": "/service-pages",
+      "documentId": "c30b5ikxmvmy5ug1s951jnk2"
+    },
+    {
+      "file": "financial-marketing.html",
+      "endpoint": "/service-pages",
+      "documentId": "m44c63n7f0o1xi4e1g3t92t4"
+    },
+    {
+      "file": "german-frankfurt.html",
+      "endpoint": "/exchange-pages",
+      "documentId": "khmm5h2zxll2ykrtnou1fjtt"
+    },
+    {
+      "file": "how-it-works.html",
+      "endpoint": "/how-it-works-page",
+      "documentId": "vgzj1979bj0efsllzfvqpf6x"
+    },
+    {
+      "file": "index.html",
+      "endpoint": "/homepage",
+      "documentId": "z72evsa60h3dorhsqoo3g1tt"
+    },
+    {
+      "file": "industry-expertise.html",
+      "endpoint": "/industry-expertise-page",
+      "documentId": "xrjrw4mfzmauqezifjrwtiqc"
+    },
+    {
+      "file": "litigation-communications.html",
+      "endpoint": "/service-pages",
+      "documentId": "tx6xan4vleocguj1em6669si"
+    },
+    {
+      "file": "market-entry.html",
+      "endpoint": "/service-pages",
+      "documentId": "agfbp3l750mypa79sw5dpesl"
+    },
+    {
+      "file": "media-relations.html",
+      "endpoint": "/service-pages",
+      "documentId": "lz8zx9vzej59i0n73r03wi3n"
+    },
+    {
+      "file": "media-strategy.html",
+      "endpoint": "/service-pages",
+      "documentId": "ozrarcuu7f0vduxy2003rkl6"
+    },
+    {
+      "file": "multicultural-engagement.html",
+      "endpoint": "/service-pages",
+      "documentId": "qahe57m7uq9wxypit4o8v5ck"
+    },
+    {
+      "file": "nasdaq-small-cap.html",
+      "endpoint": "/exchange-pages",
+      "documentId": "xmep2fla10t1n89v25el46a9"
+    },
+    {
+      "file": "otc-markets.html",
+      "endpoint": "/exchange-pages",
+      "documentId": "zav5kkkhkop3ovv3f93nuvwq"
+    },
+    {
+      "file": "strategic-advisory.html",
+      "endpoint": "/service-pages",
+      "documentId": "jwx9z2pl9xmpteolzire7pgv"
+    },
+    {
+      "file": "strategic-communications.html",
+      "endpoint": "/service-pages",
+      "documentId": "kl2p675lanm4m1gnjr96liig"
+    },
+    {
+      "file": "transactional-advisory.html",
+      "endpoint": "/service-pages",
+      "documentId": "gsqxtduhq7itgc50bojury9y"
+    }
+  ],
+  "failed": [],
+  "skipped": [],
+  "timestamp": "2026-05-21T15:07:19.311Z"
+}

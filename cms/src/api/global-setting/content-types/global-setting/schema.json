@@ -1,0 +1,28 @@
+{
+  "kind": "singleType",
+  "collectionName": "global_settings",
+  "info": {
+    "singularName": "global-setting",
+    "pluralName": "global-settings",
+    "displayName": "Global Setting"
+  },
+  "options": { "draftAndPublish": false },
+  "attributes": {
+    "site_name": { "type": "string" },
+    "tagline": { "type": "string" },
+    "footer_blurb": { "type": "text" },
+    "contact_phone": { "type": "string" },
+    "contact_email": { "type": "email" },
+    "address": { "type": "text" },
+    "footer_copyright": { "type": "string" },
+    "primary_navigation": { "type": "json" },
+    "footer_quick_links": { "type": "json" },
+    "footer_service_links": { "type": "json" },
+    "footer_exchange_links": { "type": "json" },
+    "footer_legal_links": { "type": "json" },
+    "sitemap_heading": { "type": "string" },
+    "sitemap_intro": { "type": "text" },
+    "sitemap_meta_title": { "type": "string" },
+    "sitemap_meta_description": { "type": "text" }
+  }
+}

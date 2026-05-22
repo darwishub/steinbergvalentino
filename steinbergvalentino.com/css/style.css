@@ -1,0 +1,42 @@
+.header_color a {
+    color: black !important;
+}
+.header_color .phone-info a {
+	color: white !important;
+}
+
+.logo img,
+		.logo svg {
+			padding: 0;
+			display: block;
+			width: 200px !important;
+			height: auto;
+			max-height: 100%;
+			image-rendering: auto;
+			position: relative;
+			z-index: 2;
+			-webkit-transition: opacity .4s ease-in-out;
+			transition: opacity .4s ease-in-out
+		}
+li#menu-item-3340{
+	display:none !important;
+}	
+span.footer-pt {
+    display: none !important;
+}	
+nav.mobile_menu {
+    margin-right: -55px !important;
+}
+button.mobile-menu-toggle {
+    margin-right: 55px !important;
+}
+.mobile-menu-list.open {
+  height: 400px;
+  overflow: scroll;
+  margin-top: 80px;
+}
+
+.mobile-menu-close {
+  margin-top: 80px;
+}
+

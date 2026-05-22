@@ -1,0 +1,65 @@
+# ─── Dependencies ─────────────────────────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+
+# ─── Environment & Secrets ────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# ─── Next.js ──────────────────────────────────────────────────────────────────
+web/.next/
+web/out/
+web/build/
+
+# ─── Strapi CMS ───────────────────────────────────────────────────────────────
+cms/.tmp/
+cms/build/
+cms/dist/
+cms/.cache/
+cms/public/uploads/*
+!cms/public/uploads/.gitkeep
+
+# ─── Strapi exports / backups ─────────────────────────────────────────────────
+*.tar.gz
+*.gz
+
+# ─── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ─── OS ───────────────────────────────────────────────────────────────────────
+.DS_Store
+__MACOSX/
+Thumbs.db
+
+# ─── Editor ───────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ─── Strapi generated / cache ─────────────────────────────────────────────────
+.strapi/
+.strapi-updater.json
+.npm/
+Library/
+tmp/
+
+# ─── Python cache ─────────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+
+# ─── Analysis / migration output ──────────────────────────────────────────────
+output/
+
+# ─── Misc ─────────────────────────────────────────────────────────────────────
+coverage/
+.nyc_output/
