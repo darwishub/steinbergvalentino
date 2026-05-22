@@ -1690,6 +1690,23 @@ img {
   margin: 0;
 }
 
+/* ── Footer ───────────────────────────────────────────────────────────── */
+.footer-link {
+  font-size: 0.8125rem;
+  color: var(--color-sv-gray);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-link:hover { color: var(--color-sv-white); }
+.footer-link--sm { font-size: 0.75rem; }
+
+@media (max-width: 1024px) {
+  .footer-grid { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 640px) {
+  .footer-grid { grid-template-columns: 1fr !important; }
+}
+
 /* ── Responsive ───────────────────────────────────────────────────────── */
 @media (max-width: 1280px) {
   .hp-hero__kw-inner {

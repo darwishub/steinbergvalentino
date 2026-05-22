@@ -2,7 +2,8 @@ import { SafeImage as Image } from '@/components/safe-image'
 import Link from 'next/link'
 import { getHomepage, getAllServicePages, getAllExchangePages, getGlobalSettings, getStrapiMedia } from '@/lib/strapi'
 import { BlocksContent } from '@/components/blocks-content'
-import { HeroVideo } from '@/components/hero-video'
+import dynamic from 'next/dynamic'
+const HeroVideo = dynamic(() => import('@/components/hero-video').then(m => m.HeroVideo), { ssr: false })
 import type { ServicePage, ExchangePage } from '@/lib/types'
 
 export const revalidate = 3600

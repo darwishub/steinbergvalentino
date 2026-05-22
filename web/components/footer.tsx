@@ -1,5 +1,3 @@
-'use client'
-
 import Link from 'next/link'
 import { DEFAULT_GLOBAL_SETTINGS } from '@/lib/defaults'
 import type { SiteLink } from '@/lib/types'
@@ -229,18 +227,7 @@ export function Footer({
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    style={{
-                      fontSize: '0.8125rem',
-                      color: 'var(--color-sv-gray)',
-                      textDecoration: 'none',
-                      transition: 'color 0.2s',
-                    }}
-                    onMouseEnter={(e) =>
-                      ((e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-sv-white)')
-                    }
-                    onMouseLeave={(e) =>
-                      ((e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-sv-gray)')
-                    }
+                    className="footer-link"
                   >
                     {link.label}
                   </Link>
@@ -271,18 +258,7 @@ export function Footer({
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    style={{
-                      fontSize: '0.8125rem',
-                      color: 'var(--color-sv-gray)',
-                      textDecoration: 'none',
-                      transition: 'color 0.2s',
-                    }}
-                    onMouseEnter={(e) =>
-                      ((e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-sv-white)')
-                    }
-                    onMouseLeave={(e) =>
-                      ((e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-sv-gray)')
-                    }
+                    className="footer-link"
                   >
                     {link.label}
                   </Link>
@@ -313,18 +289,7 @@ export function Footer({
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    style={{
-                      fontSize: '0.8125rem',
-                      color: 'var(--color-sv-gray)',
-                      textDecoration: 'none',
-                      transition: 'color 0.2s',
-                    }}
-                    onMouseEnter={(e) =>
-                      ((e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-sv-white)')
-                    }
-                    onMouseLeave={(e) =>
-                      ((e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-sv-gray)')
-                    }
+                    className="footer-link"
                   >
                     {link.label}
                   </Link>
@@ -358,18 +323,7 @@ export function Footer({
                 <Link
                   key={link.href}
                   href={link.href}
-                  style={{
-                    fontSize: '0.75rem',
-                    color: 'var(--color-sv-gray)',
-                    textDecoration: 'none',
-                    transition: 'color 0.2s',
-                  }}
-                  onMouseEnter={(e) =>
-                    ((e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-sv-white)')
-                  }
-                  onMouseLeave={(e) =>
-                    ((e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-sv-gray)')
-                  }
+                  className="footer-link footer-link--sm"
                 >
                   {link.label}
                 </Link>
@@ -379,19 +333,6 @@ export function Footer({
         </div>
       </div>
 
-      {/* Responsive footer grid */}
-      <style>{`
-        @media (max-width: 1024px) {
-          .footer-grid {
-            grid-template-columns: 1fr 1fr !important;
-          }
-        }
-        @media (max-width: 640px) {
-          .footer-grid {
-            grid-template-columns: 1fr !important;
-          }
-        }
-      `}</style>
     </footer>
   )
 }
