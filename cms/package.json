@@ -7,6 +7,7 @@
     "dev": "strapi develop",
     "start": "strapi start",
     "build": "strapi build",
+    "postbuild": "mkdir -p dist && rm -rf dist/config dist/src && cp -R config dist/config && cp -R src dist/src",
     "deploy": "strapi deploy"
   },
   "dependencies": {

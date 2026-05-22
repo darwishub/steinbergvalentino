@@ -1,4 +1,4 @@
-import analysis from '../../output/analysis.json'
+import analysis from '../data/analysis.json'
 import type { ContentSection, StrapiBlock } from './types'
 
 type RawPage = (typeof analysis.pages)[number]
