@@ -97,6 +97,8 @@ const legacyRedirects = [
 ]
 
 const nextConfig: NextConfig = {
+  // Prevent Next.js from eating trailing slashes before our custom redirects match
+  skipTrailingSlashRedirect: true,
   images: {
     remotePatterns: [
       {
@@ -115,6 +117,7 @@ const nextConfig: NextConfig = {
       },
     ],
     formats: ['image/avif', 'image/webp'],
+    qualities: [75, 80],
   },
   async redirects() {
     return legacyRedirects

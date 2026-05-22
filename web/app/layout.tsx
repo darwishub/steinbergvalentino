@@ -57,9 +57,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       : DEFAULT_GLOBAL_SETTINGS.primary_navigation
 
   return (
-    <html lang="en" className={`${cormorant.variable} ${manrope.variable} antialiased`}>
+    <html lang="en" data-scroll-behavior="smooth" className={`${cormorant.variable} ${manrope.variable} antialiased`}>
       <body className="flex min-h-screen flex-col">
-        <Nav items={navigation} />
+        <Nav items={navigation} phone={globalSettings?.contact_phone} />
         <main className="flex-1">{children}</main>
         <Footer
           quickLinks={globalSettings?.footer_quick_links}
@@ -71,6 +71,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           phone={globalSettings?.contact_phone}
           address={globalSettings?.address}
           copyright={globalSettings?.footer_copyright}
+          socialFacebook={globalSettings?.social_facebook}
+          socialTwitter={globalSettings?.social_twitter}
+          socialInstagram={globalSettings?.social_instagram}
+          socialLinkedin={globalSettings?.social_linkedin}
+          socialPinterest={globalSettings?.social_pinterest}
         />
       </body>
     </html>

@@ -550,6 +550,11 @@ export interface ApiGlobalSettingGlobalSetting extends Struct.SingleTypeSchema {
     sitemap_intro: Schema.Attribute.Text;
     sitemap_meta_description: Schema.Attribute.Text;
     sitemap_meta_title: Schema.Attribute.String;
+    social_facebook: Schema.Attribute.String;
+    social_instagram: Schema.Attribute.String;
+    social_linkedin: Schema.Attribute.String;
+    social_pinterest: Schema.Attribute.String;
+    social_twitter: Schema.Attribute.String;
     tagline: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

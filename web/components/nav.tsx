@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, startTransition } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { DEFAULT_GLOBAL_SETTINGS } from '@/lib/defaults'
@@ -8,11 +8,13 @@ import type { GlobalNavItem } from '@/lib/types'
 
 interface NavProps {
   items?: GlobalNavItem[] | null
+  phone?: string | null
 }
 
-export function Nav({ items }: NavProps) {
+export function Nav({ items, phone }: NavProps) {
   const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
+  const [showScrollTop, setShowScrollTop] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null)
@@ -21,17 +23,23 @@ export function Nav({ items }: NavProps) {
   /* Strip any standalone "Contact Us" link — it's always shown as the CTA button */
   const navItems = rawItems.filter((i) => i.href !== '/contact' || !!i.children?.length)
 
-  /* scroll shadow */
+  /* scroll: shadow + nav grow + scroll-to-top visibility */
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12)
+    const onScroll = () => {
+      const y = window.scrollY
+      setScrolled(y > 80)
+      setShowScrollTop(y > 400)
+    }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  /* close mobile on route change */
+  /* close mobile on route change — startTransition avoids synchronous-setState-in-effect lint */
   useEffect(() => {
-    setMobileOpen(false)
-    setMobileExpanded(null)
+    startTransition(() => {
+      setMobileOpen(false)
+      setMobileExpanded(null)
+    })
   }, [pathname])
 
   /* keep dropdown open briefly on mouse-leave */
@@ -52,6 +60,7 @@ export function Nav({ items }: NavProps) {
     <>
       <header
         className="sv-site-header"
+        data-scrolled={scrolled ? 'true' : undefined}
         style={{
           boxShadow: scrolled ? '0 6px 28px rgba(0,0,0,0.65)' : 'none',
           transition: 'box-shadow 0.3s ease',
@@ -65,12 +74,14 @@ export function Nav({ items }: NavProps) {
               <span style={{ display: 'block', width: '1.25rem', height: '1px', background: 'var(--color-sv-gold)', opacity: 0.7 }} />
               Strategic Investor Relations for Small &amp; Mid-Cap Companies
             </span>
-            <a
-              href="tel:+16465353995"
-              style={{ textDecoration: 'none', color: 'rgba(255,255,255,0.52)', letterSpacing: '0.1em' }}
-            >
-              +1 (646) 535-3995
-            </a>
+            {phone && (
+              <a
+                href={`tel:${phone.replace(/[^+\d]/g, '')}`}
+                style={{ textDecoration: 'none', color: 'rgba(255,255,255,0.52)', letterSpacing: '0.1em' }}
+              >
+                {phone}
+              </a>
+            )}
           </div>
         </div>
 
@@ -86,7 +97,7 @@ export function Nav({ items }: NavProps) {
               <span className="sv-wordmark-title" style={{ color: '#fff' }}>
                 Steinberg<span style={{ color: 'var(--color-sv-gold)' }}>Valentino</span>
               </span>
-              <span className="sv-wordmark-meta">Capital Markets Group</span>
+              <span className="sv-wordmark-meta">Group</span>
             </span>
           </Link>
 
@@ -393,6 +404,38 @@ export function Nav({ items }: NavProps) {
       </div>
 
       <div className="sv-page-offset" />
+
+      {/* ── Scroll-to-top button ────────────────────────────────────────── */}
+      <button
+        aria-label="Scroll to top"
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        style={{
+          position: 'fixed',
+          bottom: '1.75rem',
+          right: '1.75rem',
+          width: '2.875rem',
+          height: '2.875rem',
+          background: 'linear-gradient(135deg, #dca840 0%, #b08d57 100%)',
+          border: '1px solid rgba(220,168,64,0.35)',
+          borderRadius: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          zIndex: 48,
+          boxShadow: '0 4px 20px rgba(176,141,87,0.4), 0 1px 4px rgba(0,0,0,0.45)',
+          opacity: showScrollTop ? 1 : 0,
+          pointerEvents: showScrollTop ? 'auto' : 'none',
+          transform: showScrollTop ? 'translateY(0)' : 'translateY(0.625rem)',
+          transition: 'opacity 0.35s ease, transform 0.35s ease',
+          outline: 'none',
+          padding: 0,
+        }}
+      >
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M8 12V4M4 7.5 8 3.5l4 4" stroke="#0b0c0f" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
 
       <style>{`
         @media (max-width: 1080px) {

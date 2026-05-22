@@ -90,8 +90,13 @@ export const DEFAULT_GLOBAL_SETTINGS: GlobalSettings = {
   footer_legal_links: [],
   sitemap_heading: 'Sitemap',
   sitemap_intro:
-    'Browse every migrated SteinbergValentino page in the rebuilt Next.js and Strapi experience.',
+    'A complete index of all pages on the SteinbergValentino Group website.',
   sitemap_meta_title: 'Sitemap | SteinbergValentino Group',
   sitemap_meta_description:
     'Browse the full SteinbergValentino site structure, including firm pages, services, and exchange support pages.',
+  social_facebook:  'https://www.facebook.com/SteinbergValentinoGroup/',
+  social_twitter:   'https://twitter.com/SV__Group',
+  social_instagram: 'https://www.instagram.com/steinbergvalentinogroup',
+  social_linkedin:  'https://www.linkedin.com/company/steinberg-valentino-group/',
+  social_pinterest: 'https://www.pinterest.com/SteinbergValentinoGroup',
 }

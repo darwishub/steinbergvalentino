@@ -1,7 +1,7 @@
 import { SafeImage as Image } from '@/components/safe-image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { getAllServicePages } from '@/lib/strapi'
+import { getAllServicePages, getServicesListingPage, getStrapiMedia } from '@/lib/strapi'
 
 export const revalidate = 3600
 
@@ -88,12 +88,12 @@ const STATIC_SERVICES = [
 
 export default async function ServicesIndexPage() {
   let services: { title: string; slug: string; hero_subheading?: string | null }[] = []
+  let listingPage = null
 
   try {
-    const data = await getAllServicePages()
-    services = data
+    ;[services, listingPage] = await Promise.all([getAllServicePages(), getServicesListingPage()])
   } catch {
-    services = STATIC_SERVICES
+    /* ignore */
   }
 
   /* Fall back to static if Strapi returned empty */
@@ -101,13 +101,16 @@ export default async function ServicesIndexPage() {
     services = STATIC_SERVICES
   }
 
+  const heroSrc      = getStrapiMedia(listingPage?.hero_image?.url)     ?? '/fallbacks/office-tower.webp'
+  const approachSrc  = getStrapiMedia(listingPage?.approach_image?.url) ?? '/fallbacks/teamwork.webp'
+
   return (
     <>
       {/* ── Hero ────────────────────────────────────────────────────────── */}
       <section className="sv-page-hero">
         <Image
-          src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=2000&q=88"
-          alt="SteinbergValentino Services"
+          src={heroSrc}
+          alt={listingPage?.hero_heading ?? 'SteinbergValentino Services'}
           fill
           sizes="100vw"
           priority
@@ -254,7 +257,7 @@ export default async function ServicesIndexPage() {
 
             <div style={{ position: 'relative' }}>
               <Image
-                src="https://images.unsplash.com/photo-1553484771-047a44eee27a?w=800&q=80"
+                src={approachSrc}
                 alt="Integrated investor relations approach"
                 width={700}
                 height={500}

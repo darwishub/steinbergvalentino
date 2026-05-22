@@ -23,6 +23,11 @@
     "sitemap_heading": { "type": "string" },
     "sitemap_intro": { "type": "text" },
     "sitemap_meta_title": { "type": "string" },
-    "sitemap_meta_description": { "type": "text" }
+    "sitemap_meta_description": { "type": "text" },
+    "social_facebook":  { "type": "string" },
+    "social_twitter":   { "type": "string" },
+    "social_instagram": { "type": "string" },
+    "social_linkedin":  { "type": "string" },
+    "social_pinterest": { "type": "string" }
   }
 }

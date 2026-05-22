@@ -35,17 +35,16 @@ export default async function HowItWorksPage() {
 
   const heroHeading = page?.hero_heading ?? scrapedPage?.heroHeading ?? 'How It Works'
   const heroSubheading = page?.hero_subheading ?? scrapedPage?.heroSubheading ?? ''
-
   const heroBg = page?.hero_image ? getStrapiMedia(page.hero_image.url) : null
   const sections = page?.sections?.length ? page.sections : (scrapedPage?.sections ?? [])
   const bodyContent = page?.body_content ?? scrapedPage?.bodyContent ?? null
 
   return (
     <>
-      {/* ── Hero ────────────────────────────────────────────────────────── */}
+      {/* ── Inner Hero ───────────────────────────────────────────────────── */}
       <section className="sv-page-hero">
         <Image
-          src={heroBg ?? 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=2000&q=88'}
+          src={heroBg ?? '/fallbacks/office-tower.webp'}
           alt="How SteinbergValentino works"
           fill
           sizes="100vw"
@@ -71,154 +70,182 @@ export default async function HowItWorksPage() {
         </div>
       </section>
 
-      {/* ── Body Content from Strapi ─────────────────────────────────────── */}
+      {/* ── Intro body text ──────────────────────────────────────────────── */}
       {bodyContent && bodyContent.length > 0 && (
-        <section className="sv-section">
-          <div className="sv-container" style={{ maxWidth: '800px' }}>
+        <section className="sv-section sv-bg-light">
+          <div className="sv-container" style={{ maxWidth: '760px' }}>
             <BlocksContent blocks={bodyContent} />
           </div>
         </section>
       )}
 
-      {/* ── Sections from Strapi ─────────────────────────────────────────── */}
-      {sections.length > 0 ? (
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          {sections.map((section, i) => {
-            const imgSrc = section.image
-              ? getStrapiMedia(section.image.url) ?? section.image.url
-              : null
-            const isLight = i % 2 === 0
+      {/* ── Vertical numbered timeline ───────────────────────────────────── */}
+      {/*
+        Template: vertical process timeline.
+        Left column = large gold step number + connecting vertical rule.
+        Right column = heading + subheading + body + optional image.
+        Structurally distinct from About (image split) and Capabilities (card grid).
+      */}
+      {sections.length > 0 && (
+        <section className="sv-section" style={{ backgroundColor: 'var(--color-sv-light)' }}>
+          <div className="sv-container" style={{ maxWidth: '900px' }}>
 
-            return (
-              <section
-                key={section.id ?? i}
-                className={`sv-section ${isLight ? '' : 'sv-bg-light'}`}
-                style={{ borderTop: '1px solid var(--color-sv-gray200)' }}
-              >
-                <div className="sv-container">
-                  <div
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: imgSrc ? '1fr 1fr' : '3fr 2fr',
-                      gap: 'var(--sv-sp-64)',
-                      alignItems: 'center',
-                    }}
-                    className="hiw-section-grid"
-                  >
-                    {/* On even rows, if there's an image, show it on the right */}
-                    {imgSrc && i % 2 === 1 && (
-                      <div style={{ position: 'relative', overflow: 'hidden' }}>
-                        <Image
-                          src={imgSrc}
-                          alt={section.image!.alternativeText ?? section.heading ?? ''}
-                          width={section.image!.width || 800}
-                          height={section.image!.height || 600}
-                          sizes="(max-width: 1024px) 100vw, 50vw"
-                          style={{ width: '100%', height: 'auto', display: 'block' }}
-                        />
+            {/* Section label */}
+            <div style={{ marginBottom: 'var(--sv-sp-64)' }}>
+              <p className="sv-eyebrow" style={{ color: 'var(--color-sv-gold)', marginBottom: 'var(--sv-sp-16)' }}>
+                Step by Step
+              </p>
+              <h2 className="sv-display" style={{ maxWidth: '520px' }}>
+                A Proven Path to Investor Confidence
+              </h2>
+            </div>
+
+            {/* Timeline list */}
+            <ol style={{ listStyle: 'none', margin: 0, padding: 0 }} className="hiw-timeline">
+              {sections.map((section, i) => {
+                const imgSrc = section.image
+                  ? getStrapiMedia(section.image.url) ?? section.image.url
+                  : null
+                const isLast = i === sections.length - 1
+
+                return (
+                  <li key={section.id ?? i} className="hiw-step">
+                    {/* ── Left: step number + vertical rule ── */}
+                    <div className="hiw-step-left" aria-hidden="true">
+                      <div className="hiw-step-number">
+                        <span>{String(i + 1).padStart(2, '0')}</span>
                       </div>
-                    )}
+                      {!isLast && <div className="hiw-step-rule" />}
+                    </div>
 
-                    {/* Phase number visual for sections without images */}
-                    {!imgSrc && (
-                      <div>
-                        {section.heading && (
-                          <h2
-                            className="sv-display"
-                            style={{ marginBottom: 'var(--sv-sp-24)' }}
-                          >
-                            {section.heading}
-                          </h2>
-                        )}
-                        {section.subheading && (
-                          <p
-                            style={{
-                              fontSize: '1.125rem',
-                              color: 'var(--color-sv-slate)',
-                              marginBottom: 'var(--sv-sp-24)',
-                              lineHeight: 1.6,
-                            }}
-                          >
-                            {section.subheading}
-                          </p>
-                        )}
-                        {section.body && <BlocksContent blocks={section.body} />}
-                      </div>
-                    )}
-
-                    {imgSrc && (
-                      <div>
-                        {section.heading && (
-                          <h2
-                            className="sv-display"
-                            style={{ marginBottom: 'var(--sv-sp-24)' }}
-                          >
-                            {section.heading}
-                          </h2>
-                        )}
-                        {section.subheading && (
-                          <p
-                            style={{
-                              fontSize: '1.125rem',
-                              color: 'var(--color-sv-slate)',
-                              marginBottom: 'var(--sv-sp-24)',
-                              lineHeight: 1.6,
-                            }}
-                          >
-                            {section.subheading}
-                          </p>
-                        )}
-                        {section.body && <BlocksContent blocks={section.body} />}
-                      </div>
-                    )}
-
-                    {imgSrc && i % 2 === 0 && (
-                      <div style={{ position: 'relative', overflow: 'hidden' }}>
-                        <Image
-                          src={imgSrc}
-                          alt={section.image!.alternativeText ?? section.heading ?? ''}
-                          width={section.image!.width || 800}
-                          height={section.image!.height || 600}
-                          sizes="(max-width: 1024px) 100vw, 50vw"
-                          style={{ width: '100%', height: 'auto', display: 'block' }}
-                        />
-                      </div>
-                    )}
-
-                    {/* Phase number decoration for no-image sections */}
-                    {!imgSrc && (
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          padding: 'var(--sv-sp-48)',
-                          background: 'var(--color-sv-light)',
-                        }}
-                        className="hiw-phase-visual"
-                      >
-                        <p
+                    {/* ── Right: content ── */}
+                    <div className="hiw-step-body">
+                      {section.heading && (
+                        <h3
                           style={{
                             fontFamily: 'var(--font-serif)',
+                            fontSize: '1.5rem',
                             fontWeight: 400,
-                            fontSize: '7rem',
-                            color: 'var(--color-sv-gold)',
-                            lineHeight: 1,
-                            opacity: 0.25,
+                            lineHeight: 1.25,
+                            marginBottom: 'var(--sv-sp-16)',
+                            color: 'var(--color-sv-navy)',
                           }}
                         >
-                          {String(i + 1).padStart(2, '0')}
+                          {section.heading}
+                        </h3>
+                      )}
+                      {section.subheading && (
+                        <p
+                          style={{
+                            fontSize: '1rem',
+                            color: 'var(--color-sv-slate)',
+                            lineHeight: 1.65,
+                            marginBottom: section.body ? 'var(--sv-sp-16)' : 0,
+                          }}
+                        >
+                          {section.subheading}
                         </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <style>{`@media (max-width: 1024px) { .hiw-section-grid { grid-template-columns: 1fr !important; } .hiw-phase-visual { display: none !important; } }`}</style>
-              </section>
-            )
-          })}
+                      )}
+                      {section.body && (
+                        <div style={{ color: 'var(--color-sv-slate)' }}>
+                          <BlocksContent blocks={section.body} />
+                        </div>
+                      )}
+                      {imgSrc && (
+                        <div style={{ marginTop: 'var(--sv-sp-32)', overflow: 'hidden' }}>
+                          <Image
+                            src={imgSrc}
+                            alt={section.image!.alternativeText ?? section.heading ?? ''}
+                            width={section.image!.width || 800}
+                            height={section.image!.height || 450}
+                            sizes="(max-width: 900px) 100vw, 760px"
+                            style={{ width: '100%', height: 'auto', display: 'block' }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </li>
+                )
+              })}
+            </ol>
+          </div>
+        </section>
+      )}
+
+      {/* ── Bottom CTA ───────────────────────────────────────────────────── */}
+      <section
+        className="sv-section"
+        style={{ backgroundColor: '#0c0d10', borderTop: '1px solid rgba(255,255,255,0.07)' }}
+      >
+        <div className="sv-container" style={{ textAlign: 'center', maxWidth: '600px' }}>
+          <p className="sv-eyebrow" style={{ color: 'var(--color-sv-gold)', marginBottom: 'var(--sv-sp-16)' }}>
+            Start the Conversation
+          </p>
+          <h2
+            className="sv-display"
+            style={{ color: 'var(--color-sv-white)', marginBottom: 'var(--sv-sp-32)' }}
+          >
+            Ready to see the process in action?
+          </h2>
+          <a href="/contact" className="sv-btn sv-btn-primary">
+            Schedule a Consultation
+          </a>
         </div>
-      ) : null}
+      </section>
+
+      <style>{`
+        /* Timeline layout */
+        .hiw-timeline {
+          display: flex;
+          flex-direction: column;
+        }
+        .hiw-step {
+          display: grid;
+          grid-template-columns: 80px 1fr;
+          gap: 0 var(--sv-sp-48);
+          align-items: start;
+        }
+        .hiw-step-left {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .hiw-step-number {
+          width: 56px;
+          height: 56px;
+          border: 2px solid var(--color-sv-gold);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          background: #fff;
+        }
+        .hiw-step-number span {
+          font-family: var(--font-serif);
+          font-size: 1.125rem;
+          font-weight: 400;
+          color: var(--color-sv-gold);
+          line-height: 1;
+        }
+        .hiw-step-rule {
+          width: 2px;
+          flex: 1;
+          min-height: 40px;
+          background: linear-gradient(to bottom, var(--color-sv-gold), rgba(176,141,87,0.15));
+          margin-top: 0;
+        }
+        .hiw-step-body {
+          padding-bottom: var(--sv-sp-64);
+          padding-top: 12px;
+        }
+        @media (max-width: 640px) {
+          .hiw-step { grid-template-columns: 48px 1fr; gap: 0 var(--sv-sp-24); }
+          .hiw-step-number { width: 40px; height: 40px; }
+          .hiw-step-number span { font-size: 0.9rem; }
+          .hiw-step-body { padding-bottom: var(--sv-sp-48); }
+        }
+      `}</style>
     </>
   )
 }

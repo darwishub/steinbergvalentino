@@ -124,9 +124,21 @@ export interface ContactPage {
   documentId: string
   hero_heading: string
   hero_subheading: string | null
+  hero_image: StrapiMedia | null
   address: string | null
   phone: string | null
   email: string | null
+  meta_title: string | null
+  meta_description: string | null
+}
+
+export interface ServicesListingPage {
+  id: number
+  documentId: string
+  hero_heading: string | null
+  hero_subheading: string | null
+  hero_image: StrapiMedia | null
+  approach_image: StrapiMedia | null
   meta_title: string | null
   meta_description: string | null
 }
@@ -150,6 +162,11 @@ export interface GlobalSettings {
   sitemap_intro: string | null
   sitemap_meta_title: string | null
   sitemap_meta_description: string | null
+  social_facebook: string | null
+  social_twitter: string | null
+  social_instagram: string | null
+  social_linkedin: string | null
+  social_pinterest: string | null
 }
 
 /* ─── Collection Types ───────────────────────────────────────────────────── */

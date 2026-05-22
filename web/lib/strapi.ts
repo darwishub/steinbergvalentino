@@ -5,6 +5,7 @@ import type {
   CapabilitiesPage,
   IndustryExpertisePage,
   ContactPage,
+  ServicesListingPage,
   GlobalSettings,
   ServicePage,
   ExchangePage,
@@ -60,7 +61,7 @@ export async function getAboutPage(): Promise<AboutPage> {
 
 export async function getHowItWorksPage(): Promise<HowItWorksPage> {
   const res = await fetchAPI<StrapiSingleResponse<HowItWorksPage>>(
-    '/how-it-works-page?populate[sections][populate]=image'
+    '/how-it-works-page?populate[hero_image][fields][0]=url&populate[hero_image][fields][1]=width&populate[hero_image][fields][2]=height&populate[sections][populate]=image'
   )
   return res.data
 }
@@ -80,7 +81,16 @@ export async function getIndustryExpertisePage(): Promise<IndustryExpertisePage>
 }
 
 export async function getContactPage(): Promise<ContactPage> {
-  const res = await fetchAPI<StrapiSingleResponse<ContactPage>>('/contact-page')
+  const res = await fetchAPI<StrapiSingleResponse<ContactPage>>(
+    '/contact-page?populate[hero_image][fields][0]=url&populate[hero_image][fields][1]=width&populate[hero_image][fields][2]=height'
+  )
+  return res.data
+}
+
+export async function getServicesListingPage(): Promise<ServicesListingPage> {
+  const res = await fetchAPI<StrapiSingleResponse<ServicesListingPage>>(
+    '/services-listing-page?populate[hero_image][fields][0]=url&populate[hero_image][fields][1]=width&populate[hero_image][fields][2]=height&populate[approach_image][fields][0]=url&populate[approach_image][fields][1]=width&populate[approach_image][fields][2]=height'
+  )
   return res.data
 }
 

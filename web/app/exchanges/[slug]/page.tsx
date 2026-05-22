@@ -144,7 +144,7 @@ export default async function ExchangeDetailPage({ params }: Props) {
           />
         ) : (
           <Image
-            src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=2000&q=88"
+            src="/fallbacks/hero-market.webp"
             alt={resolvedPage.exchange_name}
             fill
             sizes="100vw"

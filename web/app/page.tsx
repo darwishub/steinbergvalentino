@@ -1,10 +1,43 @@
 import { SafeImage as Image } from '@/components/safe-image'
 import Link from 'next/link'
-import { getHomepage, getAllServicePages, getAllExchangePages, getStrapiMedia } from '@/lib/strapi'
+import { getHomepage, getAllServicePages, getAllExchangePages, getGlobalSettings, getStrapiMedia } from '@/lib/strapi'
 import { BlocksContent } from '@/components/blocks-content'
+import { HeroVideo } from '@/components/hero-video'
 import type { ServicePage, ExchangePage } from '@/lib/types'
 
 export const revalidate = 3600
+
+/* ─── Hero video (set NEXT_PUBLIC_HERO_VIDEO_URL in Vercel/Railway env) ── */
+const HERO_VIDEO_URL = process.env.NEXT_PUBLIC_HERO_VIDEO_URL ?? null
+
+/* ─── Testimonials — real clients from old site ─────────────────────────── */
+const TESTIMONIALS = [
+  {
+    name: 'Abraham Mirman',
+    quote:
+      "My company is a new player in the stock market, so I've been having trouble getting investors interested in my company. I needed to find a way to promote my stock so I can improve its value, which is why I got a hold of SV Group. Through a series of aggressive campaigns, I've been able to get my stock value up even higher than I expected, and it looks like it will continue in the months ahead. I'm very satisfied with what they've done, and I look forward to a bright future.",
+  },
+  {
+    name: 'Paul Tavis McKenzie',
+    quote:
+      "After taking my company public, it was a challenge to get investors aware of what we have to offer, but I needed to increase the value of my stock so I could move forward. That was when I got in touch with SV Group. My exposure in the market has increased, and I've been seeing my stock value go up higher than I expected. I feel confident that my company will become a major player in my industry, and I believe I could eventually move into major exchanges.",
+  },
+  {
+    name: 'Yat Man Lai',
+    quote:
+      "I just went public earlier this year, and I've been having trouble getting investors interested in my stock. I've heard about investor awareness companies like SV Group, so I decided to get some more information about what they could do for me. After an extended conversation with someone at their office, I decided to give them a try. Their campaigns have been extremely helpful in getting me more market exposure, and my stock's value has gone up more than I expected.",
+  },
+  {
+    name: 'Susanne Wilke',
+    quote:
+      "I felt like it was time for me to take my company public because I needed to raise more capital so I can expand my business, but it was hard to get market liquidity up so I can raise the value of my stock. I heard about how investor awareness companies like SV Group can help new public companies get more exposure on the market, so I decided reach out to them. So far, I've been happy with what they've done, and I've been able to increase the value of my stock.",
+  },
+  {
+    name: 'Mark Munro',
+    quote:
+      "I just filed my IPO this year, so I don't have the market exposure of many of my larger competitors. I needed to improve market liquidity so I could have more value on the market, which is why I went to SV Group. Their campaigns have brought more investors to my stock, and I have been able to raise the capital I need to expand my business. Now the value of my stock has more than doubled, and I expect it to go higher by the end of the fiscal year.",
+  },
+]
 
 /* ─── Flag map ──────────────────────────────────────────────────────────── */
 const COUNTRY_FLAG: Record<string, string> = {
@@ -20,6 +53,7 @@ export default async function HomePage() {
   let page = null
   let services: ServicePage[] = []
   let exchanges: ExchangePage[] = []
+  let globalSettings = null
 
   try {
     ;[page, services, exchanges] = await Promise.all([
@@ -30,6 +64,9 @@ export default async function HomePage() {
   } catch {
     /* Strapi offline — render static shell */
   }
+
+  /* Global settings fetched separately so a 404 doesn't kill the whole page */
+  globalSettings = await getGlobalSettings().catch(() => null)
 
   const heroHeading =
     page?.hero_heading ?? 'We Make Retail Markets For Publicly Traded Small Cap Stocks'
@@ -48,13 +85,7 @@ export default async function HomePage() {
 
   const heroBackground = page?.hero_background
   const heroBgUrl = getStrapiMedia(heroBackground?.url)
-  /* Premium hero — glass-and-steel financial district, dark by nature so overlay reads clean */
-  const PREMIUM_HERO =
-    'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2400&q=88'
-  const homepageHeroSrc =
-    heroBackground && heroBgUrl && heroBackground.width >= 1600 && heroBackground.height >= 900
-      ? heroBgUrl
-      : PREMIUM_HERO
+  const homepageHeroSrc = heroBgUrl ?? '/fallbacks/office-tower.webp'
 
   const sections = page?.sections ?? []
 
@@ -67,7 +98,7 @@ export default async function HomePage() {
           1 · HERO — full-bleed dark, large serif headline, stats bar
       ══════════════════════════════════════════════════════════════════════ */}
       <section className="hp-hero">
-        {/* Background */}
+        {/* Background — poster image always loads instantly (LCP-safe) */}
         <Image
           src={homepageHeroSrc}
           alt="SteinbergValentino Group — Capital Markets"
@@ -76,6 +107,11 @@ export default async function HomePage() {
           priority
           style={{ objectFit: 'cover', objectPosition: 'center 20%' }}
         />
+
+        {/* Video overlaid on top — lazy-loads only after hero enters viewport */}
+        {HERO_VIDEO_URL && (
+          <HeroVideo src={HERO_VIDEO_URL} poster={homepageHeroSrc} />
+        )}
 
         {/* Overlay */}
         <div className="hp-hero__overlay" />
@@ -107,18 +143,20 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* Stats bar */}
-        <div className="hp-hero__stats-bar">
-          <div className="sv-container hp-hero__stats-inner">
+        {/* ── Keyword band ──────────────────────────────────────────── */}
+        <div className="hp-hero__kw-band" role="presentation" aria-hidden="true">
+          <div className="sv-container hp-hero__kw-inner">
             {[
-              { stat: '20+', label: 'Years of Capital Markets Experience' },
-              { stat: '150+', label: 'Public Companies Served' },
-              { stat: '9', label: 'Major Exchange Listings Supported' },
-            ].map(({ stat, label }) => (
-              <div key={stat} className="hp-hero__stat-cell">
-                <span className="sv-stat-number hp-hero__stat-num">{stat}</span>
-                <span className="hp-hero__stat-label">{label}</span>
-              </div>
+              'Investor Relations',
+              'Capital Formation',
+              'Exchange Listings',
+              'Media & Communications',
+              'Market Making',
+            ].map((kw, i, arr) => (
+              <span key={kw} className="hp-hero__kw-group">
+                <span className="hp-hero__kw">{kw}</span>
+                {i < arr.length - 1 && <span className="hp-hero__kw-sep">·</span>}
+              </span>
             ))}
           </div>
         </div>
@@ -133,7 +171,7 @@ export default async function HomePage() {
           <div className="hp-about__col-left">
             <p className="sv-eyebrow hp-about__eyebrow">The Firm</p>
             <h2 className="sv-display hp-about__headline">
-              {sections[0]?.heading ?? 'Capital Markets Expertise for Growth-Stage Public Companies'}
+              {sections[0]?.heading ?? 'SteinbergValentino Group — The Best IR Firm For Small & Mid-Cap Businesses'}
             </h2>
 
             {sections[0]?.body ? (
@@ -142,9 +180,11 @@ export default async function HomePage() {
               </div>
             ) : (
               <p className="hp-about__body-text">
-                SteinbergValentino Group brings institutional-grade investor relations strategy to
-                small and mid-cap public companies. We build lasting investor confidence through
-                disciplined storytelling, targeted outreach, and precise capital markets execution.
+                SteinbergValentino is a small-cap company&apos;s best choice in investor relations firms.
+                SV Group goes above and beyond to serve its client companies with the best possible
+                IR mediation along with an array of other equally fundamental services. SV Group is
+                known worldwide not only for its supreme IR service but also for possessing diverse
+                capabilities.
               </p>
             )}
 
@@ -176,6 +216,29 @@ export default async function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════
+          2b · MANIFESTO STRIP — centered brand positioning statement
+      ══════════════════════════════════════════════════════════════════════ */}
+      <section className="hp-manifesto">
+        <div className="sv-container">
+          <div className="hp-manifesto__inner">
+            <div className="hp-manifesto__rule-row" aria-hidden="true">
+              <span className="hp-manifesto__rule-line" />
+              <span className="hp-manifesto__gem">◆</span>
+              <span className="hp-manifesto__rule-line" />
+            </div>
+            <p className="hp-manifesto__quote">
+              Where institutional strategy meets retail market development.
+            </p>
+            <div className="hp-manifesto__rule-row" aria-hidden="true">
+              <span className="hp-manifesto__rule-line" />
+              <span className="hp-manifesto__gem">◆</span>
+              <span className="hp-manifesto__rule-line" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════
           3 · SERVICES — light, clean 3-col grid (no images, Blackstone style)
       ══════════════════════════════════════════════════════════════════════ */}
       {featuredServices.length > 0 && (
@@ -196,12 +259,13 @@ export default async function HomePage() {
 
             {/* Services grid */}
             <div className="hp-services__grid">
-              {featuredServices.map((svc) => (
+              {featuredServices.map((svc, i) => (
                 <Link
                   key={svc.slug}
                   href={`/services/${svc.slug}`}
                   className="hp-svc-card"
                 >
+                  <span className="hp-svc-card__index" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
                   <span className="hp-svc-card__rule" />
                   <h3 className="hp-svc-card__title">{svc.title}</h3>
                   {svc.hero_subheading && (
@@ -225,7 +289,7 @@ export default async function HomePage() {
           4 · BODY CONTENT from Strapi (secondary sections / feature highlights)
       ══════════════════════════════════════════════════════════════════════ */}
       {sections.length > 1 && (
-        <section className="hp-features sv-section sv-bg-light">
+        <section className="hp-features sv-section" style={{ backgroundColor: '#0c0d10' }}>
           <div className="sv-container">
             <div className="hp-features__header">
               <p className="sv-eyebrow hp-features__eyebrow">Why SteinbergValentino</p>
@@ -289,7 +353,32 @@ export default async function HomePage() {
       )}
 
       {/* ══════════════════════════════════════════════════════════════════════
-          6 · CONTACT CTA — dark, two-column (Blackstone "two-up" style)
+          6 · TESTIMONIALS — light cream, client quotes carousel
+      ══════════════════════════════════════════════════════════════════════ */}
+      <section className="hp-testimonials sv-section">
+        <div className="sv-container">
+          <div className="hp-testimonials__header">
+            <p className="sv-eyebrow hp-testimonials__eyebrow">Client Testimonials</p>
+            <h2 className="sv-display hp-testimonials__headline">
+              What Our Clients Say
+            </h2>
+          </div>
+
+          <div className="hp-testimonials__grid">
+            {TESTIMONIALS.map((t) => (
+              <div key={t.name} className="hp-testi-card">
+                <span className="hp-testi-card__quote-mark">&ldquo;</span>
+                <p className="hp-testi-card__body">{t.quote}</p>
+                <div className="hp-testi-card__rule" />
+                <p className="hp-testi-card__name">{t.name}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════
+          7 · CONTACT CTA — dark, two-column (Blackstone "two-up" style)
       ══════════════════════════════════════════════════════════════════════ */}
       <section className="hp-cta">
         <div className="sv-container hp-cta__inner">
@@ -317,12 +406,19 @@ export default async function HomePage() {
           <div className="hp-cta__col-right">
             <div className="hp-cta__contact-block">
               <p className="hp-cta__contact-label">New Business</p>
-              <a href="mailto:contact@steinbergvalentino.com" className="hp-cta__contact-link">
-                contact@steinbergvalentino.com
-              </a>
-              <a href="tel:+16465353995" className="hp-cta__contact-link">
-                (646) 535-3995
-              </a>
+              {globalSettings?.contact_email && (
+                <a href={`mailto:${globalSettings.contact_email}`} className="hp-cta__contact-link">
+                  {globalSettings.contact_email}
+                </a>
+              )}
+              {globalSettings?.contact_phone && (
+                <a
+                  href={`tel:${globalSettings.contact_phone.replace(/[^+\d]/g, '')}`}
+                  className="hp-cta__contact-link"
+                >
+                  {globalSettings.contact_phone}
+                </a>
+              )}
             </div>
 
             {services.length > 0 && (

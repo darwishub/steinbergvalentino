@@ -7,7 +7,7 @@ type SafeImageProps = ImageProps & {
   fallbackSrc?: string
 }
 
-const DEFAULT_FALLBACK = '/fallbacks/office-tower.jpg'
+const DEFAULT_FALLBACK = '/fallbacks/office-tower.webp'
 
 function normalizeSrc(src: ImageProps['src']): string {
   if (typeof src === 'string') return src
@@ -21,7 +21,7 @@ function pickFallbackFromAlt(alt: string, explicitFallback?: string): string {
   const text = alt.toLowerCase()
 
   if (text.includes('contact') || text.includes('team') || text.includes('about')) {
-    return '/fallbacks/teamwork.jpg'
+    return '/fallbacks/teamwork.webp'
   }
 
   if (
@@ -32,7 +32,7 @@ function pickFallbackFromAlt(alt: string, explicitFallback?: string): string {
     text.includes('cse') ||
     text.includes('frankfurt')
   ) {
-    return '/fallbacks/market-data.jpg'
+    return '/fallbacks/market-data.webp'
   }
 
   if (
@@ -65,7 +65,7 @@ export function SafeImage({ src, alt, fallbackSrc, onError, ...props }: SafeImag
       {...props}
       alt={alt}
       src={currentSrc}
-      quality={props.quality ?? 92}
+      quality={props.quality ?? 80}
       unoptimized={shouldBypassOptimizer(currentSrc)}
       onError={(event) => {
         onError?.(event)

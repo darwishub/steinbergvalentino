@@ -88,7 +88,7 @@ export default async function ServiceDetailPage({ params }: Props) {
           />
         ) : (
           <Image
-            src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=2000&q=88"
+            src="/fallbacks/office-tower.webp"
             alt={resolvedPage.title}
             fill
             sizes="100vw"

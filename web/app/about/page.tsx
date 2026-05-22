@@ -45,7 +45,7 @@ export default async function AboutPage() {
       {/* ── Inner Page Hero ─────────────────────────────────────────────── */}
       <section className="sv-page-hero">
         <Image
-          src={heroBg ?? 'https://images.unsplash.com/photo-1541746972996-4e0b0f43e02a?auto=format&fit=crop&w=2000&q=88'}
+          src={heroBg ?? '/fallbacks/office-tower.webp'}
           alt="About SteinbergValentino Group"
           fill
           sizes="100vw"
