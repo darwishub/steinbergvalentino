@@ -1,0 +1,118 @@
+import type {
+  Homepage,
+  AboutPage,
+  HowItWorksPage,
+  CapabilitiesPage,
+  IndustryExpertisePage,
+  ContactPage,
+  GlobalSettings,
+  ServicePage,
+  ExchangePage,
+  StrapiListResponse,
+  StrapiSingleResponse,
+} from './types'
+
+// Use 127.0.0.1 to avoid IPv6 localhost resolution issues in Node 18+
+const STRAPI_URL =
+  process.env.STRAPI_URL ||
+  process.env.NEXT_PUBLIC_STRAPI_URL?.replace('localhost', '127.0.0.1') ||
+  'http://127.0.0.1:1337'
+const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN || ''
+
+/** Base fetch with caching */
+export async function fetchAPI<T>(path: string, revalidate = 3600): Promise<T> {
+  const url = `${STRAPI_URL}/api${path}`
+  const res = await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...(STRAPI_TOKEN ? { Authorization: `Bearer ${STRAPI_TOKEN}` } : {}),
+    },
+    next: { revalidate },
+  })
+  if (!res.ok) {
+    throw new Error(`Strapi ${res.status} @ ${path}`)
+  }
+  return res.json() as Promise<T>
+}
+
+/** Full media URL (handles relative Strapi paths) */
+export function getStrapiMedia(url: string | null | undefined): string | null {
+  if (!url) return null
+  if (url.startsWith('http')) return url
+  return `${STRAPI_URL}${url}`
+}
+
+/* ─── Typed fetchers ─────────────────────────────────────────────────────── */
+
+export async function getHomepage(): Promise<Homepage> {
+  const res = await fetchAPI<StrapiSingleResponse<Homepage>>(
+    '/homepage?populate[hero_background][fields][0]=url&populate[hero_background][fields][1]=width&populate[hero_background][fields][2]=height&populate[hero_background][fields][3]=formats&populate[sections][populate]=image'
+  )
+  return res.data
+}
+
+export async function getAboutPage(): Promise<AboutPage> {
+  const res = await fetchAPI<StrapiSingleResponse<AboutPage>>(
+    '/about-page?populate[hero_image][fields][0]=url&populate[hero_image][fields][1]=width&populate[hero_image][fields][2]=height&populate[sections][populate]=image'
+  )
+  return res.data
+}
+
+export async function getHowItWorksPage(): Promise<HowItWorksPage> {
+  const res = await fetchAPI<StrapiSingleResponse<HowItWorksPage>>(
+    '/how-it-works-page?populate[sections][populate]=image'
+  )
+  return res.data
+}
+
+export async function getCapabilitiesPage(): Promise<CapabilitiesPage> {
+  const res = await fetchAPI<StrapiSingleResponse<CapabilitiesPage>>(
+    '/capabilities-page?populate[hero_image][fields][0]=url&populate[hero_image][fields][1]=width&populate[hero_image][fields][2]=height&populate[sections][populate]=image'
+  )
+  return res.data
+}
+
+export async function getIndustryExpertisePage(): Promise<IndustryExpertisePage> {
+  const res = await fetchAPI<StrapiSingleResponse<IndustryExpertisePage>>(
+    '/industry-expertise-page?populate[hero_image][fields][0]=url&populate[hero_image][fields][1]=width&populate[hero_image][fields][2]=height&populate[sections][populate]=image'
+  )
+  return res.data
+}
+
+export async function getContactPage(): Promise<ContactPage> {
+  const res = await fetchAPI<StrapiSingleResponse<ContactPage>>('/contact-page')
+  return res.data
+}
+
+export async function getGlobalSettings(): Promise<GlobalSettings> {
+  const res = await fetchAPI<StrapiSingleResponse<GlobalSettings>>('/global-setting')
+  return res.data
+}
+
+export async function getAllServicePages(): Promise<ServicePage[]> {
+  const res = await fetchAPI<StrapiListResponse<ServicePage>>(
+    '/service-pages?pagination[pageSize]=25&populate[hero_image][fields][0]=url&populate[sections][populate]=image&sort=title:asc'
+  )
+  return res.data
+}
+
+export async function getServicePage(slug: string): Promise<ServicePage | null> {
+  const res = await fetchAPI<StrapiListResponse<ServicePage>>(
+    `/service-pages?filters[slug][$eq]=${slug}&populate[hero_image][fields][0]=url&populate[hero_image][fields][1]=width&populate[hero_image][fields][2]=height&populate[sections][populate]=image&populate[faq_items]=*`
+  )
+  return res.data[0] ?? null
+}
+
+export async function getAllExchangePages(): Promise<ExchangePage[]> {
+  const res = await fetchAPI<StrapiListResponse<ExchangePage>>(
+    '/exchange-pages?pagination[pageSize]=10&populate[hero_image][fields][0]=url&populate[sections][populate]=image&sort=exchange_name:asc'
+  )
+  return res.data
+}
+
+export async function getExchangePage(slug: string): Promise<ExchangePage | null> {
+  const res = await fetchAPI<StrapiListResponse<ExchangePage>>(
+    `/exchange-pages?filters[slug][$eq]=${slug}&populate[hero_image][fields][0]=url&populate[hero_image][fields][1]=width&populate[hero_image][fields][2]=height&populate[sections][populate]=image`
+  )
+  return res.data[0] ?? null
+}
