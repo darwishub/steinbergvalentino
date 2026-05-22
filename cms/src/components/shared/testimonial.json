@@ -1,0 +1,11 @@
+{
+  "collectionName": "components_shared_testimonials",
+  "info": {
+    "displayName": "Testimonial",
+    "icon": "quote"
+  },
+  "attributes": {
+    "name":  { "type": "string", "required": true },
+    "quote": { "type": "text",   "required": true }
+  }
+}

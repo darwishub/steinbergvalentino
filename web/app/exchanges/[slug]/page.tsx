@@ -38,56 +38,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-const EXCHANGE_FEATURES = {
+/* ── Flag + fallback facts (used only when Strapi key_facts is empty) ── */
+const EXCHANGE_META: Record<string, { flag: string; country: string; fallback_facts: string[] }> = {
   'nasdaq-small-cap': {
-    flag: '🇺🇸',
-    country: 'United States',
-    facts: [
-      'Min $5M stockholders equity',
-      'Listing fee from $55,000',
-      'Real-time market data',
-      'SEC reporting required',
-    ],
+    flag: '🇺🇸', country: 'United States',
+    fallback_facts: ['Min $5M stockholders equity', 'Listing fee from $55,000', 'Real-time market data', 'SEC reporting required'],
   },
   'otc-markets': {
-    flag: '🇺🇸',
-    country: 'United States',
-    facts: [
-      '3 tiers: OTCQX, OTCQB, Pink',
-      'Lower listing requirements',
-      'No minimum market cap',
-      'OTC Disclosure required',
-    ],
+    flag: '🇺🇸', country: 'United States',
+    fallback_facts: ['3 tiers: OTCQX, OTCQB, Pink', 'Lower listing requirements', 'No minimum market cap', 'OTC Disclosure required'],
   },
   'canadian-tsx': {
-    flag: '🇨🇦',
-    country: 'Canada',
-    facts: [
-      'Min $4M stockholders equity',
-      'Listing fee from C$10,000',
-      'Mining & tech focus',
-      'SEDAR+ reporting',
-    ],
+    flag: '🇨🇦', country: 'Canada',
+    fallback_facts: ['Min $4M stockholders equity', 'Listing fee from C$10,000', 'Mining & tech focus', 'SEDAR+ reporting'],
   },
   'canadian-cse': {
-    flag: '🇨🇦',
-    country: 'Canada',
-    facts: [
-      "Streamlined for growth co's",
-      'Lower compliance cost',
-      'Cannabis sector strength',
-      'SEDAR+ reporting',
-    ],
+    flag: '🇨🇦', country: 'Canada',
+    fallback_facts: ["Streamlined for growth co's", 'Lower compliance cost', 'Cannabis sector strength', 'SEDAR+ reporting'],
   },
   'german-frankfurt': {
-    flag: '🇩🇪',
-    country: 'Germany',
-    facts: [
-      'Access to European capital',
-      'EUR denomination option',
-      'No minimum market cap',
-      'Prospectus required',
-    ],
+    flag: '🇩🇪', country: 'Germany',
+    fallback_facts: ['Access to European capital', 'EUR denomination option', 'No minimum market cap', 'Prospectus required'],
   },
 }
 
@@ -103,7 +74,11 @@ export default async function ExchangeDetailPage({ params }: Props) {
   }
 
   if (!page && !scrapedPage) notFound()
-  const exchangeInfo = EXCHANGE_FEATURES[slug as keyof typeof EXCHANGE_FEATURES]
+  const exchangeMeta = EXCHANGE_META[slug as keyof typeof EXCHANGE_META]
+  /* key_facts: prefer Strapi → fallback to hardcoded */
+  const keyFacts: string[] = page?.key_facts?.length
+    ? page.key_facts
+    : (exchangeMeta?.fallback_facts ?? [])
 
   const resolvedPage = page
     ? {
@@ -122,7 +97,7 @@ export default async function ExchangeDetailPage({ params }: Props) {
         body_content: scrapedPage!.bodyContent,
         sections: scrapedPage!.sections,
         exchange_name: scrapedPage!.heroHeading,
-        country: exchangeInfo?.country ?? '',
+        country: exchangeMeta?.country ?? '',
       }
 
   return (
@@ -159,7 +134,7 @@ export default async function ExchangeDetailPage({ params }: Props) {
           <nav className="sv-breadcrumb" style={{ marginBottom: 'var(--sv-sp-24)' }}>
             <Link href="/services/market-entry" className="sv-breadcrumb-link">Market Entry</Link>
             <span style={{ color: 'rgba(255,255,255,0.22)', fontSize: '0.7rem' }}>›</span>
-            <span className="sv-breadcrumb-current">{exchangeInfo?.flag ?? ''} {resolvedPage.exchange_name}</span>
+            <span className="sv-breadcrumb-current">{exchangeMeta?.flag ?? ''} {resolvedPage.exchange_name}</span>
           </nav>
 
           <p className="sv-eyebrow" style={{ color: 'var(--color-sv-gold)', marginBottom: 'var(--sv-sp-16)' }}>
@@ -231,7 +206,7 @@ export default async function ExchangeDetailPage({ params }: Props) {
                       lineHeight: 1.7,
                     }}
                   >
-                    With deep knowledge of {exchangeInfo?.country ?? resolvedPage.country} capital markets
+                    With deep knowledge of {exchangeMeta?.country ?? resolvedPage.country} capital markets
                     regulations and extensive relationships with market participants, we give your
                     listing the best possible foundation for long-term success.
                   </p>
@@ -253,7 +228,7 @@ export default async function ExchangeDetailPage({ params }: Props) {
                 }}
               >
                 <div>
-                  <span style={{ fontSize: '2.5rem' }}>{exchangeInfo?.flag ?? '🏛️'}</span>
+                  <span style={{ fontSize: '2.5rem' }}>{exchangeMeta?.flag ?? '🏛️'}</span>
                   <h3
                     style={{
                       fontFamily: 'var(--font-serif)',
@@ -266,11 +241,11 @@ export default async function ExchangeDetailPage({ params }: Props) {
                     {resolvedPage.exchange_name}
                   </h3>
                   <p style={{ fontSize: '0.875rem', color: 'var(--color-sv-gray)' }}>
-                    {resolvedPage.country || exchangeInfo?.country}
+                    {resolvedPage.country || exchangeMeta?.country}
                   </p>
                 </div>
 
-                {exchangeInfo?.facts && (
+                {keyFacts.length > 0 && (
                   <div
                     style={{
                       borderTop: '1px solid rgba(255,255,255,0.1)',
@@ -293,7 +268,7 @@ export default async function ExchangeDetailPage({ params }: Props) {
                         gap: '0.625rem',
                       }}
                     >
-                      {exchangeInfo.facts.map((fact) => (
+                      {keyFacts.map((fact) => (
                         <li
                           key={fact}
                           style={{

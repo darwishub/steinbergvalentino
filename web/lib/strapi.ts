@@ -47,7 +47,7 @@ export function getStrapiMedia(url: string | null | undefined): string | null {
 
 export async function getHomepage(): Promise<Homepage> {
   const res = await fetchAPI<StrapiSingleResponse<Homepage>>(
-    '/homepage?populate[hero_background][fields][0]=url&populate[hero_background][fields][1]=width&populate[hero_background][fields][2]=height&populate[hero_background][fields][3]=formats&populate[sections][populate]=image'
+    '/homepage?populate[hero_background][fields][0]=url&populate[hero_background][fields][1]=width&populate[hero_background][fields][2]=height&populate[hero_background][fields][3]=formats&populate[sections][populate]=image&populate[testimonials]=*'
   )
   return res.data
 }
@@ -75,7 +75,7 @@ export async function getCapabilitiesPage(): Promise<CapabilitiesPage> {
 
 export async function getIndustryExpertisePage(): Promise<IndustryExpertisePage> {
   const res = await fetchAPI<StrapiSingleResponse<IndustryExpertisePage>>(
-    '/industry-expertise-page?populate[hero_image][fields][0]=url&populate[hero_image][fields][1]=width&populate[hero_image][fields][2]=height&populate[sections][populate]=image'
+    '/industry-expertise-page?populate[hero_image][fields][0]=url&populate[hero_image][fields][1]=width&populate[hero_image][fields][2]=height&populate[sections][populate]=image&populate[sectors]=*'
   )
   return res.data
 }
@@ -122,7 +122,7 @@ export async function getAllExchangePages(): Promise<ExchangePage[]> {
 
 export async function getExchangePage(slug: string): Promise<ExchangePage | null> {
   const res = await fetchAPI<StrapiListResponse<ExchangePage>>(
-    `/exchange-pages?filters[slug][$eq]=${slug}&populate[hero_image][fields][0]=url&populate[hero_image][fields][1]=width&populate[hero_image][fields][2]=height&populate[sections][populate]=image`
+    `/exchange-pages?filters[slug][$eq]=${slug}&populate[hero_image][fields][0]=url&populate[hero_image][fields][1]=width&populate[hero_image][fields][2]=height&populate[sections][populate]=image&populate[faq_items]=*`
   )
   return res.data[0] ?? null
 }

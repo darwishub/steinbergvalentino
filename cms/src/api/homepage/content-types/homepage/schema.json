@@ -8,8 +8,10 @@
   },
   "options": { "draftAndPublish": false },
   "attributes": {
+    "hero_eyebrow":       { "type": "string" },
     "hero_heading":       { "type": "string" },
     "hero_subheading":    { "type": "string" },
+    "keyword_band":       { "type": "json" },
     "hero_background":    { "type": "media", "multiple": false, "allowedTypes": ["images"] },
     "hero_cta_primary_label":   { "type": "string" },
     "hero_cta_primary_url":     { "type": "string" },
@@ -20,6 +22,11 @@
       "type": "component",
       "repeatable": true,
       "component": "shared.content-section"
+    },
+    "testimonials": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.testimonial"
     },
     "meta_title":         { "type": "string" },
     "meta_description":   { "type": "text" }

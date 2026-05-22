@@ -17,6 +17,11 @@
       "repeatable": true,
       "component": "shared.content-section"
     },
+    "sectors": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.sector"
+    },
     "meta_title":       { "type": "string" },
     "meta_description": { "type": "text" }
   }

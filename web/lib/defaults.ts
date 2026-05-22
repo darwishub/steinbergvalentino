@@ -5,6 +5,7 @@ export const DEFAULT_GLOBAL_SETTINGS: GlobalSettings = {
   documentId: 'default-global-settings',
   site_name: 'SteinbergValentino Group',
   tagline: 'The Best IR Firm For Small & Mid-Cap Businesses',
+  utility_bar_tagline: 'Strategic Investor Relations for Small & Mid-Cap Companies',
   footer_blurb:
     'The premier investor relations firm for small and mid-cap public companies.',
   contact_phone: '(646) 535-3995',

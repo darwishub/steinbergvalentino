@@ -36,6 +36,18 @@ export interface StrapiListItem {
   children: StrapiInline[]
 }
 
+export interface Testimonial {
+  id: number
+  name: string
+  quote: string
+}
+
+export interface Sector {
+  id: number
+  label: string
+  icon: string | null
+}
+
 export interface ContentSection {
   id: number
   heading: string | null
@@ -58,8 +70,10 @@ export interface GlobalNavItem extends SiteLink {
 export interface Homepage {
   id: number
   documentId: string
+  hero_eyebrow: string | null
   hero_heading: string
   hero_subheading: string | null
+  keyword_band: string[] | null
   hero_background: StrapiMedia | null
   hero_cta_primary_label: string | null
   hero_cta_primary_url: string | null
@@ -67,6 +81,7 @@ export interface Homepage {
   hero_cta_secondary_url: string | null
   body_content: StrapiBlock[] | null
   sections: ContentSection[]
+  testimonials: Testimonial[]
   meta_title: string | null
   meta_description: string | null
 }
@@ -115,6 +130,7 @@ export interface IndustryExpertisePage {
   hero_image: StrapiMedia | null
   body_content: StrapiBlock[] | null
   sections: ContentSection[]
+  sectors: Sector[]
   meta_title: string | null
   meta_description: string | null
 }
@@ -148,6 +164,7 @@ export interface GlobalSettings {
   documentId: string
   site_name: string | null
   tagline: string | null
+  utility_bar_tagline: string | null
   footer_blurb: string | null
   contact_phone: string | null
   contact_email: string | null
@@ -198,6 +215,7 @@ export interface ExchangePage {
   hero_image: StrapiMedia | null
   body_content: StrapiBlock[] | null
   sections: ContentSection[]
+  key_facts: string[] | null
   meta_title: string | null
   meta_description: string | null
 }

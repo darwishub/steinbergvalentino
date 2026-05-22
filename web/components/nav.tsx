@@ -9,9 +9,10 @@ import type { GlobalNavItem } from '@/lib/types'
 interface NavProps {
   items?: GlobalNavItem[] | null
   phone?: string | null
+  tagline?: string | null
 }
 
-export function Nav({ items, phone }: NavProps) {
+export function Nav({ items, phone, tagline }: NavProps) {
   const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
   const [showScrollTop, setShowScrollTop] = useState(false)
@@ -72,7 +73,7 @@ export function Nav({ items, phone }: NavProps) {
             <span style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               {/* Gold tick */}
               <span style={{ display: 'block', width: '1.25rem', height: '1px', background: 'var(--color-sv-gold)', opacity: 0.7 }} />
-              Strategic Investor Relations for Small &amp; Mid-Cap Companies
+              {tagline ?? DEFAULT_GLOBAL_SETTINGS.utility_bar_tagline}
             </span>
             {phone && (
               <a

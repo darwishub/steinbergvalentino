@@ -1,0 +1,11 @@
+{
+  "collectionName": "components_shared_sectors",
+  "info": {
+    "displayName": "Sector",
+    "icon": "layer"
+  },
+  "attributes": {
+    "label": { "type": "string", "required": true },
+    "icon":  { "type": "string" }
+  }
+}

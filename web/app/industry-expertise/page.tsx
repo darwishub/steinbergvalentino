@@ -23,20 +23,20 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-/* ── Static sector list — never changes for an IR firm ─────────────────── */
-const SECTORS = [
-  { label: 'Technology',          icon: '💻' },
-  { label: 'Healthcare & Biotech',icon: '🔬' },
-  { label: 'Natural Resources',   icon: '⛏️' },
-  { label: 'Financial Services',  icon: '🏦' },
-  { label: 'Clean Energy',        icon: '⚡' },
-  { label: 'Real Estate',         icon: '🏢' },
-  { label: 'Mining & Metals',     icon: '🪨' },
-  { label: 'Cannabis',            icon: '🌿' },
-  { label: 'Manufacturing',       icon: '⚙️' },
-  { label: 'Consumer Goods',      icon: '🛒' },
-  { label: 'Media & Entertainment',icon: '🎬' },
-  { label: 'Emerging Markets',    icon: '🌐' },
+/* ── Sector fallbacks (used only when Strapi has none) ───────────────────── */
+const FALLBACK_SECTORS = [
+  { id: 1,  label: 'Technology',           icon: '💻' },
+  { id: 2,  label: 'Healthcare & Biotech', icon: '🔬' },
+  { id: 3,  label: 'Natural Resources',    icon: '⛏️' },
+  { id: 4,  label: 'Financial Services',   icon: '🏦' },
+  { id: 5,  label: 'Clean Energy',         icon: '⚡' },
+  { id: 6,  label: 'Real Estate',          icon: '🏢' },
+  { id: 7,  label: 'Mining & Metals',      icon: '🪨' },
+  { id: 8,  label: 'Cannabis',             icon: '🌿' },
+  { id: 9,  label: 'Manufacturing',        icon: '⚙️' },
+  { id: 10, label: 'Consumer Goods',       icon: '🛒' },
+  { id: 11, label: 'Media & Entertainment',icon: '🎬' },
+  { id: 12, label: 'Emerging Markets',     icon: '🌐' },
 ]
 
 export default async function IndustryExpertisePage() {
@@ -53,6 +53,7 @@ export default async function IndustryExpertisePage() {
   const heroBg = page?.hero_image ? getStrapiMedia(page.hero_image.url) : null
   const sections = page?.sections?.length ? page.sections : (scrapedPage?.sections ?? [])
   const bodyContent = page?.body_content ?? scrapedPage?.bodyContent ?? null
+  const sectors = page?.sectors?.length ? page.sectors : FALLBACK_SECTORS
 
   return (
     <>
@@ -115,14 +116,17 @@ export default async function IndustryExpertisePage() {
           </div>
 
           <ul className="ind-sector-grid" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-            {SECTORS.map((sector) => (
-              <li key={sector.label} className="ind-sector-chip">
-                <span className="ind-sector-chip-icon" aria-hidden="true">
-                  {sector.icon}
-                </span>
+            {sectors.map((sector) => (
+              <li key={sector.id} className="ind-sector-chip">
+                {sector.icon && (
+                  <span className="ind-sector-chip-icon" aria-hidden="true">
+                    {sector.icon}
+                  </span>
+                )}
                 <span className="ind-sector-chip-label">{sector.label}</span>
               </li>
             ))}
+
           </ul>
         </div>
       </section>

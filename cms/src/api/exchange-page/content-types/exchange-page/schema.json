@@ -27,6 +27,7 @@
       "repeatable": true,
       "component": "shared.faq-item"
     },
+    "key_facts":        { "type": "json" },
     "meta_title":       { "type": "string" },
     "meta_description": { "type": "text" }
   }

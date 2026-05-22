@@ -11,33 +11,47 @@ export const revalidate = 3600
 /* ─── Hero video (set NEXT_PUBLIC_HERO_VIDEO_URL in Vercel/Railway env) ── */
 const HERO_VIDEO_URL = process.env.NEXT_PUBLIC_HERO_VIDEO_URL ?? null
 
-/* ─── Testimonials — real clients from old site ─────────────────────────── */
-const TESTIMONIALS = [
+/* ─── Testimonial fallbacks (used only when Strapi has none) ─────────────── */
+const FALLBACK_TESTIMONIALS = [
   {
+    id: 1,
     name: 'Abraham Mirman',
     quote:
       "My company is a new player in the stock market, so I've been having trouble getting investors interested in my company. I needed to find a way to promote my stock so I can improve its value, which is why I got a hold of SV Group. Through a series of aggressive campaigns, I've been able to get my stock value up even higher than I expected, and it looks like it will continue in the months ahead. I'm very satisfied with what they've done, and I look forward to a bright future.",
   },
   {
+    id: 2,
     name: 'Paul Tavis McKenzie',
     quote:
       "After taking my company public, it was a challenge to get investors aware of what we have to offer, but I needed to increase the value of my stock so I could move forward. That was when I got in touch with SV Group. My exposure in the market has increased, and I've been seeing my stock value go up higher than I expected. I feel confident that my company will become a major player in my industry, and I believe I could eventually move into major exchanges.",
   },
   {
+    id: 3,
     name: 'Yat Man Lai',
     quote:
       "I just went public earlier this year, and I've been having trouble getting investors interested in my stock. I've heard about investor awareness companies like SV Group, so I decided to get some more information about what they could do for me. After an extended conversation with someone at their office, I decided to give them a try. Their campaigns have been extremely helpful in getting me more market exposure, and my stock's value has gone up more than I expected.",
   },
   {
+    id: 4,
     name: 'Susanne Wilke',
     quote:
       "I felt like it was time for me to take my company public because I needed to raise more capital so I can expand my business, but it was hard to get market liquidity up so I can raise the value of my stock. I heard about how investor awareness companies like SV Group can help new public companies get more exposure on the market, so I decided reach out to them. So far, I've been happy with what they've done, and I've been able to increase the value of my stock.",
   },
   {
+    id: 5,
     name: 'Mark Munro',
     quote:
       "I just filed my IPO this year, so I don't have the market exposure of many of my larger competitors. I needed to improve market liquidity so I could have more value on the market, which is why I went to SV Group. Their campaigns have brought more investors to my stock, and I have been able to raise the capital I need to expand my business. Now the value of my stock has more than doubled, and I expect it to go higher by the end of the fiscal year.",
   },
+]
+
+/* ─── Keyword band fallback ──────────────────────────────────────────────── */
+const FALLBACK_KEYWORDS = [
+  'Investor Relations',
+  'Capital Formation',
+  'Exchange Listings',
+  'Media & Communications',
+  'Market Making',
 ]
 
 /* ─── Flag map ──────────────────────────────────────────────────────────── */
@@ -89,6 +103,9 @@ export default async function HomePage() {
   const homepageHeroSrc = heroBgUrl ?? '/fallbacks/office-tower.webp'
 
   const sections = page?.sections ?? []
+  const testimonials = page?.testimonials?.length ? page.testimonials : FALLBACK_TESTIMONIALS
+  const keywords = page?.keyword_band?.length ? page.keyword_band : FALLBACK_KEYWORDS
+  const heroEyebrow = page?.hero_eyebrow ?? 'Investor Relations · Capital Markets'
 
   /* Split services: first 6 for featured grid, rest for listing */
   const featuredServices = services.slice(0, 6)
@@ -127,7 +144,7 @@ export default async function HomePage() {
           <div className="hp-hero__eyebrow-row">
             <span className="hp-hero__eyebrow-line" />
             <span className="sv-eyebrow hp-hero__eyebrow-text">
-              Investor Relations · Capital Markets
+              {heroEyebrow}
             </span>
           </div>
 
@@ -149,13 +166,7 @@ export default async function HomePage() {
         {/* ── Keyword band ──────────────────────────────────────────── */}
         <div className="hp-hero__kw-band" role="presentation" aria-hidden="true">
           <div className="sv-container hp-hero__kw-inner">
-            {[
-              'Investor Relations',
-              'Capital Formation',
-              'Exchange Listings',
-              'Media & Communications',
-              'Market Making',
-            ].map((kw, i, arr) => (
+            {keywords.map((kw, i, arr) => (
               <span key={kw} className="hp-hero__kw-group">
                 <span className="hp-hero__kw">{kw}</span>
                 {i < arr.length - 1 && <span className="hp-hero__kw-sep">·</span>}
@@ -368,8 +379,8 @@ export default async function HomePage() {
           </div>
 
           <div className="hp-testimonials__grid">
-            {TESTIMONIALS.map((t) => (
-              <div key={t.name} className="hp-testi-card">
+            {testimonials.map((t) => (
+              <div key={t.id} className="hp-testi-card">
                 <span className="hp-testi-card__quote-mark">&ldquo;</span>
                 <p className="hp-testi-card__body">{t.quote}</p>
                 <div className="hp-testi-card__rule" />

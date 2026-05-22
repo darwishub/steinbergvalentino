@@ -10,6 +10,7 @@
   "attributes": {
     "site_name": { "type": "string" },
     "tagline": { "type": "string" },
+    "utility_bar_tagline": { "type": "string" },
     "footer_blurb": { "type": "text" },
     "contact_phone": { "type": "string" },
     "contact_email": { "type": "email" },
