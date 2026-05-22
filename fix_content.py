@@ -4,13 +4,15 @@ SteinbergValentino Content Migration Repair Script v2
 Reads scraped HTML → extracts correct section content → pushes to Strapi API
 """
 
-import re, sys, json, time
+import re, sys, json, time, os
 import urllib.request, urllib.parse, urllib.error
 from bs4 import BeautifulSoup
 
-STRAPI_URL = "http://127.0.0.1:1337"
-TOKEN      = "REDACTED_TOKEN"
-HTML_DIR   = "/Users/darwis/steinbergvalentino.com"
+STRAPI_URL = os.getenv("STRAPI_URL", "http://127.0.0.1:1337")
+TOKEN      = os.getenv("STRAPI_API_TOKEN")
+if not TOKEN:
+    raise RuntimeError("STRAPI_API_TOKEN env var is not set")
+HTML_DIR   = os.getenv("HTML_DIR", "/Users/darwis/steinbergvalentino.com")
 HEADERS    = {"Authorization": f"Bearer {TOKEN}", "Content-Type": "application/json"}
 
 # ─── Strapi helpers ──────────────────────────────────────────────────────────
