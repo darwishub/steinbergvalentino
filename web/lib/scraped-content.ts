@@ -55,7 +55,7 @@ function uniqueParagraphs(texts: Array<string | undefined | null>) {
   const seen = new Set<string>()
   return texts
     .map((text) => text?.trim())
-    .filter((text): text is string => Boolean(text) && !isArtifact(text))
+    .filter((text): text is string => typeof text === 'string' && Boolean(text) && !isArtifact(text))
     .filter((text) => {
       if (seen.has(text)) return false
       seen.add(text)
