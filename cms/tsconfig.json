@@ -2,7 +2,8 @@
   "extends": "@strapi/typescript-utils/tsconfigs/server",
   "compilerOptions": {
     "allowJs": true,
-    "noEmit": true
+    "noEmit": true,
+    "outDir": "dist"
   },
   "include": ["./types/**/*"],
   "exclude": ["node_modules/", "build/", "dist/", ".cache/"]
