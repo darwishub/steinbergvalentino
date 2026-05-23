@@ -48,10 +48,15 @@ function pickFallbackFromAlt(alt: string, explicitFallback?: string): string {
 }
 
 /* Bypass Next.js optimizer only for local dev Strapi (http, no CDN).
-   On Railway/production the Strapi URL is https — optimizer works fine. */
+   On Railway/production the Strapi URL is https — optimizer works fine.
+   Normalize localhost ↔ 127.0.0.1 — strapi.ts replaces localhost→127.0.0.1
+   in fetched URLs, so the src may differ from NEXT_PUBLIC_STRAPI_URL. */
 const STRAPI_ORIGIN = process.env.NEXT_PUBLIC_STRAPI_URL ?? 'http://127.0.0.1:1337'
 function shouldBypassOptimizer(src: string): boolean {
-  return STRAPI_ORIGIN.startsWith('http://') && src.startsWith(STRAPI_ORIGIN)
+  if (!STRAPI_ORIGIN.startsWith('http://')) return false
+  const normOrigin = STRAPI_ORIGIN.replace('localhost', '127.0.0.1')
+  const normSrc    = src.replace('localhost', '127.0.0.1')
+  return normSrc.startsWith(normOrigin)
 }
 
 export function SafeImage({ src, alt, fallbackSrc, onError, ...props }: SafeImageProps) {

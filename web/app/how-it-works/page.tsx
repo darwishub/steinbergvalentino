@@ -1,4 +1,5 @@
 import { SafeImage as Image } from '@/components/safe-image'
+import Link from 'next/link'
 import type { Metadata } from 'next'
 import { getHowItWorksPage, getStrapiMedia } from '@/lib/strapi'
 import { BlocksContent } from '@/components/blocks-content'
@@ -34,120 +35,118 @@ export default async function HowItWorksPage() {
   }
 
   const heroHeading = page?.hero_heading ?? scrapedPage?.heroHeading ?? 'How It Works'
-  const heroSubheading = page?.hero_subheading ?? scrapedPage?.heroSubheading ?? ''
-  const heroBg = page?.hero_image ? getStrapiMedia(page.hero_image.url) : null
+  const heroSubheading = page?.hero_subheading ?? scrapedPage?.heroSubheading ?? null
+  const heroImage = page?.hero_image ?? null
   const sections = page?.sections?.length ? page.sections : (scrapedPage?.sections ?? [])
   const bodyContent = page?.body_content ?? scrapedPage?.bodyContent ?? null
 
+  /* First 4 sections become the horizontal columns; remainder go to the timeline below */
+  const colSections = sections.slice(0, 4)
+  const extraSections = sections.slice(4)
+
   return (
     <>
-      {/* ── Inner Hero ───────────────────────────────────────────────────── */}
-      <section className="sv-page-hero">
-        <Image
-          src={heroBg ?? '/fallbacks/office-tower.webp'}
-          alt="How SteinbergValentino works"
-          fill
-          sizes="100vw"
-          priority
-          style={{ objectFit: 'cover', objectPosition: 'center 35%' }}
-        />
-        <div className="sv-page-hero-overlay" />
-        <div className="sv-container sv-page-hero-content">
-          <p className="sv-eyebrow" style={{ color: 'var(--color-sv-gold)', marginBottom: 'var(--sv-sp-16)' }}>
-            Our Process
-          </p>
-          <h1
-            className="sv-display"
-            style={{ color: 'var(--color-sv-white)', maxWidth: '680px', marginBottom: 'var(--sv-sp-24)' }}
-          >
-            {heroHeading}
-          </h1>
-          {heroSubheading && (
-            <p style={{ fontSize: '1.0625rem', color: 'rgba(255,255,255,0.72)', lineHeight: 1.72, maxWidth: '560px', fontWeight: 300 }}>
-              {heroSubheading}
-            </p>
-          )}
+      {/* ── Watermark Hero ───────────────────────────────────────────────── */}
+      <section className="hiw-hero">
+        {/* Ghost watermark text */}
+        <div className="hiw-hero__watermark" aria-hidden="true">PROCESS</div>
+
+        <div className="sv-container">
+          <div className="hiw-hero__inner">
+            <p className="sv-eyebrow hiw-hero__eyebrow">Our Process</p>
+            <h1 className="hiw-hero__title">{heroHeading}</h1>
+            {heroSubheading && (
+              <p className="hiw-hero__deck">{heroSubheading}</p>
+            )}
+          </div>
         </div>
+
+        {/* Right photo strip */}
+        <div className="hiw-hero__img-strip" aria-hidden="true">
+          <Image
+            src={heroImage ? (getStrapiMedia(heroImage.url) ?? heroImage.url) : '/firm-hiw.jpg'}
+            alt=""
+            width={heroImage?.width || 480}
+            height={heroImage?.height || 640}
+            priority
+            sizes="30vw"
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+          <div className="hiw-hero__img-strip-overlay" />
+        </div>
+
+        <div className="hiw-hero__rule" aria-hidden="true" />
       </section>
 
-      {/* ── Intro body text ──────────────────────────────────────────────── */}
+      {/* ── Intro body (from old site body_content) ─────────────────────── */}
       {bodyContent && bodyContent.length > 0 && (
-        <section className="sv-section sv-bg-light">
-          <div className="sv-container" style={{ maxWidth: '760px' }}>
-            <BlocksContent blocks={bodyContent} />
+        <section style={{ background: 'var(--color-sv-white)', padding: 'var(--sv-sp-80) 0' }}>
+          <div className="sv-container">
+            <div className="hiw-callout">
+              <BlocksContent blocks={bodyContent} />
+            </div>
           </div>
         </section>
       )}
 
-      {/* ── Vertical numbered timeline ───────────────────────────────────── */}
-      {/*
-        Template: vertical process timeline.
-        Left column = large gold step number + connecting vertical rule.
-        Right column = heading + subheading + body + optional image.
-        Structurally distinct from About (image split) and Capabilities (card grid).
-      */}
-      {sections.length > 0 && (
-        <section className="sv-section" style={{ backgroundColor: 'var(--color-sv-light)' }}>
-          <div className="sv-container" style={{ maxWidth: '900px' }}>
-
-            {/* Section label */}
-            <div style={{ marginBottom: 'var(--sv-sp-64)' }}>
-              <p className="sv-eyebrow" style={{ color: 'var(--color-sv-gold)', marginBottom: 'var(--sv-sp-16)' }}>
-                Step by Step
-              </p>
-              <h2 className="sv-display" style={{ maxWidth: '520px' }}>
-                A Proven Path to Investor Confidence
-              </h2>
+      {/* ── Horizontal Process Columns ───────────────────────────────────── */}
+      {colSections.length > 0 && (
+        <section className="hiw-process">
+          <div className="sv-container">
+            <div className="hiw-process__label">
+              <p className="sv-eyebrow hiw-process__eyebrow">Our Process</p>
             </div>
 
-            {/* Timeline list */}
-            <ol style={{ listStyle: 'none', margin: 0, padding: 0 }} className="hiw-timeline">
-              {sections.map((section, i) => {
+            <div className="hiw-process__cols">
+              {colSections.map((section, i) => (
+                <div key={section.id ?? i} className="hiw-process-col">
+                  <div className="hiw-process-col__num" aria-hidden="true">
+                    {String(i + 1).padStart(2, '0')}
+                  </div>
+                  {section.heading && (
+                    <h3 className="hiw-process-col__heading">{section.heading}</h3>
+                  )}
+                  {section.subheading && (
+                    <p className="hiw-process-col__body">{section.subheading}</p>
+                  )}
+                  {section.body && (
+                    <div className="hiw-process-col__body">
+                      <BlocksContent blocks={section.body} />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── Extra sections (5+) shown as vertical timeline ───────────────── */}
+      {extraSections.length > 0 && (
+        <section className="hiw-timeline-section">
+          <div className="sv-container">
+            <ol style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 'var(--sv-sp-48)' }}>
+              {extraSections.map((section, i) => {
                 const imgSrc = section.image
                   ? getStrapiMedia(section.image.url) ?? section.image.url
                   : null
-                const isLast = i === sections.length - 1
-
                 return (
-                  <li key={section.id ?? i} className="hiw-step">
-                    {/* ── Left: step number + vertical rule ── */}
-                    <div className="hiw-step-left" aria-hidden="true">
-                      <div className="hiw-step-number">
-                        <span>{String(i + 1).padStart(2, '0')}</span>
+                  <li key={section.id ?? i} className="frm-hiw-step">
+                    <div className="frm-hiw-step__left" aria-hidden="true">
+                      <div className="frm-hiw-step__number">
+                        <span>{String(colSections.length + i + 1).padStart(2, '0')}</span>
                       </div>
-                      {!isLast && <div className="hiw-step-rule" />}
+                      {i < extraSections.length - 1 && <div className="frm-hiw-step__rule" />}
                     </div>
-
-                    {/* ── Right: content ── */}
-                    <div className="hiw-step-body">
+                    <div className="frm-hiw-step__body">
                       {section.heading && (
-                        <h3
-                          style={{
-                            fontFamily: 'var(--font-serif)',
-                            fontSize: '1.5rem',
-                            fontWeight: 400,
-                            lineHeight: 1.25,
-                            marginBottom: 'var(--sv-sp-16)',
-                            color: 'var(--color-sv-navy)',
-                          }}
-                        >
-                          {section.heading}
-                        </h3>
+                        <h3 className="frm-hiw-step__heading">{section.heading}</h3>
                       )}
                       {section.subheading && (
-                        <p
-                          style={{
-                            fontSize: '1rem',
-                            color: 'var(--color-sv-slate)',
-                            lineHeight: 1.65,
-                            marginBottom: section.body ? 'var(--sv-sp-16)' : 0,
-                          }}
-                        >
-                          {section.subheading}
-                        </p>
+                        <p className="frm-hiw-step__sub">{section.subheading}</p>
                       )}
                       {section.body && (
-                        <div style={{ color: 'var(--color-sv-slate)' }}>
+                        <div className="frm-hiw-step__prose">
                           <BlocksContent blocks={section.body} />
                         </div>
                       )}
@@ -172,80 +171,20 @@ export default async function HowItWorksPage() {
         </section>
       )}
 
-      {/* ── Bottom CTA ───────────────────────────────────────────────────── */}
-      <section
-        className="sv-section"
-        style={{ backgroundColor: '#0c0d10', borderTop: '1px solid rgba(255,255,255,0.07)' }}
-      >
-        <div className="sv-container" style={{ textAlign: 'center', maxWidth: '600px' }}>
-          <p className="sv-eyebrow" style={{ color: 'var(--color-sv-gold)', marginBottom: 'var(--sv-sp-16)' }}>
-            Start the Conversation
-          </p>
-          <h2
-            className="sv-display"
-            style={{ color: 'var(--color-sv-white)', marginBottom: 'var(--sv-sp-32)' }}
-          >
-            Ready to see the process in action?
-          </h2>
-          <a href="/contact" className="sv-btn sv-btn-primary">
+      {/* ── Bottom CTA Band ──────────────────────────────────────────────── */}
+      <section className="frm-cta-band">
+        <div className="sv-container frm-cta-band__inner">
+          <div>
+            <p className="sv-eyebrow frm-cta-band__eyebrow">Start the Conversation</p>
+            <h2 className="frm-cta-band__heading">
+              Ready to see the process in action?
+            </h2>
+          </div>
+          <Link href="/contact" className="sv-btn sv-btn-gold">
             Schedule a Consultation
-          </a>
+          </Link>
         </div>
       </section>
-
-      <style>{`
-        /* Timeline layout */
-        .hiw-timeline {
-          display: flex;
-          flex-direction: column;
-        }
-        .hiw-step {
-          display: grid;
-          grid-template-columns: 80px 1fr;
-          gap: 0 var(--sv-sp-48);
-          align-items: start;
-        }
-        .hiw-step-left {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-        .hiw-step-number {
-          width: 56px;
-          height: 56px;
-          border: 2px solid var(--color-sv-gold);
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-          background: #fff;
-        }
-        .hiw-step-number span {
-          font-family: var(--font-serif);
-          font-size: 1.125rem;
-          font-weight: 400;
-          color: var(--color-sv-gold);
-          line-height: 1;
-        }
-        .hiw-step-rule {
-          width: 2px;
-          flex: 1;
-          min-height: 40px;
-          background: linear-gradient(to bottom, var(--color-sv-gold), rgba(176,141,87,0.15));
-          margin-top: 0;
-        }
-        .hiw-step-body {
-          padding-bottom: var(--sv-sp-64);
-          padding-top: 12px;
-        }
-        @media (max-width: 640px) {
-          .hiw-step { grid-template-columns: 48px 1fr; gap: 0 var(--sv-sp-24); }
-          .hiw-step-number { width: 40px; height: 40px; }
-          .hiw-step-number span { font-size: 0.9rem; }
-          .hiw-step-body { padding-bottom: var(--sv-sp-48); }
-        }
-      `}</style>
     </>
   )
 }

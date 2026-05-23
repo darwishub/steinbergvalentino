@@ -18,6 +18,7 @@
     "hero_cta_secondary_label": { "type": "string" },
     "hero_cta_secondary_url":   { "type": "string" },
     "body_content":       { "type": "blocks" },
+    "homepage_sections":  { "type": "json" },
     "sections": {
       "type": "component",
       "repeatable": true,

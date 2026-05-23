@@ -1,7 +1,7 @@
 import { SafeImage as Image } from '@/components/safe-image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { getAllExchangePages, getExchangePage } from '@/lib/strapi'
+import { getAllExchangePages, getExchangePage, getStrapiMedia } from '@/lib/strapi'
 import { BlocksContent } from '@/components/blocks-content'
 import { notFound } from 'next/navigation'
 import { getScrapedExchangeContent } from '@/lib/scraped-content'
@@ -38,27 +38,42 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-/* ── Flag + fallback facts (used only when Strapi key_facts is empty) ── */
-const EXCHANGE_META: Record<string, { flag: string; country: string; fallback_facts: string[] }> = {
+/* ── Per-exchange configuration ─────────────────────────────────────────── */
+const EXCHANGE_CONFIG: Record<string, {
+  flag: string
+  country: string
+  market_tag: string
+  hero_image: string
+}> = {
   'nasdaq-small-cap': {
-    flag: '🇺🇸', country: 'United States',
-    fallback_facts: ['Min $5M stockholders equity', 'Listing fee from $55,000', 'Real-time market data', 'SEC reporting required'],
+    flag: '🇺🇸',
+    country: 'United States',
+    market_tag: 'US Equity Market',
+    hero_image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1600&auto=format&fit=crop&q=80',
   },
   'otc-markets': {
-    flag: '🇺🇸', country: 'United States',
-    fallback_facts: ['3 tiers: OTCQX, OTCQB, Pink', 'Lower listing requirements', 'No minimum market cap', 'OTC Disclosure required'],
+    flag: '🇺🇸',
+    country: 'United States',
+    market_tag: 'OTC Marketplace',
+    hero_image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1600&auto=format&fit=crop&q=80',
   },
   'canadian-tsx': {
-    flag: '🇨🇦', country: 'Canada',
-    fallback_facts: ['Min $4M stockholders equity', 'Listing fee from C$10,000', 'Mining & tech focus', 'SEDAR+ reporting'],
+    flag: '🇨🇦',
+    country: 'Canada',
+    market_tag: 'Toronto Stock Exchange',
+    hero_image: 'https://images.unsplash.com/photo-1517935706615-2717063c2225?w=1600&auto=format&fit=crop&q=80',
   },
   'canadian-cse': {
-    flag: '🇨🇦', country: 'Canada',
-    fallback_facts: ["Streamlined for growth co's", 'Lower compliance cost', 'Cannabis sector strength', 'SEDAR+ reporting'],
+    flag: '🇨🇦',
+    country: 'Canada',
+    market_tag: 'Canadian Securities Exchange',
+    hero_image: 'https://images.unsplash.com/photo-1569406125624-98ee19b01d4a?w=1600&auto=format&fit=crop&q=80',
   },
   'german-frankfurt': {
-    flag: '🇩🇪', country: 'Germany',
-    fallback_facts: ['Access to European capital', 'EUR denomination option', 'No minimum market cap', 'Prospectus required'],
+    flag: '🇩🇪',
+    country: 'Germany',
+    market_tag: 'Frankfurt Stock Exchange',
+    hero_image: 'https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=1600&auto=format&fit=crop&q=80',
   },
 }
 
@@ -74,313 +89,238 @@ export default async function ExchangeDetailPage({ params }: Props) {
   }
 
   if (!page && !scrapedPage) notFound()
-  const exchangeMeta = EXCHANGE_META[slug as keyof typeof EXCHANGE_META]
-  /* key_facts: prefer Strapi → fallback to hardcoded */
-  const keyFacts: string[] = page?.key_facts?.length
-    ? page.key_facts
-    : (exchangeMeta?.fallback_facts ?? [])
+
+  const cfg = EXCHANGE_CONFIG[slug as keyof typeof EXCHANGE_CONFIG]
+
+  /* key_facts and faq_items come from Strapi only */
+  const keyFacts: string[] = page?.key_facts?.length ? page.key_facts : []
+  const faqItems = page?.faq_items ?? []
 
   const resolvedPage = page
     ? {
-        hero_heading: page.hero_heading,
+        hero_heading:    page.hero_heading,
         hero_subheading: page.hero_subheading,
-        hero_image: page.hero_image,
-        body_content: page.body_content,
-        sections: page.sections,
-        exchange_name: page.exchange_name,
-        country: page.country,
+        hero_image:      page.hero_image,
+        body_content:    page.body_content,
+        sections:        page.sections,
+        exchange_name:   page.exchange_name,
+        country:         page.country,
       }
     : {
-        hero_heading: scrapedPage!.heroHeading,
+        hero_heading:    scrapedPage!.heroHeading,
         hero_subheading: scrapedPage!.heroSubheading,
-        hero_image: null,
-        body_content: scrapedPage!.bodyContent,
-        sections: scrapedPage!.sections,
-        exchange_name: scrapedPage!.heroHeading,
-        country: exchangeMeta?.country ?? '',
+        hero_image:      null,
+        body_content:    scrapedPage!.bodyContent,
+        sections:        scrapedPage!.sections,
+        exchange_name:   scrapedPage!.heroHeading,
+        country:         cfg?.country ?? '',
       }
+
+  /* Hero background: prefer Strapi hero_image, then config fallback, then static banner */
+  const strapiHeroImg = resolvedPage.hero_image
+  const heroImgSrc = strapiHeroImg
+    ? (getStrapiMedia(strapiHeroImg.url) ?? strapiHeroImg.url)
+    : (cfg?.hero_image ?? '/exchange-banner.webp')
 
   return (
     <>
-      {/* ── Hero ────────────────────────────────────────────────────────── */}
-      <section className="sv-page-hero">
-        {resolvedPage.hero_image ? (
+      {/* ── Premium Full-Bleed Image Hero ─────────────────────────────────── */}
+      <section className="exc2-hero">
+        {/* Background image */}
+        <div className="exc2-hero__bg" aria-hidden="true">
           <Image
-            src={
-              resolvedPage.hero_image.url.startsWith('http')
-                ? resolvedPage.hero_image.url
-                : `http://127.0.0.1:1337${resolvedPage.hero_image.url}`
-            }
-            alt={resolvedPage.hero_image.alternativeText ?? resolvedPage.exchange_name}
-            fill
-            sizes="100vw"
+            src={heroImgSrc}
+            alt=""
+            width={strapiHeroImg?.width || 1600}
+            height={strapiHeroImg?.height || 900}
             priority
-            style={{ objectFit: 'cover' }}
-          />
-        ) : (
-          <Image
-            src="/fallbacks/hero-market.webp"
-            alt={resolvedPage.exchange_name}
-            fill
             sizes="100vw"
-            priority
-            style={{ objectFit: 'cover', objectPosition: 'center 40%' }}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
-        )}
-        <div className="sv-page-hero-overlay" />
-
-        <div className="sv-container sv-page-hero-content">
-          {/* Breadcrumb */}
-          <nav className="sv-breadcrumb" style={{ marginBottom: 'var(--sv-sp-24)' }}>
-            <Link href="/services/market-entry" className="sv-breadcrumb-link">Market Entry</Link>
-            <span style={{ color: 'rgba(255,255,255,0.22)', fontSize: '0.7rem' }}>›</span>
-            <span className="sv-breadcrumb-current">{exchangeMeta?.flag ?? ''} {resolvedPage.exchange_name}</span>
-          </nav>
-
-          <p className="sv-eyebrow" style={{ color: 'var(--color-sv-gold)', marginBottom: 'var(--sv-sp-16)' }}>
-            Exchange Support
-          </p>
-          <h1
-            className="sv-display"
-            style={{ color: 'var(--color-sv-white)', maxWidth: '720px', marginBottom: 'var(--sv-sp-24)' }}
-          >
-            {resolvedPage.hero_heading}
-          </h1>
-          {resolvedPage.hero_subheading && (
-            <p style={{ fontSize: '1.0625rem', color: 'rgba(255,255,255,0.72)', lineHeight: 1.72, maxWidth: '560px', fontWeight: 300 }}>
-              {resolvedPage.hero_subheading}
-            </p>
-          )}
+          <div className="exc2-hero__overlay" />
         </div>
-      </section>
 
-      {/* ── Exchange Overview ─────────────────────────────────────────────── */}
-      <section className="sv-section">
-        <div className="sv-container">
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '2fr 1fr',
-              gap: 'var(--sv-sp-80)',
-              alignItems: 'start',
-            }}
-            className="exchange-body-grid"
-          >
-            {/* Main content */}
-            <div>
-              {resolvedPage.body_content && resolvedPage.body_content.length > 0 ? (
-                <BlocksContent blocks={resolvedPage.body_content} />
-              ) : (
-                <>
-                  <p className="sv-eyebrow" style={{ marginBottom: 'var(--sv-sp-24)' }}>
-                    About This Exchange
-                  </p>
-                  <p
-                    style={{
-                      fontFamily: 'var(--font-serif)',
-                      fontWeight: 400,
-                      fontSize: 'clamp(1.5rem, 2.5vw, 2rem)',
-                      lineHeight: 1.25,
-                      marginBottom: 'var(--sv-sp-24)',
-                    }}
-                  >
-                    Listing on {resolvedPage.exchange_name}
-                  </p>
-                  <p
-                    style={{
-                      fontSize: '1.0625rem',
-                      color: 'var(--color-sv-slate)',
-                      lineHeight: 1.7,
-                      marginBottom: 'var(--sv-sp-24)',
-                    }}
-                  >
-                    SteinbergValentino Group provides end-to-end support for companies seeking to
-                    list or maintain their listing on {resolvedPage.exchange_name}. Our team guides you
-                    through every stage — from pre-listing preparation and compliance to
-                    post-listing investor relations.
-                  </p>
-                  <p
-                    style={{
-                      fontSize: '1.0625rem',
-                      color: 'var(--color-sv-slate)',
-                      lineHeight: 1.7,
-                    }}
-                  >
-                    With deep knowledge of {exchangeMeta?.country ?? resolvedPage.country} capital markets
-                    regulations and extensive relationships with market participants, we give your
-                    listing the best possible foundation for long-term success.
-                  </p>
-                </>
+        {/* Main content */}
+        <div className="exc2-hero__content">
+          <div className="sv-container">
+            {/* Breadcrumb */}
+            <nav className="exc2-hero__breadcrumb sv-breadcrumb">
+              <Link href="/services/market-entry" className="sv-breadcrumb-link">Market Entry</Link>
+              <span style={{ color: 'rgba(255,255,255,0.22)', fontSize: '0.7rem' }}>›</span>
+              <span className="sv-breadcrumb-current">
+                {cfg?.flag ?? ''} {resolvedPage.exchange_name}
+              </span>
+            </nav>
+
+            {/* Flag + market tag */}
+            <div className="exc2-hero__meta">
+              {cfg?.flag && (
+                <span className="exc2-hero__flag" aria-hidden="true">{cfg.flag}</span>
+              )}
+              {cfg?.market_tag && (
+                <span className="exc2-hero__market-tag">{cfg.market_tag}</span>
               )}
             </div>
 
-            {/* Sidebar: exchange info */}
-            <aside>
-              <div
-                style={{
-                  background: 'var(--color-sv-dark)',
-                  padding: 'var(--sv-sp-32)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 'var(--sv-sp-24)',
-                  position: 'sticky',
-                  top: 'calc(var(--sv-nav-h) + 2rem)',
-                }}
-              >
-                <div>
-                  <span style={{ fontSize: '2.5rem' }}>{exchangeMeta?.flag ?? '🏛️'}</span>
-                  <h3
-                    style={{
-                      fontFamily: 'var(--font-serif)',
-                      fontWeight: 400,
-                      fontSize: '1.25rem',
-                      color: 'var(--color-sv-white)',
-                      marginTop: '0.75rem',
-                    }}
-                  >
-                    {resolvedPage.exchange_name}
-                  </h3>
-                  <p style={{ fontSize: '0.875rem', color: 'var(--color-sv-gray)' }}>
-                    {resolvedPage.country || exchangeMeta?.country}
-                  </p>
-                </div>
+            <p className="sv-eyebrow exc2-hero__eyebrow">Exchange Support</p>
+            <h1 className="exc2-hero__title">{resolvedPage.hero_heading}</h1>
+            {resolvedPage.hero_subheading && (
+              <p className="exc2-hero__deck">{resolvedPage.hero_subheading}</p>
+            )}
+          </div>
+        </div>
+
+      </section>
+
+      {/* ── Exchange Body ─────────────────────────────────────────────────── */}
+      <section className="exc2-body">
+        <div className="sv-container">
+          <div className="exc2-body__grid">
+            {/* Main content */}
+            <div>
+              {resolvedPage.body_content && resolvedPage.body_content.length > 0 && (
+                <BlocksContent blocks={resolvedPage.body_content} className="exc2-prose" />
+              )}
+            </div>
+
+            {/* Sidebar */}
+            <aside className="exc2-sidebar">
+              <div className="exc2-sidebar__card">
+                <span style={{ fontSize: '2rem' }} aria-hidden="true">
+                  {cfg?.flag ?? '🏛️'}
+                </span>
+                <h3 className="exc2-sidebar__exchange-name">{resolvedPage.exchange_name}</h3>
+                <p className="exc2-sidebar__country">
+                  {resolvedPage.country || cfg?.country}
+                </p>
 
                 {keyFacts.length > 0 && (
-                  <div
-                    style={{
-                      borderTop: '1px solid rgba(255,255,255,0.1)',
-                      paddingTop: 'var(--sv-sp-20)',
-                    }}
-                  >
-                    <p
-                      className="sv-eyebrow"
-                      style={{ color: 'var(--color-sv-gold)', marginBottom: 'var(--sv-sp-16)' }}
-                    >
+                  <>
+                    <hr className="exc2-sidebar__divider" />
+                    <p className="sv-eyebrow" style={{ color: 'var(--color-sv-gold)', marginBottom: '1rem', fontSize: '0.7rem', letterSpacing: '0.14em' }}>
                       Key Facts
                     </p>
-                    <ul
-                      style={{
-                        listStyle: 'none',
-                        padding: 0,
-                        margin: 0,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '0.625rem',
-                      }}
-                    >
+                    <ul className="exc2-sidebar__facts">
                       {keyFacts.map((fact) => (
-                        <li
-                          key={fact}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'flex-start',
-                            gap: '0.625rem',
-                            fontSize: '0.875rem',
-                            color: 'var(--color-sv-gray)',
-                            lineHeight: 1.5,
-                          }}
-                        >
-                          <span
-                            style={{
-                              flexShrink: 0,
-                              color: 'var(--color-sv-gold)',
-                              marginTop: '0.125rem',
-                            }}
-                          >
-                            —
-                          </span>
-                          {fact}
+                        <li key={fact} className="exc2-sidebar__fact">
+                          <span className="exc2-sidebar__fact-bullet">—</span>
+                          <span className="exc2-sidebar__fact-text">{fact}</span>
                         </li>
                       ))}
                     </ul>
-                  </div>
+                  </>
                 )}
 
-                <div
-                  style={{
-                    borderTop: '1px solid rgba(255,255,255,0.1)',
-                    paddingTop: 'var(--sv-sp-20)',
-                  }}
-                >
-                  <Link
-                    href="/contact"
-                    className="sv-btn sv-btn-gold"
-                    style={{ width: '100%', justifyContent: 'center' }}
-                  >
-                    Discuss Your Listing
-                  </Link>
-                </div>
+                <hr className="exc2-sidebar__divider" />
+                <Link href="/contact" className="exc2-sidebar__cta">
+                  Discuss Your Listing
+                </Link>
               </div>
             </aside>
           </div>
         </div>
-        <style>{`@media (max-width: 1024px) { .exchange-body-grid { grid-template-columns: 1fr !important; } }`}</style>
       </section>
 
       {/* ── Content Sections from Strapi ──────────────────────────────────── */}
-      {resolvedPage.sections?.map((section, i) => (
-        <section key={section.id} className={`sv-section ${i % 2 === 0 ? 'sv-bg-light' : ''}`}>
-          <div className="sv-container">
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: section.image ? '1fr 1fr' : '1fr',
-                gap: 'var(--sv-sp-64)',
-                alignItems: 'center',
-                maxWidth: section.image ? 'none' : '760px',
-              }}
-              className="exc-section-grid"
-            >
-              <div>
-                {section.heading && (
-                  <h2
-                    style={{
-                      fontFamily: 'var(--font-serif)',
-                      fontWeight: 400,
-                      fontSize: 'clamp(1.5rem, 2.5vw, 2.25rem)',
-                      lineHeight: 1.2,
-                      marginBottom: 'var(--sv-sp-24)',
-                    }}
-                  >
-                    {section.heading}
-                  </h2>
-                )}
-                {section.subheading && (
-                  <p
-                    style={{
-                      fontSize: '1.125rem',
-                      color: 'var(--color-sv-slate)',
-                      marginBottom: 'var(--sv-sp-24)',
-                      lineHeight: 1.6,
-                    }}
-                  >
-                    {section.subheading}
-                  </p>
-                )}
-                {section.body && <BlocksContent blocks={section.body} />}
-              </div>
-              {section.image && (
-                <div style={{ overflow: 'hidden' }}>
-                  <Image
-                    src={
-                      section.image.url.startsWith('http')
-                        ? section.image.url
-                        : `http://127.0.0.1:1337${section.image.url}`
-                    }
-                    alt={section.image.alternativeText ?? section.heading ?? ''}
-                    width={section.image.width || 800}
-                    height={section.image.height || 600}
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    style={{ width: '100%', height: 'auto', display: 'block' }}
-                  />
+      {resolvedPage.sections?.map((section, i) => {
+        const imgSrc = section.image
+          ? getStrapiMedia(section.image.url) ?? section.image.url
+          : null
+        const isDark = i % 2 === 1
+
+        return (
+          <section
+            key={section.id}
+            className="exc2-section"
+            style={{ background: isDark ? 'var(--color-sv-dark)' : 'var(--color-sv-white)' }}
+          >
+            <div className="sv-container">
+              {imgSrc ? (
+                <div className="exc2-section__grid">
+                  <div>
+                    {section.heading && (
+                      <h2 className={`exc2-section__heading${isDark ? ' exc2-section__heading--light' : ''}`}>
+                        {section.heading}
+                      </h2>
+                    )}
+                    {section.subheading && (
+                      <p className="exc2-section__sub">{section.subheading}</p>
+                    )}
+                    {section.body && (
+                      <BlocksContent blocks={section.body} className="exc2-prose" />
+                    )}
+                  </div>
+                  <div className="exc2-section__img-wrap">
+                    <Image
+                      src={imgSrc}
+                      alt={section.image!.alternativeText ?? section.heading ?? ''}
+                      width={section.image!.width || 800}
+                      height={section.image!.height || 600}
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div style={{ maxWidth: '760px' }}>
+                  {section.heading && (
+                    <h2 className={`exc2-section__heading${isDark ? ' exc2-section__heading--light' : ''}`}>
+                      {section.heading}
+                    </h2>
+                  )}
+                  {section.subheading && (
+                    <p className="exc2-section__sub">{section.subheading}</p>
+                  )}
+                  {section.body && (
+                    <BlocksContent blocks={section.body} className="exc2-prose" />
+                  )}
                 </div>
               )}
             </div>
-          </div>
-          <style>{`@media (max-width: 1024px) { .exc-section-grid { grid-template-columns: 1fr !important; } }`}</style>
-        </section>
-      ))}
+          </section>
+        )
+      })}
 
+      {/* ── FAQ ──────────────────────────────────────────────────────────── */}
+      {faqItems.length > 0 && (
+        <section className="exc2-faq">
+          <div className="sv-container">
+            <div className="exc2-faq__head">
+              <p className="sv-eyebrow exc2-faq__eyebrow">FAQ</p>
+              <h2 className="exc2-faq__title">Frequently Asked Questions</h2>
+            </div>
+            <div className="svc-faq-list">
+              {faqItems.map((faq) => (
+                <details key={faq.id} className="svc-faq-item">
+                  <summary>
+                    {faq.question}
+                    <span className="svc-faq-item__toggle">+</span>
+                  </summary>
+                  <div className="svc-faq-item__answer">
+                    <BlocksContent blocks={faq.answer} />
+                  </div>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── CTA ──────────────────────────────────────────────────────────── */}
+      <section className="exc2-cta">
+        <div className="sv-container">
+          <div className="exc2-cta__inner">
+            <div>
+              <p className="sv-eyebrow exc2-cta__eyebrow">Ready to List?</p>
+              <h2 className="exc2-cta__heading">
+                Let us guide your {resolvedPage.exchange_name} listing journey.
+              </h2>
+            </div>
+            <Link href="/contact" className="sv-btn sv-btn-gold">
+              Contact the Firm
+            </Link>
+          </div>
+        </div>
+      </section>
     </>
   )
 }

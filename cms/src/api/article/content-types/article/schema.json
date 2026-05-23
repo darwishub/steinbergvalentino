@@ -1,0 +1,29 @@
+{
+  "kind": "collectionType",
+  "collectionName": "articles",
+  "info": {
+    "singularName": "article",
+    "pluralName": "articles",
+    "displayName": "Article",
+    "description": "News, insights, and market commentary"
+  },
+  "options": { "draftAndPublish": true },
+  "attributes": {
+    "title":          { "type": "string", "required": true },
+    "slug":           { "type": "uid", "targetField": "title", "required": true },
+    "category":       { "type": "string" },
+    "excerpt":        { "type": "text" },
+    "author":         { "type": "string" },
+    "read_time":      { "type": "integer" },
+    "layout_style":   {
+      "type": "enumeration",
+      "enum": ["feature", "insight", "brief"],
+      "default": "feature"
+    },
+    "cover_image":    { "type": "media", "multiple": false, "allowedTypes": ["images"] },
+    "body_content":   { "type": "blocks" },
+    "featured_quote": { "type": "text" },
+    "meta_title":     { "type": "string" },
+    "meta_description": { "type": "text" }
+  }
+}

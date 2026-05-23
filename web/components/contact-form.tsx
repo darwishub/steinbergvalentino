@@ -6,9 +6,11 @@ interface ContactFormProps {
   address?: string | null
   phone?: string | null
   email?: string | null
+  heading?: string | null
+  subheading?: string | null
 }
 
-export function ContactForm({ address, phone, email }: ContactFormProps) {
+export function ContactForm({ address, phone, email, heading, subheading }: ContactFormProps) {
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -84,23 +86,29 @@ export function ContactForm({ address, phone, email }: ContactFormProps) {
           className="contact-grid"
         >
           <div>
-            <h2
-              style={{
-                fontFamily: 'var(--font-serif)',
-                fontWeight: 400,
-                fontSize: 'clamp(1.5rem, 2.5vw, 2.25rem)',
-                lineHeight: 1.25,
-                marginBottom: 'var(--sv-sp-32)',
-              }}
-            >
-              Feel Free To Contact Us
-            </h2>
-            {phone && (
-              <p style={{ fontSize: '1rem', color: 'var(--color-sv-slate)', lineHeight: 1.75, marginBottom: 'var(--sv-sp-32)' }}>
-                Our support Hotline is available 24 Hours a day:{' '}
-                <a href={`tel:${phone.replace(/[^+\d]/g, '')}`} style={{ color: 'inherit' }}>{phone}</a>
-              </p>
+            {(heading || subheading) && (
+              <div style={{ marginBottom: 'var(--sv-sp-32)' }}>
+                {heading && (
+                  <h2
+                    style={{
+                      fontFamily: 'var(--font-serif)',
+                      fontWeight: 400,
+                      fontSize: 'clamp(1.5rem, 2.5vw, 2.25rem)',
+                      lineHeight: 1.25,
+                      marginBottom: subheading ? '0.5rem' : 0,
+                    }}
+                  >
+                    {heading}
+                  </h2>
+                )}
+                {subheading && (
+                  <p style={{ fontSize: '1.0625rem', color: 'var(--color-sv-slate)', margin: 0 }}>
+                    {subheading}
+                  </p>
+                )}
+              </div>
             )}
+
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sv-sp-24)' }}>
               {contactItems.map((item) => (

@@ -8,18 +8,13 @@ interface HeroVideoProps {
 }
 
 /**
- * Lazy-loaded hero background video.
- *
- * Performance rules (per NodeJS_Performance_Standards.pdf):
- *  - video must NEVER autoplay on page load (kills LCP + TBT)
- *  - video must be lazy-loaded (preload="none" until in-viewport)
+ * Lazy-loaded promo-feature background video.
  *
  * Strategy:
- *  1. Render a <video> with preload="none" — zero bytes fetched on load
- *  2. IntersectionObserver fires when hero enters viewport
- *  3. Set src → load() → play() at that point
- *  4. Fade in via opacity transition once canplay fires
- *  5. Poster image is always shown as instant fallback
+ *  1. Render <video> with preload="none" and NO src — zero bytes on paint.
+ *     The poster attribute is immediately visible (opacity is not 0).
+ *  2. IntersectionObserver fires when the element enters the viewport.
+ *  3. Set src → load() → play(). The poster transitions naturally to video.
  */
 export function HeroVideo({ src, poster }: HeroVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -31,11 +26,10 @@ export function HeroVideo({ src, poster }: HeroVideoProps) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return
-        // Defer actual load until hero is visible
         video.src = src
         video.load()
         video.play().catch(() => {
-          /* autoplay blocked (e.g. data-saver mode) — poster stays visible */
+          /* autoplay blocked — poster remains visible, that's fine */
         })
         observer.disconnect()
       },
@@ -53,7 +47,7 @@ export function HeroVideo({ src, poster }: HeroVideoProps) {
       loop
       playsInline
       poster={poster}
-      preload="none"          // ← critical: nothing loaded on page paint
+      preload="none"
       aria-hidden="true"
       style={{
         position: 'absolute',
@@ -61,13 +55,8 @@ export function HeroVideo({ src, poster }: HeroVideoProps) {
         width: '100%',
         height: '100%',
         objectFit: 'cover',
-        objectPosition: 'center 20%',
-        opacity: 0,
-        transition: 'opacity 1.2s ease',
-      }}
-      onCanPlay={(e) => {
-        // Smooth fade-in once first frame is decoded
-        ;(e.currentTarget as HTMLVideoElement).style.opacity = '1'
+        objectPosition: 'center 30%',
+        /* No opacity:0 here — poster must be visible immediately */
       }}
     />
   )

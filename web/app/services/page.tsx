@@ -1,6 +1,6 @@
-import { SafeImage as Image } from '@/components/safe-image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { SafeImage as Image } from '@/components/safe-image'
 import { getAllServicePages, getServicesListingPage, getStrapiMedia } from '@/lib/strapi'
 
 export const revalidate = 3600
@@ -12,78 +12,18 @@ export const metadata: Metadata = {
 }
 
 const STATIC_SERVICES = [
-  {
-    title: 'Advisory',
-    slug: 'advisory',
-    description:
-      'Strategic guidance on capital markets positioning, investor messaging, and long-term growth.',
-  },
-  {
-    title: 'Strategic Advisory',
-    slug: 'strategic-advisory',
-    description:
-      'Bespoke strategic counsel for critical corporate decisions, M&A, and transformative events.',
-  },
-  {
-    title: 'Transactional Advisory',
-    slug: 'transactional-advisory',
-    description:
-      'Expert guidance through mergers, acquisitions, divestitures, and other complex transactions.',
-  },
-  {
-    title: 'Capital Formation',
-    slug: 'capital-formation',
-    description:
-      'End-to-end support for private placements, public offerings, and investor roadshows.',
-  },
-  {
-    title: 'Strategic Communications',
-    slug: 'strategic-communications',
-    description:
-      'Crafting the financial narrative that resonates with institutional and retail investors.',
-  },
-  {
-    title: 'Financial Marketing',
-    slug: 'financial-marketing',
-    description:
-      'Targeted investor marketing campaigns across digital, print, and broadcast channels.',
-  },
-  {
-    title: 'Media Relations',
-    slug: 'media-relations',
-    description:
-      'High-impact media placements across financial news outlets, wire services, and digital platforms.',
-  },
-  {
-    title: 'Media Strategy',
-    slug: 'media-strategy',
-    description:
-      'Comprehensive media planning to ensure maximum coverage of your key investor milestones.',
-  },
-  {
-    title: 'Multicultural Engagement',
-    slug: 'multicultural-engagement',
-    description:
-      'Reaching diverse investor communities across language barriers and cultural contexts.',
-  },
-  {
-    title: 'Market Entry',
-    slug: 'market-entry',
-    description:
-      'Navigating exchange listing requirements and market structure for companies entering new markets.',
-  },
-  {
-    title: 'Crisis Management',
-    slug: 'crises-management',
-    description:
-      'Rapid-response communications for regulatory, litigation, and adverse market events.',
-  },
-  {
-    title: 'Litigation Communications',
-    slug: 'litigation-communications',
-    description:
-      'Strategic communications support for companies navigating active litigation and regulatory investigations.',
-  },
+  { title: 'Advisory',                 slug: 'advisory' },
+  { title: 'Strategic Advisory',       slug: 'strategic-advisory' },
+  { title: 'Transactional Advisory',   slug: 'transactional-advisory' },
+  { title: 'Capital Formation',        slug: 'capital-formation' },
+  { title: 'Strategic Communications', slug: 'strategic-communications' },
+  { title: 'Financial Marketing',      slug: 'financial-marketing' },
+  { title: 'Media Relations',          slug: 'media-relations' },
+  { title: 'Media Strategy',           slug: 'media-strategy' },
+  { title: 'Multicultural Engagement', slug: 'multicultural-engagement' },
+  { title: 'Market Entry',             slug: 'market-entry' },
+  { title: 'Crisis Management',        slug: 'crises-management' },
+  { title: 'Litigation Communications',slug: 'litigation-communications' },
 ]
 
 export default async function ServicesIndexPage() {
@@ -101,37 +41,39 @@ export default async function ServicesIndexPage() {
     services = STATIC_SERVICES
   }
 
-  const heroSrc      = getStrapiMedia(listingPage?.hero_image?.url)     ?? '/fallbacks/office-tower.webp'
-  const approachSrc  = getStrapiMedia(listingPage?.approach_image?.url) ?? '/fallbacks/teamwork.webp'
+  const heroHeading    = listingPage?.hero_heading ?? null
+  const heroSubheading = listingPage?.hero_subheading ?? null
+  const heroImage      = listingPage?.hero_image ?? null
+  const approachImage  = listingPage?.approach_image ?? null
 
   return (
     <>
       {/* ── Hero ────────────────────────────────────────────────────────── */}
-      <section className="sv-page-hero">
-        <Image
-          src={heroSrc}
-          alt={listingPage?.hero_heading ?? 'SteinbergValentino Services'}
-          fill
-          sizes="100vw"
-          priority
-          style={{ objectFit: 'cover', objectPosition: 'center 25%' }}
-        />
-        <div className="sv-page-hero-overlay" />
-        <div className="sv-container sv-page-hero-content">
-          <p className="sv-eyebrow" style={{ color: 'var(--color-sv-gold)', marginBottom: 'var(--sv-sp-16)' }}>
-            Services
-          </p>
-          <h1
-            className="sv-display"
-            style={{ color: 'var(--color-sv-white)', maxWidth: '680px', marginBottom: 'var(--sv-sp-24)' }}
-          >
-            A complete suite of investor relations services
-          </h1>
-          <p style={{ fontSize: '1.0625rem', color: 'rgba(255,255,255,0.72)', lineHeight: 1.72, maxWidth: '560px', fontWeight: 300 }}>
-            From initial strategy through ongoing investor engagement, SteinbergValentino Group
-            provides every service a public company needs to build and maintain a strong capital
-            markets presence.
-          </p>
+      <section className="frm-cta-band" style={{ paddingBlock: 'var(--sv-sp-80)', position: 'relative', overflow: 'hidden' }}>
+        {heroImage && (
+          <div className="exc2-hero__bg" aria-hidden="true">
+            <Image
+              src={getStrapiMedia(heroImage.url) ?? heroImage.url}
+              alt=""
+              width={heroImage.width || 1920}
+              height={heroImage.height || 1080}
+              priority
+              sizes="100vw"
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+            <div className="exc2-hero__overlay" />
+          </div>
+        )}
+        <div className="sv-container" style={{ position: 'relative', zIndex: 1 }}>
+          <p className="sv-eyebrow frm-cta-band__eyebrow">Services</p>
+          {heroHeading && (
+            <h1 className="frm-cta-band__heading">{heroHeading}</h1>
+          )}
+          {heroSubheading && (
+            <p style={{ color: 'rgba(255,255,255,0.72)', fontSize: '1.0625rem', marginTop: 'var(--sv-sp-16)' }}>
+              {heroSubheading}
+            </p>
+          )}
         </div>
       </section>
 
@@ -212,85 +154,31 @@ export default async function ServicesIndexPage() {
         `}</style>
       </section>
 
-      {/* ── Approach ─────────────────────────────────────────────────────── */}
-      <section className="sv-section sv-bg-dark">
-        <div className="sv-container">
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: 'var(--sv-sp-80)',
-              alignItems: 'center',
-            }}
-            className="approach-grid"
-          >
-            <div>
-              <p
-                className="sv-eyebrow"
-                style={{ color: 'var(--color-sv-gold)', marginBottom: 'var(--sv-sp-24)' }}
-              >
-                Integrated Approach
-              </p>
-              <h2
-                className="sv-display"
-                style={{ color: 'var(--color-sv-white)', marginBottom: 'var(--sv-sp-32)' }}
-              >
-                Every service works in concert
-              </h2>
-              <p
-                style={{
-                  fontSize: '1.0625rem',
-                  color: 'var(--color-sv-gray)',
-                  lineHeight: 1.7,
-                  marginBottom: 'var(--sv-sp-40)',
-                }}
-              >
-                While clients may engage us for individual services, the full power of
-                SteinbergValentino Group comes from integrating communications, capital formation,
-                and advisory under one unified strategy. The result is a cohesive investor narrative
-                that compounds over time.
-              </p>
-              <Link href="/how-it-works" className="sv-btn sv-btn-outline-white">
-                How We Work
-              </Link>
-            </div>
-
-            <div style={{ position: 'relative' }}>
-              <Image
-                src={approachSrc}
-                alt="Integrated investor relations approach"
-                width={700}
-                height={500}
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover' }}
-              />
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: '3px',
-                  background: 'var(--color-sv-gold)',
-                }}
-              />
-            </div>
-          </div>
-        </div>
-        <style>{`@media (max-width: 1024px) { .approach-grid { grid-template-columns: 1fr !important; } }`}</style>
-      </section>
+      {/* ── Approach image banner ────────────────────────────────────────── */}
+      {approachImage && (
+        <section style={{ lineHeight: 0, overflow: 'hidden', maxHeight: '420px' }}>
+          <Image
+            src={getStrapiMedia(approachImage.url) ?? approachImage.url}
+            alt="SteinbergValentino Group approach"
+            width={approachImage.width || 1920}
+            height={approachImage.height || 1080}
+            sizes="100vw"
+            style={{ width: '100%', height: '420px', objectFit: 'cover', objectPosition: 'center 40%' }}
+          />
+        </section>
+      )}
 
       {/* ── CTA ──────────────────────────────────────────────────────────── */}
-      <section className="sv-section" style={{ textAlign: 'center' }}>
-        <div className="sv-container" style={{ maxWidth: '640px' }}>
-          <p className="sv-eyebrow" style={{ marginBottom: 'var(--sv-sp-16)' }}>
-            Speak to Our Team
-          </p>
-          <h2 className="sv-display" style={{ marginBottom: 'var(--sv-sp-32)' }}>
-            Discuss which services are right for your company
-          </h2>
-          <Link href="/contact" className="sv-btn sv-btn-primary">
-            Contact Us
+      <section className="frm-cta-band">
+        <div className="sv-container frm-cta-band__inner">
+          <div>
+            <p className="sv-eyebrow frm-cta-band__eyebrow">Work With Us</p>
+            <h2 className="frm-cta-band__heading">
+              Ready to build your investor relations program?
+            </h2>
+          </div>
+          <Link href="/contact" className="sv-btn sv-btn-gold">
+            Contact the Firm
           </Link>
         </div>
       </section>

@@ -1,7 +1,8 @@
 import { SafeImage as Image } from '@/components/safe-image'
 import type { Metadata } from 'next'
-import { getAboutPage, getStrapiMedia } from '@/lib/strapi'
+import { getAboutPage, getGlobalSettings, getStrapiMedia } from '@/lib/strapi'
 import { BlocksContent } from '@/components/blocks-content'
+import { ContactForm } from '@/components/contact-form'
 import { getScrapedPageContent } from '@/lib/scraped-content'
 
 export const revalidate = 3600
@@ -26,126 +27,146 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function AboutPage() {
   let page = null
+  let globalSettings = null
   const scrapedPage = getScrapedPageContent('about.html')
   try {
-    page = await getAboutPage()
+    ;[page, globalSettings] = await Promise.all([getAboutPage(), getGlobalSettings()])
   } catch {
     /* static fallback */
   }
 
-  const heroHeading = page?.hero_heading ?? scrapedPage?.heroHeading ?? 'About'
-  const heroSubheading = page?.hero_subheading ?? scrapedPage?.heroSubheading ?? ''
+  const heroHeading    = page?.hero_heading    ?? scrapedPage?.heroHeading    ?? 'About SteinbergValentino Group'
+  const heroSubheading = page?.hero_subheading ?? scrapedPage?.heroSubheading ?? null
+  const heroImage      = page?.hero_image      ?? null
+  const sections       = page?.sections?.length ? page.sections : (scrapedPage?.sections ?? [])
+  const bodyContent    = page?.body_content    ?? scrapedPage?.bodyContent    ?? null
 
-  const heroBg = page?.hero_image ? getStrapiMedia(page.hero_image.url) : null
-  const sections = page?.sections?.length ? page.sections : (scrapedPage?.sections ?? [])
-  const bodyContent = page?.body_content ?? scrapedPage?.bodyContent ?? null
+  /* Contact form */
+  const showForm            = page?.show_contact_form ?? true
+  const contactFormHeading  = page?.contact_form_heading    ?? null
+  const contactFormSubhead  = page?.contact_form_subheading ?? null
+  const contactAddress      = globalSettings?.address       ?? null
+  const contactPhone        = globalSettings?.contact_phone ?? null
+  const contactEmail        = globalSettings?.contact_email ?? null
 
   return (
     <>
-      {/* ── Inner Page Hero ─────────────────────────────────────────────── */}
-      <section className="sv-page-hero">
-        <Image
-          src={heroBg ?? '/fallbacks/office-tower.webp'}
-          alt="About SteinbergValentino Group"
-          fill
-          sizes="100vw"
-          priority
-          style={{ objectFit: 'cover', objectPosition: 'center 40%' }}
-        />
-        <div className="sv-page-hero-overlay" />
-        <div className="sv-container sv-page-hero-content">
-          <p className="sv-eyebrow" style={{ color: 'var(--color-sv-gold)', marginBottom: 'var(--sv-sp-16)' }}>
-            About the Firm
-          </p>
-          <h1
-            className="sv-display"
-            style={{ color: 'var(--color-sv-white)', maxWidth: '700px', marginBottom: 'var(--sv-sp-24)' }}
-          >
-            {heroHeading}
-          </h1>
+      {/* ── Split-Screen Hero ─────────────────────────────────────────────── */}
+      <section className="ab-hero">
+        {/* Left: dark content panel */}
+        <div className="ab-hero__left">
+          <p className="sv-eyebrow ab-hero__eyebrow">About the Firm</p>
+          <h1 className="ab-hero__title">{heroHeading}</h1>
           {heroSubheading && (
-            <p style={{ fontSize: '1.0625rem', color: 'rgba(255,255,255,0.72)', lineHeight: 1.72, maxWidth: '580px', fontWeight: 300 }}>
-              {heroSubheading}
-            </p>
+            <p className="ab-hero__deck">{heroSubheading}</p>
           )}
         </div>
+
+        {/* Right: full-bleed photo */}
+        <div className="ab-hero__right">
+          <Image
+            src={heroImage ? (getStrapiMedia(heroImage.url) ?? heroImage.url) : '/firm-about.png'}
+            alt="SteinbergValentino Group — investor relations professionals"
+            width={heroImage?.width || 960}
+            height={heroImage?.height || 720}
+            priority
+            sizes="50vw"
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+          <div className="ab-hero__right-overlay" aria-hidden="true" />
+        </div>
+
+        <div className="ab-hero__rule" aria-hidden="true" />
       </section>
 
-      {/* ── Body Content from Strapi ─────────────────────────────────────── */}
+      {/* ── Body prose ───────────────────────────────────────────────────── */}
       {bodyContent && bodyContent.length > 0 && (
-        <section className="sv-section">
-          <div className="sv-container" style={{ maxWidth: '800px' }}>
-            <BlocksContent blocks={bodyContent} />
+        <section className="ab-body">
+          <div className="sv-container">
+            <div className="ab-body__prose">
+              <BlocksContent blocks={bodyContent} />
+            </div>
           </div>
         </section>
       )}
 
-      {/* ── Sections from Strapi ─────────────────────────────────────────── */}
+      {/* ── Editorial Sections ───────────────────────────────────────────── */}
       {sections.map((section, i) => {
         const imgSrc = section.image
           ? getStrapiMedia(section.image.url) ?? section.image.url
           : null
         const isDark = i % 2 === 1
+
         return (
           <section
             key={section.id ?? i}
-            className={`sv-section ${isDark ? 'sv-bg-dark' : 'sv-bg-light'}`}
+            className="ab-section"
+            style={{ background: isDark ? 'var(--color-sv-dark)' : 'var(--color-sv-white)' }}
           >
             <div className="sv-container">
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: imgSrc ? '1fr 1fr' : '1fr',
-                  gap: 'var(--sv-sp-64)',
-                  alignItems: 'center',
-                  maxWidth: imgSrc ? '100%' : '800px',
-                }}
-                className="about-section-grid"
-              >
-                <div>
-                  {section.heading && (
-                    <h2
-                      className="sv-display"
-                      style={{
-                        marginBottom: 'var(--sv-sp-24)',
-                        color: isDark ? 'var(--color-sv-white)' : undefined,
-                      }}
-                    >
-                      {section.heading}
-                    </h2>
-                  )}
-                  {section.subheading && (
-                    <p
-                      style={{
-                        fontSize: '1.125rem',
-                        color: isDark ? 'var(--color-sv-gray)' : 'var(--color-sv-slate)',
-                        marginBottom: 'var(--sv-sp-24)',
-                        lineHeight: 1.6,
-                      }}
-                    >
-                      {section.subheading}
-                    </p>
-                  )}
-                  {section.body && <BlocksContent blocks={section.body} />}
-                </div>
-                {imgSrc && (
-                  <div style={{ position: 'relative', overflow: 'hidden' }}>
+              {imgSrc ? (
+                <div className="ab-section__grid">
+                  <div>
+                    {section.heading && (
+                      <h2 className={`ab-section__heading${isDark ? ' ab-section__heading--light' : ''}`}>
+                        {section.heading}
+                      </h2>
+                    )}
+                    {section.subheading && (
+                      <p className={`ab-section__sub${isDark ? ' ab-section__sub--light' : ''}`}>
+                        {section.subheading}
+                      </p>
+                    )}
+                    {section.body && (
+                      <div className={isDark ? 'sv-prose-light' : ''}>
+                        <BlocksContent blocks={section.body} />
+                      </div>
+                    )}
+                  </div>
+                  <div className="ab-section__img-wrap">
                     <Image
                       src={imgSrc}
                       alt={section.image!.alternativeText ?? section.heading ?? ''}
                       width={section.image!.width || 800}
                       height={section.image!.height || 600}
-                      sizes="(max-width: 1024px) 100vw, 50vw"
-                      style={{ width: '100%', height: 'auto', display: 'block' }}
+                      sizes="(max-width: 900px) 100vw, 50vw"
                     />
                   </div>
-                )}
-              </div>
+                </div>
+              ) : (
+                <div style={{ maxWidth: '760px' }}>
+                  {section.heading && (
+                    <h2 className={`ab-section__heading${isDark ? ' ab-section__heading--light' : ''}`}>
+                      {section.heading}
+                    </h2>
+                  )}
+                  {section.subheading && (
+                    <p className={`ab-section__sub${isDark ? ' ab-section__sub--light' : ''}`}>
+                      {section.subheading}
+                    </p>
+                  )}
+                  {section.body && (
+                    <div className={isDark ? 'sv-prose-light' : ''}>
+                      <BlocksContent blocks={section.body} />
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
-            <style>{`@media (max-width: 1024px) { .about-section-grid { grid-template-columns: 1fr !important; } }`}</style>
           </section>
         )
       })}
+
+      {/* ── Contact Form (from old site) ────────────────────────────────── */}
+      {showForm && (
+        <ContactForm
+          heading={contactFormHeading}
+          subheading={contactFormSubhead}
+          address={contactAddress}
+          phone={contactPhone}
+          email={contactEmail}
+        />
+      )}
     </>
   )
 }

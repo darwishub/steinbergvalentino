@@ -1,4 +1,5 @@
 import { SafeImage as Image } from '@/components/safe-image'
+import Link from 'next/link'
 import type { Metadata } from 'next'
 import { getCapabilitiesPage, getStrapiMedia } from '@/lib/strapi'
 import { BlocksContent } from '@/components/blocks-content'
@@ -24,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-/* ── Per-card decorative icons (inline SVG, indexed by position) ────────── */
+/* ── Per-card SVG icons (indexed by position) ───────────────────────────── */
 const CARD_ICONS = [
   /* 0 — Communications */
   <svg key="comms" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -40,7 +41,9 @@ const CARD_ICONS = [
   </svg>,
   /* 3 — Digital */
   <svg key="digital" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+    <line x1="8" y1="21" x2="16" y2="21"/>
+    <line x1="12" y1="17" x2="12" y2="21"/>
   </svg>,
 ]
 
@@ -54,139 +57,92 @@ export default async function CapabilitiesPage() {
   }
 
   const heroHeading = page?.hero_heading ?? scrapedPage?.heroHeading ?? 'Capabilities'
-  const heroSubheading = page?.hero_subheading ?? scrapedPage?.heroSubheading ?? ''
-  const heroBg = page?.hero_image ? getStrapiMedia(page.hero_image.url) : null
+  const heroSubheading = page?.hero_subheading ?? scrapedPage?.heroSubheading ?? null
   const sections = page?.sections?.length ? page.sections : (scrapedPage?.sections ?? [])
   const bodyContent = page?.body_content ?? scrapedPage?.bodyContent ?? null
+  const heroImage = page?.hero_image ?? null
 
   return (
     <>
-      {/* ── Inner Hero ───────────────────────────────────────────────────── */}
-      <section className="sv-page-hero">
-        <Image
-          src={heroBg ?? '/fallbacks/office-tower.webp'}
-          alt="SteinbergValentino capabilities"
-          fill
-          sizes="100vw"
-          priority
-          style={{ objectFit: 'cover', objectPosition: 'center 55%' }}
-        />
-        <div className="sv-page-hero-overlay" />
-        <div className="sv-container sv-page-hero-content">
-          <p className="sv-eyebrow" style={{ color: 'var(--color-sv-gold)', marginBottom: 'var(--sv-sp-16)' }}>
-            What We Do
-          </p>
-          <h1
-            className="sv-display"
-            style={{ color: 'var(--color-sv-white)', maxWidth: '700px', marginBottom: 'var(--sv-sp-24)' }}
-          >
-            {heroHeading}
-          </h1>
-          {heroSubheading && (
-            <p style={{ fontSize: '1.0625rem', color: 'rgba(255,255,255,0.72)', lineHeight: 1.72, maxWidth: '560px', fontWeight: 300 }}>
-              {heroSubheading}
-            </p>
-          )}
+      {/* ── Dot-Grid Hero ─────────────────────────────────────────────────── */}
+      <section className="cap-hero">
+        <div className="sv-container">
+          <div className="cap-hero__inner">
+            <div className="cap-hero__text">
+              <p className="sv-eyebrow cap-hero__eyebrow">What We Do</p>
+              <h1 className="cap-hero__title">{heroHeading}</h1>
+              {heroSubheading && (
+                <p className="cap-hero__deck">{heroSubheading}</p>
+              )}
+            </div>
+
+            {heroImage && (
+              <div className="cap-hero__img-wrap">
+                <Image
+                  src={getStrapiMedia(heroImage.url) ?? heroImage.url}
+                  alt={heroImage.alternativeText ?? heroHeading}
+                  width={heroImage.width || 640}
+                  height={heroImage.height || 480}
+                  priority
+                  sizes="(max-width: 1024px) 0px, 480px"
+                  style={{ width: '100%', height: 'auto', objectFit: 'cover', borderRadius: '4px' }}
+                />
+              </div>
+            )}
+          </div>
         </div>
+        <div className="cap-hero__rule" aria-hidden="true" />
       </section>
 
-      {/* ── Intro body text ──────────────────────────────────────────────── */}
+      {/* ── Intro prose (light) ───────────────────────────────────────────── */}
       {bodyContent && bodyContent.length > 0 && (
-        <section className="sv-section sv-bg-light">
-          <div className="sv-container" style={{ maxWidth: '760px' }}>
-            <BlocksContent blocks={bodyContent} />
+        <section className="cap-intro">
+          <div className="sv-container">
+            <div className="cap-intro__prose">
+              <BlocksContent blocks={bodyContent} />
+            </div>
           </div>
         </section>
       )}
 
-      {/* ── Capability card grid ─────────────────────────────────────────── */}
-      {/*
-        Template: dark-background 2×2 card grid.
-        Each card = gold icon + left-border accent + heading + body text.
-        Structurally distinct from About (image+text split) and HIW (timeline).
-      */}
+      {/* ── Dark Card Grid ────────────────────────────────────────────────── */}
       {sections.length > 0 && (
-        <section
-          className="sv-section"
-          style={{ backgroundColor: '#0c0d10' }}
-        >
+        <section className="cap-grid-section">
           <div className="sv-container">
-            {/* Section label */}
-            <div style={{ textAlign: 'center', marginBottom: 'var(--sv-sp-64)' }}>
-              <p className="sv-eyebrow" style={{ color: 'var(--color-sv-gold)', marginBottom: 'var(--sv-sp-16)' }}>
-                Our Expertise
-              </p>
-              <h2
-                className="sv-display"
-                style={{ color: 'var(--color-sv-white)', maxWidth: '580px', margin: '0 auto' }}
-              >
-                Built for Capital Markets
-              </h2>
-            </div>
-
-            {/* 2 × 2 card grid */}
             <div className="cap-card-grid">
               {sections.map((section, i) => (
-                <article
-                  key={section.id ?? i}
-                  className="cap-card"
-                  style={{
-                    borderLeft: '3px solid var(--color-sv-gold)',
-                    padding: 'var(--sv-sp-48) var(--sv-sp-48) var(--sv-sp-48) calc(var(--sv-sp-48) - 3px)',
-                    backgroundColor: 'rgba(255,255,255,0.035)',
-                    position: 'relative',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 'var(--sv-sp-24)',
-                  }}
-                >
-                  {/* Icon */}
-                  <div style={{ color: 'var(--color-sv-gold)' }}>
+                <article key={section.id ?? i} className="cap-card">
+                  <div className="cap-card__icon">
                     {CARD_ICONS[i % CARD_ICONS.length]}
                   </div>
 
-                  {/* Heading */}
+                  <span className="cap-card__num" aria-hidden="true">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+
                   {section.heading && (
-                    <h3
-                      style={{
-                        fontFamily: 'var(--font-serif)',
-                        fontSize: '1.375rem',
-                        fontWeight: 400,
-                        lineHeight: 1.25,
-                        color: 'var(--color-sv-white)',
-                        margin: 0,
-                      }}
-                    >
-                      {section.heading}
-                    </h3>
+                    <h3 className="cap-card__heading">{section.heading}</h3>
                   )}
 
-                  {/* Subheading */}
                   {section.subheading && (
-                    <p style={{ fontSize: '0.9375rem', color: 'var(--color-sv-gray)', lineHeight: 1.65, margin: 0 }}>
-                      {section.subheading}
-                    </p>
+                    <p className="cap-card__sub">{section.subheading}</p>
                   )}
 
-                  {/* Body blocks */}
                   {section.body && (
-                    <div style={{ color: 'var(--color-sv-gray)', fontSize: '0.9rem' }}>
+                    <div className="cap-card__sub">
                       <BlocksContent blocks={section.body} />
                     </div>
                   )}
 
-                  {/* Section image (small, bottom of card) */}
                   {section.image && (
-                    <div style={{ marginTop: 'auto', overflow: 'hidden' }}>
-                      <Image
-                        src={getStrapiMedia(section.image.url) ?? section.image.url}
-                        alt={section.image.alternativeText ?? section.heading ?? ''}
-                        width={section.image.width || 600}
-                        height={section.image.height || 340}
-                        sizes="(max-width: 768px) 100vw, 50vw"
-                        style={{ width: '100%', height: '180px', objectFit: 'cover', display: 'block' }}
-                      />
-                    </div>
+                    <Image
+                      className="cap-card__img"
+                      src={getStrapiMedia(section.image.url) ?? section.image.url}
+                      alt={section.image.alternativeText ?? section.heading ?? ''}
+                      width={section.image.width || 600}
+                      height={section.image.height || 160}
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
                   )}
                 </article>
               ))}
@@ -195,45 +151,22 @@ export default async function CapabilitiesPage() {
         </section>
       )}
 
-      {/* ── Bottom CTA strip ─────────────────────────────────────────────── */}
-      <section
-        className="sv-section"
-        style={{
-          borderTop: '1px solid var(--color-sv-gray200)',
-          backgroundColor: 'var(--color-sv-light)',
-        }}
-      >
-        <div
-          className="sv-container"
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 'var(--sv-sp-32)' }}
-        >
-          <div>
-            <p className="sv-eyebrow" style={{ color: 'var(--color-sv-gold)', marginBottom: 'var(--sv-sp-16)' }}>
-              Ready to Get Started?
-            </p>
-            <h2
-              className="sv-display"
-              style={{ maxWidth: '480px', margin: 0 }}
-            >
-              Let&apos;s build your investor relations program.
-            </h2>
+      {/* ── Light CTA (inverted) ─────────────────────────────────────────── */}
+      <section className="cap-cta">
+        <div className="sv-container">
+          <div className="cap-cta__inner">
+            <div>
+              <p className="sv-eyebrow cap-cta__eyebrow">Work With Us</p>
+              <h2 className="cap-cta__heading">
+                Ready to build your investor relations program?
+              </h2>
+            </div>
+            <Link href="/contact" className="sv-btn sv-btn-dark">
+              Contact the Firm
+            </Link>
           </div>
-          <a href="/contact" className="sv-btn sv-btn-primary">
-            Contact the Firm
-          </a>
         </div>
       </section>
-
-      <style>{`
-        .cap-card-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: var(--sv-sp-2, 2px);
-        }
-        @media (max-width: 768px) {
-          .cap-card-grid { grid-template-columns: 1fr; }
-        }
-      `}</style>
     </>
   )
 }

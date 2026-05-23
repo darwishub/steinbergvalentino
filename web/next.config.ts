@@ -19,6 +19,10 @@ function getStrapiRemotePattern() {
 }
 
 const legacyRedirects = [
+  // Legacy slug redirects (missing from original list)
+  { source: '/sv-group/', destination: '/about', permanent: true },
+  { source: '/contact-us/', destination: '/contact', permanent: true },
+  // Core page .html redirects
   { source: '/about.html', destination: '/about', permanent: true },
   { source: '/how-it-works.html', destination: '/how-it-works', permanent: true },
   { source: '/capabilities.html', destination: '/capabilities', permanent: true },
@@ -120,9 +124,9 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       getStrapiRemotePattern(),
-      /* Local Strapi sometimes binds to 127.0.0.1 instead of localhost */
+      /* Also allow 127.0.0.1 — strapi.ts replaces localhost→127.0.0.1 in the
+         returned image URLs even when NEXT_PUBLIC_STRAPI_URL uses localhost */
       { protocol: 'http', hostname: '127.0.0.1', port: '1337', pathname: '/uploads/**' },
-      { protocol: 'http', hostname: 'localhost',  port: '1337', pathname: '/uploads/**' },
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',

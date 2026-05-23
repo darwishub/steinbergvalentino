@@ -1,11 +1,36 @@
 import React from 'react'
-import type { StrapiBlock } from '@/lib/types'
+import type { StrapiBlock, StrapiMedia } from '@/lib/types'
+import { getStrapiMedia } from '@/lib/strapi'
 
-type InlineChild = { type: string; text: string; bold?: boolean; italic?: boolean }
+type InlineChild = {
+  type: string
+  text?: string
+  bold?: boolean
+  italic?: boolean
+  underline?: boolean
+  url?: string
+  children?: InlineChild[]
+}
 
-function renderInline(children: InlineChild[]) {
+function renderInline(children: InlineChild[]): React.ReactNode[] {
   return children.map((child, i) => {
-    let node: React.ReactNode = child.text
+    // Link node — render children as the visible text
+    if (child.type === 'link') {
+      const linkText = child.children?.map((c) => c.text ?? '').join('') ?? ''
+      return (
+        <a
+          key={i}
+          href={child.url ?? '#'}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: 'var(--color-sv-gold)', textDecoration: 'underline' }}
+        >
+          {linkText}
+        </a>
+      )
+    }
+
+    let node: React.ReactNode = child.text ?? ''
     if (child.bold)
       node = (
         <strong key={i} style={{ fontWeight: 600, color: 'inherit' }}>
@@ -13,6 +38,7 @@ function renderInline(children: InlineChild[]) {
         </strong>
       )
     if (child.italic) node = <em key={i}>{node}</em>
+    if (child.underline) node = <u key={i}>{node}</u>
     return <span key={i}>{node}</span>
   })
 }
@@ -72,6 +98,44 @@ export function BlocksContent({ blocks, className }: BlocksContentProps) {
                   </li>
                 ))}
               </ListTag>
+            )
+          }
+
+          case 'quote':
+            return (
+              <blockquote
+                key={i}
+                style={{
+                  borderLeft: '3px solid var(--color-sv-gold)',
+                  paddingLeft: '1.25rem',
+                  margin: '1.5rem 0',
+                  fontStyle: 'italic',
+                  color: 'var(--color-sv-slate)',
+                }}
+              >
+                {renderInline(block.children as InlineChild[])}
+              </blockquote>
+            )
+
+          case 'image': {
+            const img = block.image as StrapiMedia
+            if (!img?.url) return null
+            const src = getStrapiMedia(img.url) ?? img.url
+            return (
+              <figure
+                key={i}
+                style={{ margin: '1.5rem 0', lineHeight: 0 }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={src}
+                  alt={img.alternativeText ?? ''}
+                  width={img.width || undefined}
+                  height={img.height || undefined}
+                  style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
+                  loading="lazy"
+                />
+              </figure>
             )
           }
 

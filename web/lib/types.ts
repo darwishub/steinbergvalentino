@@ -42,6 +42,64 @@ export interface Testimonial {
   quote: string
 }
 
+export interface HomepageStatItem {
+  value: string
+  label: string
+}
+
+export interface HomepageVideoConfig {
+  src: string | null
+  poster: string | null
+}
+
+export interface HomepageSectionsConfig {
+  hero_video: HomepageVideoConfig | null
+  stats_items: HomepageStatItem[] | null
+  offerings_eyebrow: string | null
+  offerings_title: string | null
+  offerings_cta_label: string | null
+  offerings_cta_url: string | null
+  offerings_stat_value: string | null
+  offerings_stat_label: string | null
+  capital_markets_eyebrow: string | null
+  capital_markets_title: string | null
+  capital_markets_body: string | null
+  capital_markets_cta_label: string | null
+  capital_markets_cta_url: string | null
+  featured_services_eyebrow: string | null
+  featured_services_title: string | null
+  featured_services_cta_label: string | null
+  featured_services_cta_url: string | null
+  exchanges_eyebrow: string | null
+  exchanges_title: string | null
+  exchanges_cta_label: string | null
+  exchanges_cta_url: string | null
+  offerings_subheading: string | null
+  offerings_body: string | null
+  offerings_stat_note: string | null
+  features_eyebrow: string | null
+  features_title: string | null
+  testimonials_eyebrow: string | null
+  testimonials_title: string | null
+  contact_eyebrow: string | null
+  contact_title: string | null
+  contact_body: string | null
+  contact_cta_label: string | null
+  contact_cta_url: string | null
+  contact_secondary_cta_label: string | null
+  contact_secondary_cta_url: string | null
+  contact_lead_label: string | null
+  contact_services_label: string | null
+  carousel_slides: Array<{
+    image_url: string
+    title: string
+    blurb: string
+    cta_label: string
+    cta_url: string
+  }> | null
+  exchanges_item_link_label: string | null
+}
+
 export interface Sector {
   id: number
   label: string
@@ -80,6 +138,7 @@ export interface Homepage {
   hero_cta_secondary_label: string | null
   hero_cta_secondary_url: string | null
   body_content: StrapiBlock[] | null
+  homepage_sections: HomepageSectionsConfig | null
   sections: ContentSection[]
   testimonials: Testimonial[]
   meta_title: string | null
@@ -96,6 +155,9 @@ export interface AboutPage {
   sections: ContentSection[]
   meta_title: string | null
   meta_description: string | null
+  show_contact_form: boolean | null
+  contact_form_heading: string | null
+  contact_form_subheading: string | null
 }
 
 export interface HowItWorksPage {
@@ -216,6 +278,21 @@ export interface ExchangePage {
   body_content: StrapiBlock[] | null
   sections: ContentSection[]
   key_facts: string[] | null
+  faq_items?: { id: number; question: string; answer: StrapiBlock[] }[]
+  meta_title: string | null
+  meta_description: string | null
+}
+
+export interface Article {
+  id: number
+  documentId: string
+  title: string
+  slug: string
+  category: string | null
+  excerpt: string | null
+  publishedAt: string | null
+  cover_image: StrapiMedia | null
+  body_content: StrapiBlock[] | null
   meta_title: string | null
   meta_description: string | null
 }

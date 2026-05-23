@@ -1,79 +1,90 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import {
   getHomepage,
   getAllServicePages,
   getAllExchangePages,
   getGlobalSettings,
+  getStrapiMedia,
 } from '@/lib/strapi'
 import { BlocksContent } from '@/components/blocks-content'
-import { HeroVideoLoader } from '@/components/hero-video-loader'
+import { PromoCarousel } from '@/components/promo-carousel'
+import { TestimonialSlider } from '@/components/testimonial-slider'
+import { DEFAULT_GLOBAL_SETTINGS } from '@/lib/defaults'
 import type { ServicePage, ExchangePage } from '@/lib/types'
 
 export const revalidate = 3600
 
-/* ─── Hardcoded hero video (swap src once a real asset is uploaded) ──────── */
-const HERO_VIDEO_SRC =
-  'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4'
-const HERO_VIDEO_POSTER = '/fallbacks/office-tower.webp'
-
-/* ─── Fallbacks ──────────────────────────────────────────────────────────── */
+/* ─── Minimal structural fallbacks (UI cannot be empty) ─────────────────── */
+// Testimonials: real client quotes, kept as static fallback when Strapi offline
 const FALLBACK_TESTIMONIALS = [
-  { id: 1, name: 'Abraham Mirman',    quote: "My company is a new player in the stock market. Through a series of aggressive campaigns by SV Group, I've been able to get my stock value up even higher than I expected, and it looks like it will continue in the months ahead." },
-  { id: 2, name: 'Paul Tavis McKenzie', quote: "After taking my company public, it was a challenge to get investors aware of what we have to offer. SV Group's campaigns have increased my market exposure and I've been seeing my stock value go up higher than I expected." },
-  { id: 3, name: 'Yat Man Lai',       quote: "Their campaigns have been extremely helpful in getting me more market exposure, and my stock's value has gone up more than I expected. I'd recommend SV Group to any company looking to grow their investor base." },
+  {
+    id: 1,
+    name: 'Abraham Mirman',
+    quote:
+      "My company is a new player in the stock market, so I've been having trouble getting investors interested in my company. I needed to find a way to promote my stock so I can improve its value, which is why I got a hold of SV Group. Through a series of aggressive campaigns, I've been able to get my stock value up even higher than I expected, and it looks like it will continue in the months ahead. I'm very satisfied with what they've done, and I look forward to a bright future.",
+  },
+  {
+    id: 2,
+    name: 'Paul Tavis McKenzie',
+    quote:
+      "After taking my company public, it was a challenge to get investors aware of what we have to offer, but I needed to increase the value of my stock so I could move forward. That was when I got in touch with SV Group. My exposure in the market has increased, and I've been seeing my stock value go up higher than I expected. I feel confident that my company will become a major player in my industry, and I believe I could eventually move into major exchanges.",
+  },
+  {
+    id: 3,
+    name: 'Yat Man Lai',
+    quote:
+      "I just went public earlier this year, and I've been having trouble getting investors interested in my stock. I've heard about investor awareness companies like SV Group, so I decided to get some more information about what they could do for me. After an extended conversation with someone at their office, I decided to give them a try. Their campaigns have been extremely helpful in getting me more market exposure, and my stock's value has gone up more than I expected.",
+  },
+  {
+    id: 4,
+    name: 'Susanne Wilke',
+    quote:
+      "I felt like it was time for me to take my company public because I needed to raise more capital so I can expand my business, but it was hard to get market liquidity up so I can raise the value of my stock. I heard about how investor awareness companies like SV Group can help new public companies get more exposure on the market, so I decided reach out to them. So far, I've been happy with what they've done, and I've been able to increase the value of my stock.",
+  },
+  {
+    id: 5,
+    name: 'Mark Munro',
+    quote:
+      "I just filed my IPO this year, so I don't have the market exposure of many of my larger competitors. I needed to improve market liquidity so I could have more value on the market, which is why I went to SV Group. Their campaigns have brought more investors to my stock, and I have been able to raise the capital I need to expand my business. Now the value of my stock has more than doubled, and I expect it to go higher by the end of the fiscal year.",
+  },
 ]
 
-const FALLBACK_KEYWORDS = [
-  'Investor Relations', 'Capital Formation', 'Exchange Listings',
-  'Media & Communications', 'Market Making', 'IPO Advisory',
-  'Retail Market Development', 'Financial Communications',
-]
+// Contact info: business data that rarely changes — from Strapi or DEFAULT_GLOBAL_SETTINGS
+const FALLBACK_EMAIL = DEFAULT_GLOBAL_SETTINGS.contact_email!
+const FALLBACK_PHONE = DEFAULT_GLOBAL_SETTINGS.contact_phone!
 
-const FALLBACK_SERVICES = [
-  { slug: 'investor-relations',   title: 'Investor Relations Strategy', desc: 'Bespoke IR programs built for your sector and investor base.' },
-  { slug: 'capital-formation',    title: 'Capital Formation',           desc: 'Structured financing advisory for growth and expansion rounds.' },
-  { slug: 'exchange-listings',    title: 'Exchange Listings',           desc: 'NASDAQ, OTC, TSX, CSE, Frankfurt — we know every market.' },
-  { slug: 'media-communications', title: 'Media & Communications',      desc: 'Strategic press relations across financial and trade media.' },
-]
+// Services: used only when Strapi services collection is empty/offline
+const FALLBACK_SERVICES = DEFAULT_GLOBAL_SETTINGS.footer_service_links!.slice(0, 6).map((l) => ({
+  slug: l.href.replace('/services/', ''),
+  title: l.label,
+}))
 
-const COUNTRY_FLAG: Record<string, string> = {
-  'United States': '🇺🇸', Canada: '🇨🇦', Germany: '🇩🇪', UK: '🇬🇧', Australia: '🇦🇺',
+function splitEditorialHeading(heading: string) {
+  const words = heading.trim().split(/\s+/).filter(Boolean)
+
+  if (words.length <= 4) return [heading]
+  if (words.length <= 7) {
+    const midpoint = Math.ceil(words.length / 2)
+    return [words.slice(0, midpoint).join(' '), words.slice(midpoint).join(' ')]
+  }
+
+  const firstBreak = Math.ceil(words.length * 0.4)
+  const secondBreak = Math.ceil(words.length * 0.7)
+
+  return [
+    words.slice(0, firstBreak).join(' '),
+    words.slice(firstBreak, secondBreak).join(' '),
+    words.slice(secondBreak).join(' '),
+  ]
 }
 
-/* ─── Split hero heading into two stagger lines ──────────────────────────── */
-function splitHeroHeading(heading: string): [string, string] {
-  const words = heading.trim().split(/\s+/)
-  if (words.length <= 2) return ['', heading]
-  const mid = Math.ceil(words.length / 2)
-  return [words.slice(0, mid).join(' '), words.slice(mid).join(' ')]
-}
-
-/* ─── Singular Link — exact Blackstone 3-path SVG ───────────────────────── */
-function BxSingularLink({ href, label, white }: { href: string; label: string; white?: boolean }) {
+/* ─── Circle-arrow SVG (reused in several places) ───────────────────────── */
+function CircleArrow({ size = 36 }: { size?: number }) {
   return (
-    <Link
-      href={href}
-      className="bx-singular-link_frontend"
-      style={white ? { color: '#fff' } : undefined}
-      aria-label={label}
-    >
-      <span className="bx-singular-link__label">{label}</span>
-      <svg className="bx-singular-link__icon" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-        <path className="bx-singular-link__icon-arrow" d="M29 20c0-.2 0-.4-.2-.6l-4.4-4.6a1 1 0 0 0-1.2 0c-.3.3-.3.8 0 1.1l3.1 3.3H11.8a.8.8 0 1 0 0 1.6h14.5l-3 3.3c-.4.3-.4.8 0 1.2.3.3.8.2 1.1 0l4.4-4.7.2-.6Z" fill="currentColor" />
-        <path className="bx-singular-link__icon-fill" d="M20 0a20 20 0 1 1 0 40 20 20 0 0 1 0-40Zm3.2 14.8c-.3.3-.3.8 0 1.1l3.1 3.3H11.8a.8.8 0 1 0 0 1.6h14.5l-3 3.3c-.4.3-.4.8 0 1.2.3.3.8.2 1.1 0l4.4-4.7.2-.6c0-.2 0-.4-.2-.6l-4.4-4.6a1 1 0 0 0-1.2 0Z" fill="currentColor" />
-        <path className="bx-singular-link__icon-border" fill="currentColor" d="M20 0a20 20 0 1 0 0 40 20 20 0 0 0 0-40Zm0 1.5a18.5 18.5 0 1 1 0 37 18.5 18.5 0 0 1 0-37Z" />
-      </svg>
-    </Link>
-  )
-}
-
-/* ─── Inline arrow SVG link (for service rows in panels) ─────────────────── */
-function ArrowSvg() {
-  return (
-    <svg className="bx-singular-link__icon" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-      <path className="bx-singular-link__icon-arrow" d="M29 20c0-.2 0-.4-.2-.6l-4.4-4.6a1 1 0 0 0-1.2 0c-.3.3-.3.8 0 1.1l3.1 3.3H11.8a.8.8 0 1 0 0 1.6h14.5l-3 3.3c-.4.3-.4.8 0 1.2.3.3.8.2 1.1 0l4.4-4.7.2-.6Z" fill="currentColor" />
-      <path className="bx-singular-link__icon-fill" d="M20 0a20 20 0 1 1 0 40 20 20 0 0 1 0-40Zm3.2 14.8c-.3.3-.3.8 0 1.1l3.1 3.3H11.8a.8.8 0 1 0 0 1.6h14.5l-3 3.3c-.4.3-.4.8 0 1.2.3.3.8.2 1.1 0l4.4-4.7.2-.6c0-.2 0-.4-.2-.6l-4.4-4.6a1 1 0 0 0-1.2 0Z" fill="currentColor" />
-      <path className="bx-singular-link__icon-border" fill="currentColor" d="M20 0a20 20 0 1 0 0 40 20 20 0 0 0 0-40Zm0 1.5a18.5 18.5 0 1 1 0 37 18.5 18.5 0 0 1 0-37Z" />
+    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="20" cy="20" r="19.25" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M17 14l6 6-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }
@@ -90,208 +101,198 @@ export default async function HomePage() {
       getAllServicePages(),
       getAllExchangePages(),
     ])
-  } catch { /* Strapi offline — all sections fall back gracefully */ }
+  } catch {
+    /* Strapi offline — render with fallbacks */
+  }
 
+  /* Global settings: separate fetch for the same reason */
   globalSettings = await getGlobalSettings().catch(() => null)
 
-  /* ── Hero fields ─────────────────────────────────────────────────────── */
-  const heroEyebrow   = page?.hero_eyebrow   ?? null
-  const heroHeading   = page?.hero_heading   ?? 'Build with SteinbergValentino'
-  const heroSubheading = page?.hero_subheading ?? 'SteinbergValentino Group is the premier investor relations firm for small and mid-cap public companies.'
-  const ctaPrimary   = { label: page?.hero_cta_primary_label  ?? 'Our Capabilities', url: page?.hero_cta_primary_url  ?? '/capabilities' }
-  const ctaSecondary = { label: page?.hero_cta_secondary_label ?? 'How It Works',     url: page?.hero_cta_secondary_url ?? '/how-it-works' }
-
-  const [heroLine1, heroLine2] = splitHeroHeading(heroHeading)
-
-  /* ── Section content ─────────────────────────────────────────────────── */
-  const sections     = page?.sections ?? []
+  /* Convenience shorthands */
+  const sections = page?.sections ?? []
+  const hs = page?.homepage_sections
   const testimonials = page?.testimonials?.length ? page.testimonials : FALLBACK_TESTIMONIALS
-  const keywords     = page?.keyword_band?.length ? page.keyword_band : FALLBACK_KEYWORDS
-  const tickerItems  = [...keywords, ...keywords, ...keywords]
 
-  // Section 0 → Offerings ("About the Firm") block
-  const offeringsSection  = sections[0] ?? null
-  // Body content as fallback copy for offerings
-  const bodyContent = page?.body_content ?? null
+  /* Services: first 8 for features grid (8 cards fills 3×3 with first card span-2), first 5 for The Firm dark card */
+  const featuredServices = services.slice(0, 8)
+  const firmServices = services.length > 0 ? services.slice(0, 5) : FALLBACK_SERVICES
 
-  const svcCards = (services.length > 0
-    ? services.slice(0, 4).map(s => ({ slug: s.slug, title: s.title, desc: s.hero_subheading ?? '' }))
-    : FALLBACK_SERVICES)
-
-  const svcLinks = (services.length > 0 ? services : FALLBACK_SERVICES).slice(0, 5)
-
-  const contactEmail = globalSettings?.contact_email ?? 'info@steinbergvalentino.com'
-  const contactPhone = globalSettings?.contact_phone ?? null
+  /* Contact: prefer Strapi global settings, fall back to defaults */
+  const contactEmail = globalSettings?.contact_email ?? FALLBACK_EMAIL
+  const contactPhone = globalSettings?.contact_phone ?? FALLBACK_PHONE
+  const ctaServices = services.length > 0 ? services.slice(0, 6) : FALLBACK_SERVICES
+  const heroHeading = page?.hero_heading ?? 'Strategic investor relations for public companies'
+  const heroLines = splitEditorialHeading(heroHeading)
 
   return (
     <>
-      {/* ── Blackstone CSS loaded locally — all bx-* classes powered by this ── */}
-      <link rel="stylesheet" href="/bx/frontend.css" precedence="default" />
+      {/* ══════════════════════════════════════════════════════════════════════
+          1 · PROMO HEADER — dark text block (Blackstone bx-promo-header style)
+      ══════════════════════════════════════════════════════════════════════ */}
+      <section className="sv-promo-header">
+        <div className="sv-container sv-promo-header__inner">
+          <div className="sv-promo-header__col-headline">
+            {page?.hero_eyebrow && (
+              <div className="sv-promo-header__eyebrow-row">
+                <span className="sv-promo-header__eyebrow-rule" aria-hidden="true" />
+                <p className="sv-promo-header__eyebrow">{page.hero_eyebrow}</p>
+              </div>
+            )}
+            <h1 className="sv-promo-header__heading">
+              <span className="sv-promo-header__line sv-promo-header__line--lg">
+                {heroHeading}
+              </span>
+              <span className="sv-promo-header__line sv-promo-header__line--brand">
+                Steinberg<span className="sv-promo-header__gold">Valentino</span>
+              </span>
+            </h1>
+          </div>
+          <div className="sv-promo-header__col-body">
+            {page?.hero_subheading && (
+              <p className="sv-promo-header__desc">{page.hero_subheading}</p>
+            )}
+            <div className="sv-promo-header__ctas">
+              {(page?.hero_cta_primary_label || page?.hero_cta_primary_url) && (
+                <Link
+                  href={page.hero_cta_primary_url ?? '/about'}
+                  className="sv-promo-header__cta"
+                >
+                  {page.hero_cta_primary_label ?? 'About the Firm'}
+                </Link>
+              )}
+              {(page?.hero_cta_secondary_label || page?.hero_cta_secondary_url) && (
+                <Link
+                  href={page.hero_cta_secondary_url ?? '/contact'}
+                  className="sv-promo-header__cta sv-promo-header__cta--ghost"
+                >
+                  {page.hero_cta_secondary_label ?? 'Contact Us'}
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
 
-      {/* ════════════════════════════════════════════════════════════════════
-          1 · PROMO HEADER  (dark bg, full-bleed video background)
-      ════════════════════════════════════════════════════════════════════ */}
-      <section
-        className="bx-block-component bx-promo-header alignfull bx-stacked-component-header-padding-top bx-stacked-component-header-padding-bottom is-color-theme-dark"
-        style={{ position: 'relative', overflow: 'hidden' }}
-      >
-        {/* Lazy-loaded background video — hardcoded src for testing */}
-        <HeroVideoLoader src={HERO_VIDEO_SRC} poster={HERO_VIDEO_POSTER} />
+        {/* Keyword band — from Strapi homepage.keyword_band */}
+        {page?.keyword_band && page.keyword_band.length > 0 && (
+          <div className="hp-hero__kw-band">
+            <div className="hp-hero__kw-inner">
+              {(page.keyword_band as string[]).map((kw: string, i: number) => (
+                <span key={kw} className="hp-hero__kw-group">
+                  <span className="hp-hero__kw">{kw}</span>
+                  {i < (page.keyword_band as string[]).length - 1 && (
+                    <span className="hp-hero__kw-sep" aria-hidden="true">◆</span>
+                  )}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </section>
 
-        {/* Dark scrim so text stays readable */}
-        <div
-          aria-hidden="true"
-          style={{
-            position: 'absolute', inset: 0,
-            background: 'linear-gradient(160deg, rgba(12,14,18,0.82) 0%, rgba(18,19,23,0.65) 100%)',
-            zIndex: 1,
-          }}
-        />
+      {/* ══════════════════════════════════════════════════════════════════════
+          2 · PROMO CAROUSEL — full-width image slider
+      ══════════════════════════════════════════════════════════════════════ */}
+      <PromoCarousel slides={hs?.carousel_slides} />
 
-        <div className="bx-promo-header__inner" style={{ position: 'relative', zIndex: 2 }}>
-
-          {heroEyebrow && (
-            <p
-              className="bx-promo-header__eyebrow is-style-eyebrow"
-              style={{ color: 'rgba(220,168,64,0.9)', marginBottom: '1.5rem' }}
-              aria-hidden="true"
-            >
-              {heroEyebrow}
-            </p>
+      {/* ══════════════════════════════════════════════════════════════════════
+          2b · WHY CHOOSE SV — white section, centered top + two-col body
+      ══════════════════════════════════════════════════════════════════════ */}
+      <section className="sv-why">
+        <div className="sv-container sv-why__top">
+          <span className="sv-why__rule" aria-hidden="true" />
+          {hs?.offerings_eyebrow && (
+            <p className="sv-why__eyebrow">{hs.offerings_eyebrow}</p>
           )}
+          {hs?.offerings_title && (
+            <h2 className="sv-why__heading">{hs.offerings_title}</h2>
+          )}
+        </div>
 
-          <h1 className="bx-promo-header__title animated">
-            {heroLine1 && <span className="bx-promo-header__title-1">{heroLine1}</span>}
-            <span className="bx-promo-header__title-2">{heroLine2 || heroHeading}</span>
-          </h1>
-
-          <div className="bx-promo-header__description animated">
-            <p>{heroSubheading}</p>
-            <div style={{ display: 'flex', gap: '2.5rem', marginTop: '2.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-              <BxSingularLink href={ctaPrimary.url}   label={ctaPrimary.label}   white />
-              <BxSingularLink href={ctaSecondary.url} label={ctaSecondary.label} white />
-            </div>
+        <div className="sv-container sv-why__body">
+          {/* Left col: subheading + body from Strapi */}
+          <div className="sv-why__col-left">
+            {hs?.offerings_subheading && (
+              <h3 className="sv-why__subheading">{hs.offerings_subheading}</h3>
+            )}
+            {hs?.offerings_body && (
+              <p className="sv-why__text">{hs.offerings_body}</p>
+            )}
+            <Link
+              href={hs?.offerings_cta_url ?? '/about'}
+              className="sv-why__cta"
+            >
+              {hs?.offerings_cta_label ?? 'About SV Group'}
+              <CircleArrow />
+            </Link>
           </div>
 
-        </div>
-      </section>
-
-      {/* ════════════════════════════════════════════════════════════════════
-          2 · STATS BAND  (dark, 3 key SV numbers)
-      ════════════════════════════════════════════════════════════════════ */}
-      <section
-        className="bx-block-component alignfull is-color-theme-dark bx-component-base-padding-top bx-component-base-padding-bottom"
-        style={{ background: '#121317' }}
-      >
-        <div
-          className="bx-table-comp"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '1px',
-            background: 'rgba(255,255,255,0.08)',
-          }}
-        >
-          {[
-            { value: '500+', label: 'Client Companies Served' },
-            { value: '15+',  label: 'Years of Capital Markets Expertise' },
-            { value: '8',    label: 'Major Exchanges Covered' },
-          ].map(stat => (
-            <div key={stat.value} style={{ background: '#121317', padding: '3rem 2rem' }}>
-              <p style={{ fontFamily: 'Sanomat, serif', fontSize: 'var(--fs-56, 3.5rem)', fontWeight: 300, lineHeight: 1, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 0.5rem' }}>
-                {stat.value}
-              </p>
-              <p style={{ fontSize: 'var(--fs-16, 1rem)', color: 'rgba(255,255,255,0.6)', margin: 0 }}>
-                {stat.label}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ════════════════════════════════════════════════════════════════════
-          3 · OFFERINGS  (light bg, CMS section[0])
-      ════════════════════════════════════════════════════════════════════ */}
-      <section className="bx-block-component bx-offerings alignfull bx-component-base-padding-top bx-component-base-padding-bottom">
-        <div className="bx-offerings__inner bx-table-comp">
-
-          <div className="bx-offerings__heading bx-offerings-heading has-text-align-center">
-            <p className="bx-offerings-heading__eyebrow" aria-hidden="true">ABOUT The Firm</p>
-            <h2 className="bx-offerings-heading__title">
-              <span className="visually-hidden">ABOUT The Firm: </span>
-              Delivering for Investors
-            </h2>
-          </div>
-
-          <div className="bx-offerings__main bx-offerings-main">
-
-            <h3 className="bx-offerings-main__title">
-              {offeringsSection?.heading ?? 'Unmatched expertise in small-cap IR'}
-            </h3>
-
-            <div className="bx-offerings-main__content">
-              <div className="bx-offerings-main__copy">
-                {/* Prefer section body, fall back to page body_content, then static text */}
-                {offeringsSection?.body && offeringsSection.body.length > 0 ? (
-                  <div className="sv-rich-text"><BlocksContent blocks={offeringsSection.body} /></div>
-                ) : bodyContent && bodyContent.length > 0 ? (
-                  <div className="sv-rich-text"><BlocksContent blocks={bodyContent} /></div>
-                ) : (
-                  <p>SteinbergValentino Group is a small-cap company&apos;s best choice in investor relations firms. SV Group goes above and beyond to serve its client companies with the best possible IR mediation along with an array of other equally fundamental services — known worldwide not only for its supreme IR service but also for possessing diverse capabilities.</p>
-                )}
-              </div>
-              <div className="bx-offerings-main__cta">
-                <BxSingularLink href="/about" label="About the Firm" />
-              </div>
-            </div>
-
-            <div className="bx-offerings-main__stat">
-              <p className="bx-offerings-main__stat-value">500+</p>
-              <div className="bx-offerings-main__stat-subtext">
-                <p>Client Companies Served</p>
-              </div>
-            </div>
-
+          {/* Right col: stat from Strapi */}
+          <div className="sv-why__col-right">
+            {hs?.offerings_stat_value && (
+              <p className="sv-why__stat">{hs.offerings_stat_value}</p>
+            )}
+            {hs?.offerings_stat_label && (
+              <p className="sv-why__stat-label">{hs.offerings_stat_label}</p>
+            )}
+            {hs?.offerings_stat_note && (
+              <p className="sv-why__stat-note">{hs.offerings_stat_note}</p>
+            )}
           </div>
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════════════════════════
-          4 · TWO-UP CONTENT  (dark, services links panel)
-      ════════════════════════════════════════════════════════════════════ */}
-      <section className="bx-block-component bx-two-up-content alignfull is-color-theme-dark bx-component-base-padding-top bx-component-base-padding-bottom">
-        <div className="bx-two-up-content__inner bx-table-comp">
+      {/* ══════════════════════════════════════════════════════════════════════
+          3 · THE FIRM — dark, two-col: serif left / service list dark card right
+      ══════════════════════════════════════════════════════════════════════ */}
+      <section className="hp-about sv-bg-dark">
+        <div className="sv-container hp-about__inner">
 
-          <p className="bx-two-up-content__eyebrow is-style-eyebrow">Capital Markets</p>
+          {/* ── Left ─────────────────────────────────────────────────────── */}
+          <div className="hp-about__col-left">
+            <div className="hp-about__eyebrow-row">
+              {hs?.capital_markets_eyebrow && (
+                <p className="sv-eyebrow hp-about__eyebrow">{hs.capital_markets_eyebrow}</p>
+              )}
+              <span className="hp-about__eyebrow-line" aria-hidden="true" />
+            </div>
 
-          <h3 className="bx-two-up-content__title">
-            Institutional quality for individual investors
-          </h3>
+            {(sections[0]?.heading || hs?.capital_markets_title) && (
+              <h2 className="sv-display hp-about__headline">
+                {sections[0]?.heading ?? hs?.capital_markets_title}
+              </h2>
+            )}
 
-          <div className="bx-two-up-content__copy">
-            <p>We deliver the same rigorous IR strategy and capital markets expertise to growth companies that institutional firms bring to large-cap clients — bespoke programs built for your sector and investor base.</p>
+            {sections[0]?.body ? (
+              <div className="sv-rich-text hp-about__body-text">
+                <BlocksContent blocks={sections[0].body} />
+              </div>
+            ) : hs?.capital_markets_body ? (
+              <p className="hp-about__body-text">{hs.capital_markets_body}</p>
+            ) : null}
+
+            <Link
+              href={hs?.capital_markets_cta_url ?? '/about'}
+              className="hp-about__cta-arrow"
+            >
+              {hs?.capital_markets_cta_label ?? 'Learn More'}
+              <CircleArrow />
+            </Link>
           </div>
 
-          <div className="bx-two-up-content__cta">
-            <BxSingularLink href="/how-it-works" label="How It Works" white />
-          </div>
-
-          <div className="bx-two-up-content__links has-feature-five">
-            <div className="bx-two-up-content__links-inner">
-              {svcLinks.map(svc => (
-                <div key={svc.slug} className="bx-two-up-content__link">
-                  <div className="bx-two-up-content__link-col">
-                    <p className="bx-two-up-content__link-label">{svc.title}</p>
-                  </div>
-                  <Link
-                    href={`/services/${svc.slug}`}
-                    className="bx-singular-link_frontend"
-                    aria-label={svc.title}
-                  >
-                    <span className="bx-singular-link__label" />
-                    <ArrowSvg />
-                  </Link>
-                </div>
+          {/* ── Right: service list pulled from Strapi (not hardcoded) ──── */}
+          <div className="hp-about__col-right">
+            <div className="hp-about__card">
+              {firmServices.map((svc) => (
+                <Link
+                  key={svc.slug}
+                  href={`/services/${svc.slug}`}
+                  className="hp-about__card-item"
+                >
+                  <span className="hp-about__card-label">{svc.title}</span>
+                  <span className="hp-about__card-arrow" aria-hidden="true">
+                    <CircleArrow size={32} />
+                  </span>
+                </Link>
               ))}
             </div>
           </div>
@@ -299,129 +300,51 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════════════════════════
-          5 · TICKERTAPE  (dark strip, scrolling keywords from CMS)
-      ════════════════════════════════════════════════════════════════════ */}
-      <div
-        className="bx-block-component bx-block-no-spacing bx-tickertape alignfull is-color-theme-dark bx-ticker-tape-stack-padding-top bx-ticker-tape-stack-padding-bottom"
-        role="presentation"
-        aria-hidden="true"
-      >
-        <div className="bx-tickertape__inner bx-table-comp">
-          <div className="bx-tickertape__ticker">
-            {tickerItems.map((kw, i) => (
-              <div key={`${kw}-${i}`} className="bx-tickertape__ticker-item">
-                <p className="bx-tickertape__title">{kw}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ════════════════════════════════════════════════════════════════════
-          6 · FEATURED SERVICES  (CMS service pages → bx-content-card grid)
-      ════════════════════════════════════════════════════════════════════ */}
-      <section className="bx-block-component bx-featured-news alignfull bx-component-stacked-same-theme-padding-top bx-component-base-padding-bottom" id="services">
-        <div className="bx-featured-news__inner bx-table-comp">
-
-          <p className="bx-featured-news__eyebrow is-style-eyebrow" aria-hidden="true">What We Do</p>
-          <h2 className="bx-featured-news__title">
-            <span className="visually-hidden">What We Do: </span>
-            Our Capabilities
-          </h2>
-
-          <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-            <BxSingularLink href="/capabilities" label="All Capabilities" />
-          </div>
-
-          <div className="bx-featured-news__cards">
-            {svcCards.map((svc, i) => (
-              <div key={svc.slug} className="bx-featured-news__card">
-                <article className="bx-content-card">
-
-                  {/* Media: gradient card — no external images */}
-                  <div
-                    className="bx-content-card__media"
-                    style={{
-                      background: 'linear-gradient(160deg, #1a1d23 0%, #121317 100%)',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '1rem',
-                    }}
-                  >
-                    <div className="bx-content-card__curtain" />
-                    <span style={{
-                      fontFamily: 'Sanomat, serif',
-                      fontSize: 'var(--fs-96, 6rem)',
-                      fontWeight: 300,
-                      lineHeight: 1,
-                      color: 'rgba(220,168,64,0.25)',
-                      userSelect: 'none',
-                    }}>
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                    <span style={{ width: '2rem', height: '1px', background: 'rgba(220,168,64,0.6)', display: 'block' }} />
-                  </div>
-
-                  <div className="bx-content-card__main">
-                    <h3 className="bx-content-card__title">
-                      <Link href={`/services/${svc.slug}`} className="bx-content-card__title-link">
-                        {svc.title}
-                      </Link>
-                    </h3>
-                    {svc.desc && (
-                      <p className="bx-content-card__description" style={{ fontSize: 'var(--fs-14, 0.875rem)', color: 'var(--c-copy)', marginTop: '0.5rem' }}>
-                        {svc.desc}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="bx-content-card__footer">
-                    <p className="bx-content-card__meta">
-                      <Link href={`/services/${svc.slug}`}>Services</Link>
-                    </p>
-                  </div>
-
-                </article>
-              </div>
-            ))}
-          </div>
-
-        </div>
-      </section>
-
-      {/* ════════════════════════════════════════════════════════════════════
-          7 · EXCHANGES  (dark, 4-col grid — CMS exchange pages)
-      ════════════════════════════════════════════════════════════════════ */}
-      {exchanges.length > 0 && (
-        <section className="bx-block-component alignfull is-color-theme-dark bx-component-base-padding-top bx-component-base-padding-bottom">
-          <div className="bx-table-comp">
-            <div style={{ marginBottom: '3.5rem', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '2rem' }}>
+      {/* ══════════════════════════════════════════════════════════════════════
+          4 · SERVICES — clean grid from Strapi service-pages collection
+      ══════════════════════════════════════════════════════════════════════ */}
+      {featuredServices.length > 0 && (
+        <section className="hp-services sv-section">
+          <div className="sv-container">
+            <div className="hp-services__header">
               <div>
-                <p
-                  className="is-style-eyebrow"
-                  style={{ fontSize: 'var(--fs-14)', fontWeight: 400, letterSpacing: '.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', marginBottom: '1rem' }}
-                >
-                  Exchange Coverage
-                </p>
-                <h2 style={{ fontFamily: 'Sanomat, serif', fontWeight: 300, fontSize: 'var(--fs-40, 2.5rem)', lineHeight: 1.1, color: '#fff', margin: 0 }}>
-                  We list companies on {exchanges.length} major exchanges
-                </h2>
+                {hs?.featured_services_eyebrow && (
+                  <p className="sv-eyebrow hp-services__eyebrow">{hs.featured_services_eyebrow}</p>
+                )}
+                {hs?.featured_services_title && (
+                  <h2 className="sv-display hp-services__headline">{hs.featured_services_title}</h2>
+                )}
               </div>
-              <BxSingularLink href="/services/market-entry" label="Market Entry" white />
+              <Link
+                href={hs?.featured_services_cta_url ?? '/capabilities'}
+                className="sv-link-arrow hp-services__all-link"
+              >
+                {hs?.featured_services_cta_label ?? 'All Capabilities'}
+              </Link>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1px', background: 'rgba(255,255,255,0.08)' }}>
-              {exchanges.map(ex => (
+
+            <div className="hp-services__grid">
+              {featuredServices.map((svc, i) => (
                 <Link
-                  key={ex.slug}
-                  href={`/exchanges/${ex.slug}`}
-                  style={{ background: '#121317', padding: '2rem', display: 'flex', flexDirection: 'column', gap: '0.4rem', textDecoration: 'none', color: '#fff' }}
+                  key={svc.slug}
+                  href={`/services/${svc.slug}`}
+                  className="hp-svc-card"
                 >
-                  <span style={{ fontSize: '1.75rem' }}>{COUNTRY_FLAG[ex.country] ?? '🏛️'}</span>
-                  <span style={{ fontFamily: 'Sanomat, serif', fontSize: '1.0625rem' }}>{ex.exchange_name}</span>
-                  <span style={{ fontSize: '0.8125rem', color: 'rgba(255,255,255,0.42)' }}>{ex.country}</span>
+                  <span className="hp-svc-card__index" aria-hidden="true">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span className="hp-svc-card__rule" />
+                  <h3 className="hp-svc-card__title">{svc.title}</h3>
+                  {svc.hero_subheading && (
+                    <p className="hp-svc-card__desc">
+                      {svc.hero_subheading.length > 100
+                        ? svc.hero_subheading.slice(0, 100) + '…'
+                        : svc.hero_subheading}
+                    </p>
+                  )}
+                  <span className="hp-svc-card__cta">
+                    <CircleArrow size={30} />
+                  </span>
                 </Link>
               ))}
             </div>
@@ -429,96 +352,163 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* ════════════════════════════════════════════════════════════════════
-          8 · TESTIMONIALS  (light two-up, CMS testimonials)
-      ════════════════════════════════════════════════════════════════════ */}
-      <section className="bx-block-component bx-two-up-content alignfull bx-component-base-padding-top bx-component-base-padding-bottom">
-        <div className="bx-two-up-content__inner bx-table-comp">
-
-          <p className="bx-two-up-content__eyebrow is-style-eyebrow">Client Testimonials</p>
-          <h3 className="bx-two-up-content__title">What Our Clients Say</h3>
-
-          <div className="bx-two-up-content__links has-feature-three">
-            <div className="bx-two-up-content__links-inner">
-              {testimonials.slice(0, 3).map(t => (
-                <div key={t.id} className="bx-two-up-content__link" style={{ display: 'block', padding: '1.5rem 0' }}>
-                  <p style={{ fontFamily: 'Sanomat, serif', fontSize: 'var(--fs-20)', lineHeight: 1.6, color: 'var(--c-copy, #0f1115)', margin: '0 0 0.75rem' }}>
-                    &ldquo;{t.quote}&rdquo;
-                  </p>
-                  <p style={{ fontSize: 'var(--fs-14)', fontWeight: 500, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--c-graphics, #dca840)', margin: 0 }}>
-                    — {t.name}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* ════════════════════════════════════════════════════════════════════
-          9 · CTA  (dark two-up + contact panel from GlobalSettings)
-      ════════════════════════════════════════════════════════════════════ */}
-      <section className="bx-block-component bx-two-up-content alignfull is-color-theme-dark bx-component-base-padding-top bx-component-base-padding-bottom">
-        <div className="bx-two-up-content__inner bx-table-comp">
-
-          <p className="bx-two-up-content__eyebrow is-style-eyebrow">Start Your Engagement</p>
-
-          <h3 className="bx-two-up-content__title">
-            Ready to strengthen your investor relations program?
-          </h3>
-
-          <div className="bx-two-up-content__copy">
-            <p>Schedule a confidential consultation to explore how SteinbergValentino Group can elevate your company&apos;s capital markets profile and drive meaningful investor awareness.</p>
-          </div>
-
-          <div className="bx-two-up-content__cta">
-            <BxSingularLink href="/contact" label="Contact Us" white />
-          </div>
-
-          <div className="bx-two-up-content__links has-feature-five">
-            <div className="bx-two-up-content__links-inner">
-
-              {/* Contact details from GlobalSettings */}
-              <div style={{ marginBottom: '2rem' }}>
-                <p style={{ fontSize: 'var(--fs-14)', fontWeight: 400, letterSpacing: '.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.42)', marginBottom: '0.5rem' }}>
-                  New Business
-                </p>
-                <a
-                  href={`mailto:${contactEmail}`}
-                  style={{ fontFamily: 'Sanomat, serif', fontSize: '1.0625rem', color: '#fff', textDecoration: 'none', display: 'block' }}
-                >
-                  {contactEmail}
-                </a>
-                {contactPhone && (
-                  <a
-                    href={`tel:${contactPhone.replace(/[^+\d]/g, '')}`}
-                    style={{ fontFamily: 'Sanomat, serif', fontSize: '1.0625rem', color: '#fff', textDecoration: 'none', display: 'block', marginTop: '0.25rem' }}
-                  >
-                    {contactPhone}
-                  </a>
+      {/* ══════════════════════════════════════════════════════════════════════
+          5 · FEATURE HIGHLIGHTS — additional content sections from Strapi
+      ══════════════════════════════════════════════════════════════════════ */}
+      {sections.length > 1 && (
+        <section className="hp-features sv-section" style={{ backgroundColor: '#0c0d10' }}>
+          <div className="sv-container">
+            {(hs?.features_eyebrow || hs?.features_title) && (
+              <div className="hp-features__header">
+                {hs.features_eyebrow && (
+                  <p className="sv-eyebrow hp-features__eyebrow">{hs.features_eyebrow}</p>
+                )}
+                {hs.features_title && (
+                  <h2 className="sv-display hp-features__headline">{hs.features_title}</h2>
                 )}
               </div>
+            )}
 
-              {/* Core services list */}
-              <p style={{ fontSize: 'var(--fs-14)', fontWeight: 400, letterSpacing: '.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.42)', marginBottom: '1rem' }}>
-                Core Services
-              </p>
-              {svcLinks.map(svc => (
-                <div key={svc.slug} className="bx-two-up-content__link">
-                  <div className="bx-two-up-content__link-col">
-                    <p className="bx-two-up-content__link-label">{svc.title}</p>
-                  </div>
-                  <Link href={`/services/${svc.slug}`} className="bx-singular-link_frontend" aria-label={svc.title}>
-                    <span className="bx-singular-link__label" />
-                    <ArrowSvg />
-                  </Link>
+            <div className="hp-features__grid">
+              {sections.slice(1, 4).map((section, i) => (
+                <div key={section.id ?? i} className="hp-feat-card">
+                  <p className="hp-feat-card__num">0{i + 1}</p>
+                  {section.heading && (
+                    <h3 className="hp-feat-card__title">{section.heading}</h3>
+                  )}
+                  {section.subheading && (
+                    <p className="hp-feat-card__sub">{section.subheading}</p>
+                  )}
+                  {section.body && (
+                    <div className="sv-rich-text hp-feat-card__body">
+                      <BlocksContent blocks={section.body} />
+                    </div>
+                  )}
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+      )}
 
+      {/* ══════════════════════════════════════════════════════════════════════
+          6 · EXCHANGES — from Strapi exchange-pages collection
+      ══════════════════════════════════════════════════════════════════════ */}
+      {exchanges.length > 0 && (
+        <section className="hp-exchanges sv-bg-dark">
+          <div className="sv-container">
+            <div className="hp-exchanges__header">
+              <div>
+                {hs?.exchanges_eyebrow && (
+                  <p className="sv-eyebrow hp-exchanges__eyebrow">{hs.exchanges_eyebrow}</p>
+                )}
+                {hs?.exchanges_title && (
+                  <h2 className="sv-display hp-exchanges__headline">{hs.exchanges_title}</h2>
+                )}
+              </div>
+              {(hs?.exchanges_cta_label || hs?.exchanges_cta_url) && (
+                <Link
+                  href={hs?.exchanges_cta_url ?? '/services/market-entry'}
+                  className="sv-link-arrow sv-link-arrow-white"
+                >
+                  {hs?.exchanges_cta_label ?? 'Market Entry Services'}
+                </Link>
+              )}
+            </div>
+
+            <div className="hp-exchanges__grid">
+              {exchanges.map((ex, index) => (
+                <Link key={ex.slug} href={`/exchanges/${ex.slug}`} className="hp-exchange-item">
+                  <span className="hp-exchange-item__index">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <span className="hp-exchange-item__name">{ex.exchange_name}</span>
+                  <span className="hp-exchange-item__country">{ex.country}</span>
+                  <span className="hp-exchange-item__link">
+                    {hs?.exchanges_item_link_label ?? 'View details →'}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+
+      {/* ══════════════════════════════════════════════════════════════════════
+          7 · TESTIMONIALS — premium dark slider, data from Strapi
+      ══════════════════════════════════════════════════════════════════════ */}
+      <TestimonialSlider testimonials={testimonials} />
+
+      {/* ══════════════════════════════════════════════════════════════════════
+          8 · CONTACT CTA — all text + links from Strapi homepage_sections
+      ══════════════════════════════════════════════════════════════════════ */}
+      <section className="hp-cta">
+        <div className="sv-container hp-cta__inner">
+          {/* Left */}
+          <div className="hp-cta__col-left">
+            {hs?.contact_eyebrow && (
+              <p className="sv-eyebrow hp-cta__eyebrow">{hs.contact_eyebrow}</p>
+            )}
+            {hs?.contact_title && (
+              <h2 className="sv-display hp-cta__headline">{hs.contact_title}</h2>
+            )}
+            {hs?.contact_body && (
+              <p className="hp-cta__body">{hs.contact_body}</p>
+            )}
+            <div className="hp-cta__actions">
+              {(hs?.contact_cta_label || hs?.contact_cta_url) && (
+                <Link
+                  href={hs?.contact_cta_url ?? '/contact'}
+                  className="sv-btn sv-btn-outline-white"
+                >
+                  {hs?.contact_cta_label ?? 'Contact Us'}
+                </Link>
+              )}
+              {(hs?.contact_secondary_cta_label || hs?.contact_secondary_cta_url) && (
+                <Link
+                  href={hs?.contact_secondary_cta_url ?? '/how-it-works'}
+                  className="sv-link-arrow sv-link-arrow-white"
+                >
+                  {hs?.contact_secondary_cta_label ?? 'How It Works'}
+                </Link>
+              )}
             </div>
           </div>
 
+          {/* Right — contact details (Strapi global settings) + service links */}
+          <div className="hp-cta__col-right">
+            <div className="hp-cta__contact-block">
+              {hs?.contact_lead_label && (
+                <p className="hp-cta__contact-label">{hs.contact_lead_label}</p>
+              )}
+              <a href={`mailto:${contactEmail}`} className="hp-cta__contact-link">
+                {contactEmail}
+              </a>
+              <a
+                href={`tel:${contactPhone.replace(/[^+\d]/g, '')}`}
+                className="hp-cta__contact-link"
+              >
+                {contactPhone}
+              </a>
+            </div>
+
+            <div className="hp-cta__svc-list">
+              {hs?.contact_services_label && (
+                <p className="hp-cta__svc-list-label">{hs.contact_services_label}</p>
+              )}
+              <ul className="hp-cta__svc-items">
+                {ctaServices.map((svc) => (
+                  <li key={svc.slug}>
+                    <Link href={`/services/${svc.slug}`} className="hp-cta__svc-link">
+                      <span className="hp-cta__svc-rule" />
+                      {svc.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
       </section>
     </>

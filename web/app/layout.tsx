@@ -7,7 +7,7 @@ import { DEFAULT_GLOBAL_SETTINGS } from '@/lib/defaults'
 import { getGlobalSettings } from '@/lib/strapi'
 
 /* ─── Fonts ──────────────────────────────────────────────────────────────── */
-// Sanomat (Blackstone serif) → Cormorant Garamond — hairline strokes, old-money gravitas
+// Primary serif for display typography
 const cormorant = Cormorant_Garamond({
   variable: '--font-cormorant',
   subsets: ['latin'],
@@ -17,7 +17,7 @@ const cormorant = Cormorant_Garamond({
   preload: true,
 })
 
-// UI / body sans → Manrope — humanist geometric, premium fintech feel
+// Primary sans for interface and body copy
 const manrope = Manrope({
   variable: '--font-manrope',
   subsets: ['latin'],
@@ -83,11 +83,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           phone={globalSettings?.contact_phone}
           address={globalSettings?.address}
           copyright={globalSettings?.footer_copyright}
-          socialFacebook={globalSettings?.social_facebook}
-          socialTwitter={globalSettings?.social_twitter}
-          socialInstagram={globalSettings?.social_instagram}
-          socialLinkedin={globalSettings?.social_linkedin}
-          socialPinterest={globalSettings?.social_pinterest}
+          socialFacebook={globalSettings?.social_facebook ?? DEFAULT_GLOBAL_SETTINGS.social_facebook}
+          socialTwitter={globalSettings?.social_twitter ?? DEFAULT_GLOBAL_SETTINGS.social_twitter}
+          socialInstagram={globalSettings?.social_instagram ?? DEFAULT_GLOBAL_SETTINGS.social_instagram}
+          socialLinkedin={globalSettings?.social_linkedin ?? DEFAULT_GLOBAL_SETTINGS.social_linkedin}
+          socialPinterest={globalSettings?.social_pinterest ?? DEFAULT_GLOBAL_SETTINGS.social_pinterest}
         />
       </body>
     </html>

@@ -18,6 +18,9 @@
       "component": "shared.content-section"
     },
     "meta_title":       { "type": "string" },
-    "meta_description": { "type": "text" }
+    "meta_description": { "type": "text" },
+    "show_contact_form":      { "type": "boolean", "default": true },
+    "contact_form_heading":   { "type": "string" },
+    "contact_form_subheading":{ "type": "string" }
   }
 }

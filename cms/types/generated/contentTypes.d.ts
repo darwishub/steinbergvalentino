@@ -381,6 +381,8 @@ export interface ApiAboutPageAboutPage extends Struct.SingleTypeSchema {
   };
   attributes: {
     body_content: Schema.Attribute.Blocks;
+    contact_form_heading: Schema.Attribute.String;
+    contact_form_subheading: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -397,6 +399,51 @@ export interface ApiAboutPageAboutPage extends Struct.SingleTypeSchema {
     meta_title: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     sections: Schema.Attribute.Component<'shared.content-section', true>;
+    show_contact_form: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<true>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
+  collectionName: 'articles';
+  info: {
+    description: 'News, insights, and market commentary';
+    displayName: 'Article';
+    pluralName: 'articles';
+    singularName: 'article';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    author: Schema.Attribute.String;
+    body_content: Schema.Attribute.Blocks;
+    category: Schema.Attribute.String;
+    cover_image: Schema.Attribute.Media<'images'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    excerpt: Schema.Attribute.Text;
+    featured_quote: Schema.Attribute.Text;
+    layout_style: Schema.Attribute.Enumeration<
+      ['feature', 'insight', 'brief']
+    > &
+      Schema.Attribute.DefaultTo<'feature'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::article.article'
+    > &
+      Schema.Attribute.Private;
+    meta_description: Schema.Attribute.Text;
+    meta_title: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    read_time: Schema.Attribute.Integer;
+    slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -587,6 +634,7 @@ export interface ApiHomepageHomepage extends Struct.SingleTypeSchema {
     hero_eyebrow: Schema.Attribute.String;
     hero_heading: Schema.Attribute.String;
     hero_subheading: Schema.Attribute.String;
+    homepage_sections: Schema.Attribute.JSON;
     keyword_band: Schema.Attribute.JSON;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -1258,6 +1306,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::about-page.about-page': ApiAboutPageAboutPage;
+      'api::article.article': ApiArticleArticle;
       'api::capabilities-page.capabilities-page': ApiCapabilitiesPageCapabilitiesPage;
       'api::contact-page.contact-page': ApiContactPageContactPage;
       'api::exchange-page.exchange-page': ApiExchangePageExchangePage;

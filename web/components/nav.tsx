@@ -57,45 +57,19 @@ export function Nav({ items, phone, tagline }: NavProps) {
     return item.children.some((c) => pathname === c.href || pathname.startsWith(c.href + '/'))
   }
 
+  const hamburgerColor = scrolled ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.85)'
+
   return (
     <>
-      <header
-        className="sv-site-header"
-        data-scrolled={scrolled ? 'true' : undefined}
-        style={{
-          boxShadow: scrolled ? '0 6px 28px rgba(0,0,0,0.65)' : 'none',
-          transition: 'box-shadow 0.3s ease',
-        }}
-      >
-        {/* ── Utility bar ─────────────────────────────────────────────── */}
-        <div className="sv-site-utility">
-          <div className="sv-container sv-site-utility-inner">
-            <span style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              {/* Gold tick */}
-              <span style={{ display: 'block', width: '1.25rem', height: '1px', background: 'var(--color-sv-gold)', opacity: 0.7 }} />
-              {tagline ?? DEFAULT_GLOBAL_SETTINGS.utility_bar_tagline}
-            </span>
-            {phone && (
-              <a
-                href={`tel:${phone.replace(/[^+\d]/g, '')}`}
-                style={{ textDecoration: 'none', color: 'rgba(255,255,255,0.52)', letterSpacing: '0.1em' }}
-              >
-                {phone}
-              </a>
-            )}
-          </div>
-        </div>
+      <header className="sv-site-header" data-scrolled={scrolled ? 'true' : undefined}>
 
         {/* ── Main nav ─────────────────────────────────────────────────── */}
-        <div
-          className="sv-container sv-site-nav"
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '100%' }}
-          role="navigation"
-        >
-          {/* Wordmark */}
+        <div className="sv-container sv-site-nav" role="navigation">
+
+          {/* Logo box (Blackstone bordered wordmark style) */}
           <Link href="/" style={{ textDecoration: 'none', flexShrink: 0 }}>
-            <span className="sv-wordmark">
-              <span className="sv-wordmark-title" style={{ color: '#fff' }}>
+            <span className="sv-logo-box">
+              <span className="sv-wordmark-title">
                 Steinberg<span style={{ color: 'var(--color-sv-gold)' }}>Valentino</span>
               </span>
               <span className="sv-wordmark-meta">Group</span>
@@ -168,11 +142,11 @@ export function Nav({ items, phone, tagline }: NavProps) {
                     className={`sv-dropdown-panel${isOpen ? ' is-open' : ''}`}
                     style={{
                       position: 'absolute',
-                      top: 'calc(100% + 4px)',
+                      top: 'calc(100% + 6px)',
                       left: '50%',
-                      transform: isOpen ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-6px)',
-                      minWidth: '230px',
-                      padding: '0.35rem 0',
+                      transform: isOpen ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-8px)',
+                      minWidth: '300px',
+                      padding: '0.5rem 0',
                       zIndex: 100,
                     }}
                     onMouseEnter={() => handleMouseEnter(item.label)}
@@ -236,9 +210,9 @@ export function Nav({ items, phone, tagline }: NavProps) {
                     display: 'block',
                     width: '22px',
                     height: '1.5px',
-                    backgroundColor: 'rgba(255,255,255,0.85)',
+                    backgroundColor: hamburgerColor,
                     opacity: mobileOpen ? 0 : 1,
-                    transition: 'opacity 0.3s',
+                    transition: 'opacity 0.3s, background-color 0.38s',
                   }}
                 />
               ) : (
@@ -248,15 +222,16 @@ export function Nav({ items, phone, tagline }: NavProps) {
                     display: 'block',
                     width: '22px',
                     height: '1.5px',
-                    backgroundColor: 'rgba(255,255,255,0.85)',
-                    transition: 'transform 0.3s',
+                    backgroundColor: hamburgerColor,
+                    transition: 'transform 0.3s, background-color 0.38s',
                     transform,
                   }}
                 />
               )
             )}
           </button>
-        </div>
+
+        </div>{/* /sv-site-nav */}
       </header>
 
       {/* ── Mobile drawer ─────────────────────────────────────────────── */}
@@ -404,7 +379,7 @@ export function Nav({ items, phone, tagline }: NavProps) {
         </div>
       </div>
 
-      <div className="sv-page-offset" />
+      {pathname !== '/' && <div className="sv-page-offset" />}
 
       {/* ── Scroll-to-top button ────────────────────────────────────────── */}
       <button
@@ -438,16 +413,6 @@ export function Nav({ items, phone, tagline }: NavProps) {
         </svg>
       </button>
 
-      <style>{`
-        @media (max-width: 1080px) {
-          .desktop-nav { display: none !important; }
-          .mobile-hamburger { display: flex !important; }
-        }
-        @media (min-width: 1081px) {
-          .mobile-drawer { display: none !important; }
-          .mobile-hamburger { display: none !important; }
-        }
-      `}</style>
     </>
   )
 }

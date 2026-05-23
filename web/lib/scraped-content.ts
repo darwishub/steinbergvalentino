@@ -35,11 +35,27 @@ const EXCHANGE_FILE_BY_SLUG: Record<string, string> = {
   'german-frankfurt': 'german-frankfurt.html',
 }
 
+/** Patterns that indicate scraped text is a placeholder / footer artifact, not real page content */
+const ARTIFACT_PATTERNS = [
+  /Company overview and introduction section/i,
+  /WordPress shortcodes not rendered/i,
+  /featured image section/i,
+  /Contact form section.*artifact/i,
+  // Address / contact info lines scraped from footer
+  /100 Church Street.*Suite/i,
+  /support Hotline is available/i,
+  /\(646\)\s*535-3995/,
+]
+
+function isArtifact(text: string): boolean {
+  return ARTIFACT_PATTERNS.some((re) => re.test(text))
+}
+
 function uniqueParagraphs(texts: Array<string | undefined | null>) {
   const seen = new Set<string>()
   return texts
     .map((text) => text?.trim())
-    .filter((text): text is string => Boolean(text))
+    .filter((text): text is string => Boolean(text) && !isArtifact(text))
     .filter((text) => {
       if (seen.has(text)) return false
       seen.add(text)
@@ -88,8 +104,14 @@ function buildScrapedPageContent(page: RawPage): ScrapedPageContent {
     page.headings?.h2?.[0]?.trim() ||
     page.key_content_sections?.[0]?.heading?.trim() ||
     null
+  /* Skip hero body_text when the section is flagged as dynamic/placeholder */
+  const heroBodyText =
+    heroSection && (heroSection as Record<string, unknown>).is_dynamic
+      ? undefined
+      : heroSection?.body_text
+
   const bodyParagraphs = uniqueParagraphs([
-    heroSection?.body_text,
+    heroBodyText,
     ...(page.paragraphs_preview ?? []),
   ])
 
