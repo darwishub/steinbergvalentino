@@ -37,9 +37,19 @@ export async function fetchAPI<T>(path: string, revalidate = 3600): Promise<T> {
   return res.json() as Promise<T>
 }
 
-/** Full media URL (handles relative Strapi paths) */
+/** Full media URL (handles relative Strapi paths and normalises localhost absolute URLs) */
 export function getStrapiMedia(url: string | null | undefined): string | null {
   if (!url) return null
+  // Normalise absolute localhost/127.0.0.1 URLs that were saved during local development
+  if (url.startsWith('http://localhost:') || url.startsWith('http://127.0.0.1:')) {
+    // Extract the path portion and rebuild with the configured STRAPI_URL
+    try {
+      const { pathname } = new URL(url)
+      return `${STRAPI_URL}${pathname}`
+    } catch {
+      /* fall through */
+    }
+  }
   if (url.startsWith('http')) return url
   return `${STRAPI_URL}${url}`
 }
