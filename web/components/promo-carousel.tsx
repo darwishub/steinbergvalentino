@@ -51,17 +51,27 @@ const FALLBACK_SLIDES: Slide[] = [
  * return the single URL as a srcset hint.
  */
 function buildSrcSet(url: string): string | undefined {
-  if (url.includes('unsplash.com')) {
-    const base = url.replace(/[?&]w=\d+/, '')
-    const sep = base.includes('?') ? '&' : '?'
-    return [
-      `${base}${sep}w=640&q=75&auto=format&fit=crop 640w`,
-      `${base}${sep}w=960&q=80&auto=format&fit=crop 960w`,
-      `${base}${sep}w=1200&q=80&auto=format&fit=crop 1200w`,
-      `${base}${sep}w=1600&q=80&auto=format&fit=crop 1600w`,
-    ].join(', ')
+  if (!url.includes('unsplash.com')) return undefined
+  try {
+    const u = new URL(url)
+    u.searchParams.delete('w')
+    u.searchParams.delete('q')
+    const base = u.toString()
+    const widths = [640, 960, 1200, 1600]
+    const qualities: Record<number, number> = { 640: 75, 960: 80, 1200: 80, 1600: 80 }
+    return widths
+      .map((w) => {
+        const variant = new URL(base)
+        variant.searchParams.set('w', String(w))
+        variant.searchParams.set('q', String(qualities[w]))
+        variant.searchParams.set('auto', 'format')
+        variant.searchParams.set('fit', 'crop')
+        return `${variant.toString()} ${w}w`
+      })
+      .join(', ')
+  } catch {
+    return undefined
   }
-  return undefined
 }
 
 function ArrowIcon({ dir }: { dir: 'left' | 'right' }) {

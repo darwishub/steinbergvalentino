@@ -154,15 +154,19 @@ export default async function HomePage() {
         rel="preload"
         as="image"
         href={firstSlideUrl}
-        imageSrcSet={
-          firstSlideUrl.includes('unsplash.com')
-            ? [
-                `${firstSlideUrl.replace(/[?&]w=\d+/, '')}?w=640&q=75&auto=format&fit=crop 640w`,
-                `${firstSlideUrl.replace(/[?&]w=\d+/, '')}?w=960&q=80&auto=format&fit=crop 960w`,
-                `${firstSlideUrl.replace(/[?&]w=\d+/, '')}?w=1200&q=80&auto=format&fit=crop 1200w`,
-              ].join(', ')
-            : undefined
-        }
+        imageSrcSet={(() => {
+          if (!firstSlideUrl.includes('unsplash.com')) return undefined
+          try {
+            return [640, 960, 1200].map((w) => {
+              const u = new URL(firstSlideUrl)
+              u.searchParams.set('w', String(w))
+              u.searchParams.set('q', w === 640 ? '75' : '80')
+              u.searchParams.set('auto', 'format')
+              u.searchParams.set('fit', 'crop')
+              return `${u.toString()} ${w}w`
+            }).join(', ')
+          } catch { return undefined }
+        })()}
         imageSizes="100vw"
       />
 
