@@ -124,8 +124,29 @@ export default async function HomePage() {
   const heroHeading = page?.hero_heading ?? 'Strategic investor relations for public companies'
   const heroLines = splitEditorialHeading(heroHeading)
 
+  /* First carousel image — preload for LCP improvement on mobile */
+  const firstSlideUrl = hs?.carousel_slides?.[0]?.image_url
+    ?? 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=960&q=80&auto=format&fit=crop'
+
   return (
     <>
+      {/* Preload first carousel image — the LCP element on mobile */}
+      <link
+        rel="preload"
+        as="image"
+        href={firstSlideUrl}
+        imageSrcSet={
+          firstSlideUrl.includes('unsplash.com')
+            ? [
+                `${firstSlideUrl.replace(/[?&]w=\d+/, '')}?w=640&q=75&auto=format&fit=crop 640w`,
+                `${firstSlideUrl.replace(/[?&]w=\d+/, '')}?w=960&q=80&auto=format&fit=crop 960w`,
+                `${firstSlideUrl.replace(/[?&]w=\d+/, '')}?w=1200&q=80&auto=format&fit=crop 1200w`,
+              ].join(', ')
+            : undefined
+        }
+        imageSizes="100vw"
+      />
+
       {/* ══════════════════════════════════════════════════════════════════════
           1 · PROMO HEADER — dark text block (Blackstone bx-promo-header style)
       ══════════════════════════════════════════════════════════════════════ */}

@@ -18,7 +18,7 @@ interface Props {
 const FALLBACK_SLIDES: Slide[] = [
   {
     image_url:
-      'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1600&q=85&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1200&q=80&auto=format&fit=crop',
     title: 'Premier Investor Relations for Public Companies',
     blurb:
       'SteinbergValentino Group delivers institutional-grade IR strategy and capital markets expertise to small and mid-cap public companies worldwide.',
@@ -27,7 +27,7 @@ const FALLBACK_SLIDES: Slide[] = [
   },
   {
     image_url:
-      'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1600&q=85&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&q=80&auto=format&fit=crop',
     title: 'Capital Markets Advisory',
     blurb:
       'Strategic financing solutions and exchange listing expertise — from NASDAQ and NYSE to TSX, CSE, and Frankfurt.',
@@ -36,7 +36,7 @@ const FALLBACK_SLIDES: Slide[] = [
   },
   {
     image_url:
-      'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&q=85&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&q=80&auto=format&fit=crop',
     title: 'Global Capital Markets Expertise',
     blurb:
       'SteinbergValentino has worked for many worldwide firms across NASDAQ, OTC, TSX, CSE, and Frankfurt exchanges — bringing rare creative talent and market innovation.',
@@ -44,6 +44,25 @@ const FALLBACK_SLIDES: Slide[] = [
     cta_url: '/how-it-works',
   },
 ]
+
+/**
+ * Build a responsive srcSet for Unsplash and Strapi image URLs.
+ * Unsplash supports ?w= param; Strapi serves static files so we only
+ * return the single URL as a srcset hint.
+ */
+function buildSrcSet(url: string): string | undefined {
+  if (url.includes('unsplash.com')) {
+    const base = url.replace(/[?&]w=\d+/, '')
+    const sep = base.includes('?') ? '&' : '?'
+    return [
+      `${base}${sep}w=640&q=75&auto=format&fit=crop 640w`,
+      `${base}${sep}w=960&q=80&auto=format&fit=crop 960w`,
+      `${base}${sep}w=1200&q=80&auto=format&fit=crop 1200w`,
+      `${base}${sep}w=1600&q=80&auto=format&fit=crop 1600w`,
+    ].join(', ')
+  }
+  return undefined
+}
 
 function ArrowIcon({ dir }: { dir: 'left' | 'right' }) {
   return (
@@ -91,8 +110,15 @@ export function PromoCarousel({ slides: slidesProp }: Props) {
           <img
             key={i}
             src={s.image_url}
+            srcSet={buildSrcSet(s.image_url)}
+            sizes="100vw"
             alt=""
             aria-hidden="true"
+            /* First slide is the LCP element — load eagerly with high priority.
+               All subsequent slides are hidden behind CSS; lazy-load them. */
+            loading={i === 0 ? 'eager' : 'lazy'}
+            fetchPriority={i === 0 ? 'high' : 'low'}
+            decoding={i === 0 ? 'sync' : 'async'}
             className={`sv-pcarousel__img${i === current ? ' is-active' : ''}`}
           />
         ))}
