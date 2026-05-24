@@ -32,7 +32,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: {
-      template: `%s | ${siteName}`,
+      /* No template — each page returns its own complete title from Strapi.
+         The default applies only when a page has no generateMetadata at all. */
+      absolute: `${siteName} — Investor Relations for Small & Mid-Cap Companies`,
       default: `${siteName} — Investor Relations for Small & Mid-Cap Companies`,
     },
     description:
