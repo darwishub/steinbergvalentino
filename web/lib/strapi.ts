@@ -58,7 +58,7 @@ export function getStrapiMedia(url: string | null | undefined): string | null {
 
 export async function getHomepage(): Promise<Homepage> {
   const res = await fetchAPI<StrapiSingleResponse<Homepage>>(
-    '/homepage?populate[hero_background][fields][0]=url&populate[hero_background][fields][1]=width&populate[hero_background][fields][2]=height&populate[hero_background][fields][3]=formats&populate[hero_background][fields][4]=alternativeText&populate[sections][populate]=image&populate[testimonials]=*'
+    '/homepage?populate[sections][populate]=image&populate[testimonials]=*'
   )
   return res.data
 }

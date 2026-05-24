@@ -26,26 +26,31 @@ const manrope = Manrope({
   preload: true,
 })
 
-export const metadata: Metadata = {
-  title: {
-    template: '%s | SteinbergValentino Group',
-    default: 'SteinbergValentino Group — Investor Relations for Small & Mid-Cap Companies',
-  },
-  description:
-    'SteinbergValentino Group is a premier investor relations firm serving small and mid-cap public companies. We help businesses build institutional confidence, access capital, and achieve sustainable market recognition.',
-  keywords: [
-    'investor relations',
-    'IR firm',
-    'small cap',
-    'mid cap',
-    'capital markets',
-    'strategic advisory',
-    'financial communications',
-  ],
-  openGraph: {
-    type: 'website',
-    siteName: 'SteinbergValentino Group',
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  const globalSettings = await getGlobalSettings().catch(() => null)
+  const siteName = globalSettings?.site_name ?? 'SteinbergValentino Group'
+
+  return {
+    title: {
+      template: `%s | ${siteName}`,
+      default: `${siteName} — Investor Relations for Small & Mid-Cap Companies`,
+    },
+    description:
+      'SteinbergValentino Group is a premier investor relations firm serving small and mid-cap public companies. We help businesses build institutional confidence, access capital, and achieve sustainable market recognition.',
+    keywords: [
+      'investor relations',
+      'IR firm',
+      'small cap',
+      'mid cap',
+      'capital markets',
+      'strategic advisory',
+      'financial communications',
+    ],
+    openGraph: {
+      type: 'website',
+      siteName,
+    },
+  }
 }
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

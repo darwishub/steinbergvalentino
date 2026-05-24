@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import {
   getHomepage,
   getAllServicePages,
@@ -14,6 +15,24 @@ import { DEFAULT_GLOBAL_SETTINGS } from '@/lib/defaults'
 import type { ServicePage, ExchangePage } from '@/lib/types'
 
 export const revalidate = 3600
+
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const page = await getHomepage()
+    return {
+      title: page.meta_title ?? 'SteinbergValentino Group | Investor Relations & Capital Markets',
+      description:
+        page.meta_description ??
+        'SteinbergValentino Group delivers institutional-grade investor relations strategy and capital markets expertise to public companies worldwide.',
+    }
+  } catch {
+    return {
+      title: 'SteinbergValentino Group | Investor Relations & Capital Markets',
+      description:
+        'SteinbergValentino Group delivers institutional-grade investor relations strategy and capital markets expertise to public companies worldwide.',
+    }
+  }
+}
 
 /* ─── Minimal structural fallbacks (UI cannot be empty) ─────────────────── */
 // Testimonials: real client quotes, kept as static fallback when Strapi offline

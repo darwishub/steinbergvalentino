@@ -5,10 +5,22 @@ import { getAllServicePages, getServicesListingPage, getStrapiMedia } from '@/li
 
 export const revalidate = 3600
 
-export const metadata: Metadata = {
-  title: 'Services | SteinbergValentino Group',
-  description:
-    'Explore the full suite of investor relations and capital markets services offered by SteinbergValentino Group.',
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const page = await getServicesListingPage()
+    return {
+      title: page.meta_title ?? 'Services | SteinbergValentino Group',
+      description:
+        page.meta_description ??
+        'Explore the full suite of investor relations and capital markets services offered by SteinbergValentino Group.',
+    }
+  } catch {
+    return {
+      title: 'Services | SteinbergValentino Group',
+      description:
+        'Explore the full suite of investor relations and capital markets services offered by SteinbergValentino Group.',
+    }
+  }
 }
 
 const STATIC_SERVICES = [
