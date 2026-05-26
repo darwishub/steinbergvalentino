@@ -149,32 +149,72 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Preload first carousel image — the LCP element on mobile */}
-      <link
-        rel="preload"
-        as="image"
-        href={firstSlideUrl}
-        imageSrcSet={(() => {
-          if (!firstSlideUrl.includes('unsplash.com')) return undefined
-          try {
-            return [640, 960, 1200].map((w) => {
-              const u = new URL(firstSlideUrl)
-              u.searchParams.set('w', String(w))
-              u.searchParams.set('q', w === 640 ? '75' : '80')
-              u.searchParams.set('auto', 'format')
-              u.searchParams.set('fit', 'crop')
-              return `${u.toString()} ${w}w`
-            }).join(', ')
-          } catch { return undefined }
-        })()}
-        imageSizes="100vw"
-      />
+      {/* Preload first carousel image only when no hero_background is set.
+          When hero_background IS set, Next.js <Image priority> handles its own preload. */}
+      {!page?.hero_background && (
+        <link
+          rel="preload"
+          as="image"
+          href={firstSlideUrl}
+          imageSrcSet={(() => {
+            if (!firstSlideUrl.includes('unsplash.com')) return undefined
+            try {
+              return [640, 750, 960, 1200].map((w) => {
+                const u = new URL(firstSlideUrl)
+                u.searchParams.set('w', String(w))
+                u.searchParams.set('q', w <= 750 ? '75' : '80')
+                u.searchParams.set('auto', 'format')
+                u.searchParams.set('fit', 'crop')
+                return `${u.toString()} ${w}w`
+              }).join(', ')
+            } catch { return undefined }
+          })()}
+          imageSizes="100vw"
+        />
+      )}
 
       {/* ══════════════════════════════════════════════════════════════════════
           1 · PROMO HEADER — dark text block (Blackstone bx-promo-header style)
       ══════════════════════════════════════════════════════════════════════ */}
-      <section className="sv-promo-header">
-        <div className="sv-container sv-promo-header__inner">
+      <section
+        className="sv-promo-header"
+        style={(hs?.hero_video?.src || page?.hero_background) ? { position: 'relative', overflow: 'hidden' } : undefined}
+      >
+        {/* Background: video takes priority over static image */}
+        {(hs?.hero_video?.src || page?.hero_background) && (
+          <div className="exc2-hero__bg" aria-hidden="true">
+            {hs?.hero_video?.src ? (
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                poster={
+                  hs.hero_video.poster ??
+                  (page?.hero_background
+                    ? (getStrapiMedia(page.hero_background.url) ?? page.hero_background.url)
+                    : undefined)
+                }
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
+              >
+                <source src={hs.hero_video.src} />
+              </video>
+            ) : page?.hero_background ? (
+              /* Next.js <Image> → auto AVIF/WebP + correct size per viewport */
+              <Image
+                src={getStrapiMedia(page.hero_background.url) ?? page.hero_background.url}
+                alt=""
+                width={page.hero_background.width || 1920}
+                height={page.hero_background.height || 1080}
+                priority
+                sizes="(max-width: 640px) 640px, (max-width: 1280px) 1280px, 1920px"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
+              />
+            ) : null}
+            <div className="exc2-hero__overlay" />
+          </div>
+        )}
+        <div className="sv-container sv-promo-header__inner" style={page?.hero_background ? { position: 'relative', zIndex: 1 } : undefined}>
           <div className="sv-promo-header__col-headline">
             {page?.hero_eyebrow && (
               <div className="sv-promo-header__eyebrow-row">
@@ -234,12 +274,73 @@ export default async function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════
+          1b · HOMEPAGE BODY CONTENT — optional rich-text block from Strapi
+      ══════════════════════════════════════════════════════════════════════ */}
+      {page?.body_content && page.body_content.length > 0 && (
+        <section className="sv-section" style={{ background: 'var(--color-sv-white)' }}>
+          <div className="sv-container">
+            <div className="sv-rich-text" style={{ maxWidth: '760px' }}>
+              <BlocksContent blocks={page.body_content} />
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════════
           2 · PROMO CAROUSEL — full-width image slider
       ══════════════════════════════════════════════════════════════════════ */}
       <PromoCarousel slides={hs?.carousel_slides} />
 
       {/* ══════════════════════════════════════════════════════════════════════
-          2b · WHY CHOOSE SV — white section, centered top + two-col body
+          2b · STATS BAND — key numbers from Strapi homepage_sections.stats_items
+      ══════════════════════════════════════════════════════════════════════ */}
+      {hs?.stats_items && hs.stats_items.length > 0 && (
+        <section style={{ background: '#0c0d10', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <div
+            className="sv-container"
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+              gap: 'clamp(2rem, 6vw, 5rem)',
+              paddingTop: 'clamp(2rem, 4vw, 3rem)',
+              paddingBottom: 'clamp(2rem, 4vw, 3rem)',
+            }}
+          >
+            {hs.stats_items.map((stat, i) => (
+              <div key={i} style={{ textAlign: 'center', minWidth: '120px' }}>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-serif)',
+                    fontSize: 'clamp(2rem, 4vw, 3rem)',
+                    fontWeight: 300,
+                    color: '#fff',
+                    lineHeight: 1,
+                    margin: 0,
+                  }}
+                >
+                  {stat.value}
+                </p>
+                <p
+                  style={{
+                    fontSize: '0.6875rem',
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                    color: 'var(--color-sv-gold)',
+                    marginTop: '0.625rem',
+                    margin: '0.625rem 0 0',
+                  }}
+                >
+                  {stat.label}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════════
+          2c · WHY CHOOSE SV — white section, centered top + two-col body
       ══════════════════════════════════════════════════════════════════════ */}
       <section className="sv-why">
         <div className="sv-container sv-why__top">
@@ -313,6 +414,22 @@ export default async function HomePage() {
             ) : hs?.capital_markets_body ? (
               <p className="hp-about__body-text">{hs.capital_markets_body}</p>
             ) : null}
+
+            {sections[0]?.image && (() => {
+              const imgSrc = getStrapiMedia(sections[0].image!.url) ?? sections[0].image!.url
+              return (
+                <div style={{ marginTop: 'var(--sv-sp-32)', overflow: 'hidden' }}>
+                  <Image
+                    src={imgSrc}
+                    alt={sections[0].image!.alternativeText ?? sections[0].heading ?? ''}
+                    width={sections[0].image!.width || 800}
+                    height={sections[0].image!.height || 500}
+                    sizes="(max-width: 1024px) 100vw, 45vw"
+                    style={{ width: '100%', height: 'auto', display: 'block' }}
+                  />
+                </div>
+              )
+            })()}
 
             <Link
               href={hs?.capital_markets_cta_url ?? '/about'}
@@ -414,22 +531,39 @@ export default async function HomePage() {
             )}
 
             <div className="hp-features__grid">
-              {sections.slice(1, 4).map((section, i) => (
-                <div key={section.id ?? i} className="hp-feat-card">
-                  <p className="hp-feat-card__num">0{i + 1}</p>
-                  {section.heading && (
-                    <h3 className="hp-feat-card__title">{section.heading}</h3>
-                  )}
-                  {section.subheading && (
-                    <p className="hp-feat-card__sub">{section.subheading}</p>
-                  )}
-                  {section.body && (
-                    <div className="sv-rich-text hp-feat-card__body">
-                      <BlocksContent blocks={section.body} />
-                    </div>
-                  )}
-                </div>
-              ))}
+              {sections.slice(1, 4).map((section, i) => {
+                const featImgSrc = section.image
+                  ? getStrapiMedia(section.image.url) ?? section.image.url
+                  : null
+                return (
+                  <div key={section.id ?? i} className="hp-feat-card">
+                    {featImgSrc && (
+                      <div style={{ marginBottom: '1.25rem', overflow: 'hidden' }}>
+                        <Image
+                          src={featImgSrc}
+                          alt={section.image!.alternativeText ?? section.heading ?? ''}
+                          width={section.image!.width || 600}
+                          height={section.image!.height || 340}
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          style={{ width: '100%', height: '200px', objectFit: 'cover', display: 'block' }}
+                        />
+                      </div>
+                    )}
+                    <p className="hp-feat-card__num">0{i + 1}</p>
+                    {section.heading && (
+                      <h3 className="hp-feat-card__title">{section.heading}</h3>
+                    )}
+                    {section.subheading && (
+                      <p className="hp-feat-card__sub">{section.subheading}</p>
+                    )}
+                    {section.body && (
+                      <div className="sv-rich-text hp-feat-card__body">
+                        <BlocksContent blocks={section.body} />
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
             </div>
           </div>
         </section>
@@ -482,7 +616,11 @@ export default async function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════
           7 · TESTIMONIALS — premium dark slider, data from Strapi
       ══════════════════════════════════════════════════════════════════════ */}
-      <TestimonialSlider testimonials={testimonials} />
+      <TestimonialSlider
+        testimonials={testimonials}
+        eyebrow={hs?.testimonials_eyebrow}
+        title={hs?.testimonials_title}
+      />
 
       {/* ══════════════════════════════════════════════════════════════════════
           8 · CONTACT CTA — all text + links from Strapi homepage_sections

@@ -10,6 +10,8 @@ interface Testimonial {
 
 interface Props {
   testimonials: Testimonial[]
+  eyebrow?: string | null
+  title?: string | null
 }
 
 function ArrowBtn({ dir, onClick }: { dir: 'left' | 'right'; onClick: () => void }) {
@@ -27,7 +29,7 @@ function ArrowBtn({ dir, onClick }: { dir: 'left' | 'right'; onClick: () => void
   )
 }
 
-export function TestimonialSlider({ testimonials }: Props) {
+export function TestimonialSlider({ testimonials, eyebrow, title }: Props) {
   const [current, setCurrent] = useState(0)
   const [visible, setVisible] = useState(true)
   const lockRef = useRef(false)
@@ -62,6 +64,22 @@ export function TestimonialSlider({ testimonials }: Props) {
   return (
     <div className="sv-tslider">
       <div className="sv-container sv-tslider__inner">
+
+        {/* Optional eyebrow + title from Strapi */}
+        {(eyebrow || title) && (
+          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+            {eyebrow && (
+              <p className="sv-eyebrow" style={{ color: 'var(--color-sv-gold)', marginBottom: '0.75rem' }}>
+                {eyebrow}
+              </p>
+            )}
+            {title && (
+              <h2 style={{ fontFamily: 'var(--font-serif)', fontWeight: 400, fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', color: '#fff', lineHeight: 1.25 }}>
+                {title}
+              </h2>
+            )}
+          </div>
+        )}
 
         {/* Decorative open-quote */}
         <span className="sv-tslider__deco" aria-hidden="true">&ldquo;</span>

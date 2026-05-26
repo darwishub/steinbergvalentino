@@ -8,6 +8,7 @@ interface FooterProps {
   exchangeLinks?: SiteLink[] | null
   legalLinks?: SiteLink[] | null
   blurb?: string | null
+  tagline?: string | null
   email?: string | null
   phone?: string | null
   address?: string | null
@@ -25,6 +26,7 @@ export function Footer({
   exchangeLinks,
   legalLinks,
   blurb,
+  tagline,
   email,
   phone,
   address,
@@ -66,6 +68,11 @@ export function Footer({
           </span>
           <span className="sv-footer__logo-sub">Group</span>
         </Link>
+        {tagline && (
+          <p style={{ fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-sv-gold)', marginBottom: '0.5rem', marginTop: '0.25rem' }}>
+            {tagline}
+          </p>
+        )}
         {resolvedBlurb && (
           <p className="sv-footer__tagline">{resolvedBlurb}</p>
         )}

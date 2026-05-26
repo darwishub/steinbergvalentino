@@ -86,6 +86,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           exchangeLinks={globalSettings?.footer_exchange_links}
           legalLinks={globalSettings?.footer_legal_links}
           blurb={globalSettings?.footer_blurb}
+          tagline={globalSettings?.tagline}
           email={globalSettings?.contact_email}
           phone={globalSettings?.contact_phone}
           address={globalSettings?.address}

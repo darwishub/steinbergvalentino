@@ -57,8 +57,9 @@ function buildSrcSet(url: string): string | undefined {
     u.searchParams.delete('w')
     u.searchParams.delete('q')
     const base = u.toString()
-    const widths = [640, 960, 1200, 1600]
-    const qualities: Record<number, number> = { 640: 75, 960: 80, 1200: 80, 1600: 80 }
+    // 750 closes the gap between 640→960 for mid-range mobile (720–900px viewport)
+    const widths = [640, 750, 960, 1200, 1600]
+    const qualities: Record<number, number> = { 640: 72, 750: 75, 960: 78, 1200: 80, 1600: 80 }
     return widths
       .map((w) => {
         const variant = new URL(base)

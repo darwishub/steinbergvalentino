@@ -98,24 +98,41 @@ export default async function HowItWorksPage() {
             </div>
 
             <div className="hiw-process__cols">
-              {colSections.map((section, i) => (
-                <div key={section.id ?? i} className="hiw-process-col">
-                  <div className="hiw-process-col__num" aria-hidden="true">
-                    {String(i + 1).padStart(2, '0')}
-                  </div>
-                  {section.heading && (
-                    <h3 className="hiw-process-col__heading">{section.heading}</h3>
-                  )}
-                  {section.subheading && (
-                    <p className="hiw-process-col__body">{section.subheading}</p>
-                  )}
-                  {section.body && (
-                    <div className="hiw-process-col__body">
-                      <BlocksContent blocks={section.body} />
+              {colSections.map((section, i) => {
+                const colImgSrc = section.image
+                  ? getStrapiMedia(section.image.url) ?? section.image.url
+                  : null
+                return (
+                  <div key={section.id ?? i} className="hiw-process-col">
+                    <div className="hiw-process-col__num" aria-hidden="true">
+                      {String(i + 1).padStart(2, '0')}
                     </div>
-                  )}
-                </div>
-              ))}
+                    {section.heading && (
+                      <h3 className="hiw-process-col__heading">{section.heading}</h3>
+                    )}
+                    {section.subheading && (
+                      <p className="hiw-process-col__body">{section.subheading}</p>
+                    )}
+                    {section.body && (
+                      <div className="hiw-process-col__body">
+                        <BlocksContent blocks={section.body} />
+                      </div>
+                    )}
+                    {colImgSrc && (
+                      <div style={{ marginTop: '1.25rem', overflow: 'hidden' }}>
+                        <Image
+                          src={colImgSrc}
+                          alt={section.image!.alternativeText ?? section.heading ?? ''}
+                          width={section.image!.width || 480}
+                          height={section.image!.height || 300}
+                          sizes="(max-width: 768px) 100vw, 25vw"
+                          style={{ width: '100%', height: 'auto', display: 'block' }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
             </div>
           </div>
         </section>

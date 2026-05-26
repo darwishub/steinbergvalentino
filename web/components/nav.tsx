@@ -63,6 +63,59 @@ export function Nav({ items, phone, tagline }: NavProps) {
     <>
       <header className="sv-site-header" data-scrolled={scrolled ? 'true' : undefined}>
 
+        {/* ── Utility bar (tagline + phone from Strapi) ───────────────── */}
+        {(tagline || phone) && (
+          <div
+            style={{
+              borderBottom: '1px solid rgba(255,255,255,0.07)',
+              background: 'rgba(10,10,12,0.6)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+              padding: '0.35rem 0',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '1.25rem',
+                flexWrap: 'wrap',
+              }}
+            >
+              {tagline && (
+                <p
+                  style={{
+                    fontSize: '0.6875rem',
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                    color: 'rgba(255,255,255,0.55)',
+                    margin: 0,
+                  }}
+                >
+                  {tagline}
+                </p>
+              )}
+              {tagline && phone && (
+                <span style={{ color: 'rgba(255,255,255,0.18)', fontSize: '0.625rem' }} aria-hidden="true">|</span>
+              )}
+              {phone && (
+                <a
+                  href={`tel:${phone.replace(/[^\d+]/g, '')}`}
+                  style={{
+                    fontSize: '0.6875rem',
+                    letterSpacing: '0.06em',
+                    color: 'rgba(255,255,255,0.55)',
+                    textDecoration: 'none',
+                  }}
+                >
+                  {phone}
+                </a>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* ── Main nav ─────────────────────────────────────────────────── */}
         <div className="sv-container sv-site-nav" role="navigation">
 
@@ -356,6 +409,9 @@ export function Nav({ items, phone, tagline }: NavProps) {
             paddingLeft: 'var(--sv-pad-sm)',
             paddingRight: 'var(--sv-pad-sm)',
             marginTop: '1.5rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.75rem',
           }}
         >
           <Link
@@ -376,6 +432,23 @@ export function Nav({ items, phone, tagline }: NavProps) {
           >
             Contact Us
           </Link>
+          {phone && (
+            <a
+              href={`tel:${phone.replace(/[^\d+]/g, '')}`}
+              style={{
+                display: 'block',
+                textAlign: 'center',
+                padding: '0.6rem',
+                fontSize: '0.8125rem',
+                letterSpacing: '0.04em',
+                textDecoration: 'none',
+                color: 'rgba(255,255,255,0.55)',
+                borderTop: '1px solid rgba(255,255,255,0.06)',
+              }}
+            >
+              {phone}
+            </a>
+          )}
         </div>
       </div>
 
