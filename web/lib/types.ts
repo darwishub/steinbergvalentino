@@ -92,6 +92,8 @@ export interface HomepageSectionsConfig {
     cta_url: string
   }> | null
   exchanges_item_link_label: string | null
+  marquee_text: string | null
+  marquee_disclaimer: string | null
 }
 
 export interface Sector {

@@ -69,12 +69,12 @@ export function TestimonialSlider({ testimonials, eyebrow, title }: Props) {
         {(eyebrow || title) && (
           <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
             {eyebrow && (
-              <p className="sv-eyebrow" style={{ color: 'var(--color-sv-gold)', marginBottom: '0.75rem' }}>
+              <p className="sv-eyebrow" style={{ color: 'var(--color-sv-gold)', marginBottom: '0.75rem', fontSize: '0.8125rem' }}>
                 {eyebrow}
               </p>
             )}
             {title && (
-              <h2 style={{ fontFamily: 'var(--font-serif)', fontWeight: 400, fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', color: '#fff', lineHeight: 1.25 }}>
+              <h2 style={{ fontFamily: 'var(--font-serif)', fontWeight: 400, fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', color: 'var(--color-sv-black)', lineHeight: 1.25 }}>
                 {title}
               </h2>
             )}

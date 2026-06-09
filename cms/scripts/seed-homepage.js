@@ -79,6 +79,8 @@ const homepageData = {
     contact_lead_label: 'New Business',
     contact_services_label: 'Core Services',
     exchanges_item_link_label: 'View details →',
+    marquee_text: 'Build investor awareness with SteinbergValentino',
+    marquee_disclaimer: 'Investing involves risk, including possible loss of capital.',
     articles_eyebrow: 'News & Insights',
     articles_title: 'Featured Stories',
     offerings_subheading: 'The Best IR Firm For Small & Mid-Cap Businesses',

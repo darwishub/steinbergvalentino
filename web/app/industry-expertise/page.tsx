@@ -60,7 +60,7 @@ export default async function IndustryExpertisePage() {
         </div>
 
         {/* Content */}
-        <div className="ind-hero__content">
+        <div className="sv-container ind-hero__content">
           <p className="sv-eyebrow ind-hero__eyebrow">Sector Knowledge</p>
           <h1 className="ind-hero__title">{heroHeading}</h1>
           {heroSubheading && (

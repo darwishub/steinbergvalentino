@@ -11,6 +11,7 @@ import {
 import { BlocksContent } from '@/components/blocks-content'
 import { PromoCarousel } from '@/components/promo-carousel'
 import { TestimonialSlider } from '@/components/testimonial-slider'
+import { ScrollMarquee } from '@/components/scroll-marquee'
 import { DEFAULT_GLOBAL_SETTINGS } from '@/lib/defaults'
 import type { ServicePage, ExchangePage } from '@/lib/types'
 
@@ -132,8 +133,8 @@ export default async function HomePage() {
   const hs = page?.homepage_sections
   const testimonials = page?.testimonials?.length ? page.testimonials : FALLBACK_TESTIMONIALS
 
-  /* Services: first 8 for features grid (8 cards fills 3×3 with first card span-2), first 5 for The Firm dark card */
-  const featuredServices = services.slice(0, 8)
+  /* Services: first 9 for a uniform 3×3 grid, first 5 for The Firm dark card */
+  const featuredServices = services.slice(0, 9)
   const firmServices = services.length > 0 ? services.slice(0, 5) : FALLBACK_SERVICES
 
   /* Contact: prefer Strapi global settings, fall back to defaults */
@@ -255,7 +256,7 @@ export default async function HomePage() {
         {/* Keyword band — from Strapi homepage.keyword_band */}
         {page?.keyword_band && page.keyword_band.length > 0 && (
           <div className="hp-hero__kw-band">
-            <div className="hp-hero__kw-inner">
+            <div className="sv-container hp-hero__kw-inner">
               {(page.keyword_band as string[]).map((kw: string, i: number) => (
                 <span key={kw} className="hp-hero__kw-group">
                   <span className="hp-hero__kw">{kw}</span>
@@ -572,6 +573,11 @@ export default async function HomePage() {
         eyebrow={hs?.testimonials_eyebrow}
         title={hs?.testimonials_title}
       />
+
+      {/* ══════════════════════════════════════════════════════════════════════
+          7b · SCROLL MARQUEE — oversized brand statement with gold scroll reveal
+      ══════════════════════════════════════════════════════════════════════ */}
+      <ScrollMarquee text={hs?.marquee_text} disclaimer={hs?.marquee_disclaimer} />
 
       {/* ══════════════════════════════════════════════════════════════════════
           8 · CONTACT CTA — all text + links from Strapi homepage_sections

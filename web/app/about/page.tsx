@@ -53,27 +53,29 @@ export default async function AboutPage() {
     <>
       {/* ── Split-Screen Hero ─────────────────────────────────────────────── */}
       <section className="ab-hero">
-        {/* Left: dark content panel */}
-        <div className="ab-hero__left">
-          <p className="sv-eyebrow ab-hero__eyebrow">About the Firm</p>
-          <h1 className="ab-hero__title">{heroHeading}</h1>
-          {heroSubheading && (
-            <p className="ab-hero__deck">{heroSubheading}</p>
-          )}
-        </div>
-
-        {/* Right: full-bleed photo */}
-        <div className="ab-hero__right">
+        {/* Photo absolutely fills the right half — behind the container */}
+        <div className="ab-hero__right" aria-hidden="true">
           <Image
             src={heroImage ? (getStrapiMedia(heroImage.url) ?? heroImage.url) : '/firm-about.png'}
-            alt="SteinbergValentino Group — investor relations professionals"
+            alt=""
             width={heroImage?.width || 960}
             height={heroImage?.height || 720}
             priority
             sizes="50vw"
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
-          <div className="ab-hero__right-overlay" aria-hidden="true" />
+          <div className="ab-hero__right-overlay" />
+        </div>
+
+        {/* Content inside sv-container — aligns with navbar logo and body sections */}
+        <div className="sv-container ab-hero__inner">
+          <div className="ab-hero__left">
+            <p className="sv-eyebrow ab-hero__eyebrow">About the Firm</p>
+            <h1 className="ab-hero__title">{heroHeading}</h1>
+            {heroSubheading && (
+              <p className="ab-hero__deck">{heroSubheading}</p>
+            )}
+          </div>
         </div>
 
         <div className="ab-hero__rule" aria-hidden="true" />
