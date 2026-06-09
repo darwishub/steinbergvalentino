@@ -115,6 +115,7 @@ export function PromoCarousel({ slides: slidesProp }: Props) {
 
   return (
     <div className="sv-pcarousel">
+      <div className="sv-container sv-pcarousel__media-wrap">
       <div className="sv-pcarousel__media">
         {slides.map((s, i) => (
           // eslint-disable-next-line @next/next/no-img-element
@@ -122,7 +123,7 @@ export function PromoCarousel({ slides: slidesProp }: Props) {
             key={i}
             src={s.image_url}
             srcSet={buildSrcSet(s.image_url)}
-            sizes="100vw"
+            sizes="(min-width: 1469px) 1250px, (min-width: 1281px) calc(98vw - 190px), (min-width: 769px) calc(98vw - 100px), calc(98vw - 40px)"
             alt=""
             aria-hidden="true"
             /* First slide is the LCP element — load eagerly with high priority.
@@ -134,6 +135,7 @@ export function PromoCarousel({ slides: slidesProp }: Props) {
           />
         ))}
         <div className="sv-pcarousel__scrim" aria-hidden="true" />
+      </div>
       </div>
 
       <div className="sv-container sv-pcarousel__lower">

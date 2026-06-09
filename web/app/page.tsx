@@ -149,9 +149,9 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Preload first carousel image only when no hero_background is set.
+      {/* Preload first carousel image only when no hero_background (and no video) is set.
           When hero_background IS set, Next.js <Image priority> handles its own preload. */}
-      {!page?.hero_background && (
+      {!page?.hero_background && !hs?.hero_video?.src && (
         <link
           rel="preload"
           as="image"
@@ -169,7 +169,7 @@ export default async function HomePage() {
               }).join(', ')
             } catch { return undefined }
           })()}
-          imageSizes="100vw"
+          imageSizes="(min-width: 1469px) 1250px, (min-width: 1281px) calc(98vw - 190px), (min-width: 769px) calc(98vw - 100px), calc(98vw - 40px)"
         />
       )}
 
@@ -178,29 +178,13 @@ export default async function HomePage() {
       ══════════════════════════════════════════════════════════════════════ */}
       <section
         className="sv-promo-header"
-        style={(hs?.hero_video?.src || page?.hero_background) ? { position: 'relative', overflow: 'hidden' } : undefined}
+        style={(page?.hero_background || hs?.hero_video?.src) ? { position: 'relative', overflow: 'hidden' } : undefined}
       >
-        {/* Background: video takes priority over static image */}
-        {(hs?.hero_video?.src || page?.hero_background) && (
+        {/* Background: hero_background image takes priority; video is used only when no image is set */}
+        {(page?.hero_background || hs?.hero_video?.src) && (
           <div className="exc2-hero__bg" aria-hidden="true">
-            {hs?.hero_video?.src ? (
-              <video
-                autoPlay
-                muted
-                loop
-                playsInline
-                poster={
-                  hs.hero_video.poster ??
-                  (page?.hero_background
-                    ? (getStrapiMedia(page.hero_background.url) ?? page.hero_background.url)
-                    : undefined)
-                }
-                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
-              >
-                <source src={hs.hero_video.src} />
-              </video>
-            ) : page?.hero_background ? (
-              /* Next.js <Image> → auto AVIF/WebP + correct size per viewport */
+            {page?.hero_background ? (
+              /* Explicitly-uploaded image — Next.js <Image> for auto AVIF/WebP + responsive sizing */
               <Image
                 src={getStrapiMedia(page.hero_background.url) ?? page.hero_background.url}
                 alt=""
@@ -210,11 +194,23 @@ export default async function HomePage() {
                 sizes="(max-width: 640px) 640px, (max-width: 1280px) 1280px, 1920px"
                 style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
               />
+            ) : hs?.hero_video?.src ? (
+              /* Fallback: video background when no static image is configured */
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                poster={hs.hero_video.poster ?? undefined}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
+              >
+                <source src={hs.hero_video.src} />
+              </video>
             ) : null}
             <div className="exc2-hero__overlay" />
           </div>
         )}
-        <div className="sv-container sv-promo-header__inner" style={page?.hero_background ? { position: 'relative', zIndex: 1 } : undefined}>
+        <div className="sv-container sv-promo-header__inner" style={(page?.hero_background || hs?.hero_video?.src) ? { position: 'relative', zIndex: 1 } : undefined}>
           <div className="sv-promo-header__col-headline">
             {page?.hero_eyebrow && (
               <div className="sv-promo-header__eyebrow-row">
@@ -292,54 +288,6 @@ export default async function HomePage() {
       <PromoCarousel slides={hs?.carousel_slides} />
 
       {/* ══════════════════════════════════════════════════════════════════════
-          2b · STATS BAND — key numbers from Strapi homepage_sections.stats_items
-      ══════════════════════════════════════════════════════════════════════ */}
-      {hs?.stats_items && hs.stats_items.length > 0 && (
-        <section style={{ background: '#0c0d10', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <div
-            className="sv-container"
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              flexWrap: 'wrap',
-              gap: 'clamp(2rem, 6vw, 5rem)',
-              paddingTop: 'clamp(2rem, 4vw, 3rem)',
-              paddingBottom: 'clamp(2rem, 4vw, 3rem)',
-            }}
-          >
-            {hs.stats_items.map((stat, i) => (
-              <div key={i} style={{ textAlign: 'center', minWidth: '120px' }}>
-                <p
-                  style={{
-                    fontFamily: 'var(--font-serif)',
-                    fontSize: 'clamp(2rem, 4vw, 3rem)',
-                    fontWeight: 300,
-                    color: '#fff',
-                    lineHeight: 1,
-                    margin: 0,
-                  }}
-                >
-                  {stat.value}
-                </p>
-                <p
-                  style={{
-                    fontSize: '0.6875rem',
-                    letterSpacing: '0.12em',
-                    textTransform: 'uppercase',
-                    color: 'var(--color-sv-gold)',
-                    marginTop: '0.625rem',
-                    margin: '0.625rem 0 0',
-                  }}
-                >
-                  {stat.label}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* ══════════════════════════════════════════════════════════════════════
           2c · WHY CHOOSE SV — white section, centered top + two-col body
       ══════════════════════════════════════════════════════════════════════ */}
       <section className="sv-why">
@@ -390,17 +338,19 @@ export default async function HomePage() {
           3 · THE FIRM — dark, two-col: serif left / service list dark card right
       ══════════════════════════════════════════════════════════════════════ */}
       <section className="hp-about sv-bg-dark">
-        <div className="sv-container hp-about__inner">
+        <div className="sv-container">
+          {/* Eyebrow row lives above the grid — matches reference (eyebrow outside columns) */}
+          <div className="hp-about__eyebrow-row">
+            {hs?.capital_markets_eyebrow && (
+              <p className="sv-eyebrow hp-about__eyebrow">{hs.capital_markets_eyebrow}</p>
+            )}
+            <span className="hp-about__eyebrow-line" aria-hidden="true" />
+          </div>
+
+          <div className="hp-about__inner">
 
           {/* ── Left ─────────────────────────────────────────────────────── */}
           <div className="hp-about__col-left">
-            <div className="hp-about__eyebrow-row">
-              {hs?.capital_markets_eyebrow && (
-                <p className="sv-eyebrow hp-about__eyebrow">{hs.capital_markets_eyebrow}</p>
-              )}
-              <span className="hp-about__eyebrow-line" aria-hidden="true" />
-            </div>
-
             {(sections[0]?.heading || hs?.capital_markets_title) && (
               <h2 className="sv-display hp-about__headline">
                 {sections[0]?.heading ?? hs?.capital_markets_title}
@@ -458,7 +408,8 @@ export default async function HomePage() {
             </div>
           </div>
 
-        </div>
+          </div>{/* /hp-about__inner */}
+        </div>{/* /sv-container */}
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════

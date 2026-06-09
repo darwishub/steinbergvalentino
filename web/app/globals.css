@@ -354,8 +354,12 @@ img {
   transition:
     background 0.38s ease,
     border-color 0.38s ease,
-    box-shadow 0.38s ease;
-  /* Explicitly NO height/transform transition */
+    box-shadow 0.38s ease,
+    transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sv-site-header[data-hidden='true'] {
+  transform: translateY(-100%);
 }
 
 /* Scrolled: only bg/border/shadow change — size stays identical */
@@ -485,6 +489,121 @@ img {
 
 .sv-site-header[data-scrolled='true'] .sv-nav-cta:hover {
   color: #000;
+}
+
+/* ── Search trigger (icon button) ───────────────────────────────────────── */
+.sv-nav-search {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  margin-left: 0.35rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.78);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+.sv-nav-search:hover {
+  color: #fff;
+}
+
+.sv-site-header[data-scrolled='true'] .sv-nav-search {
+  color: rgba(0, 0, 0, 0.68);
+}
+
+.sv-site-header[data-scrolled='true'] .sv-nav-search:hover {
+  color: #000;
+}
+
+/* ── Search overlay ─────────────────────────────────────────────────────── */
+.sv-search-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(8, 9, 11, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 14vh 1.25rem 1.25rem;
+  animation: sv-search-fade 0.18s ease;
+}
+
+@keyframes sv-search-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.sv-search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 640px;
+  padding: 0.5rem 0.75rem 0.5rem 1rem;
+  background: #14161a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 3px solid var(--color-sv-gold);
+  box-shadow: 0 32px 64px rgba(0, 0, 0, 0.6);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.sv-search-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.85rem 0;
+  font-size: 1.05rem;
+  font-family: var(--font-manrope), system-ui, sans-serif;
+  color: #fff;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.sv-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.sv-search-submit {
+  flex-shrink: 0;
+  padding: 0.7rem 1.4rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-sv-dark);
+  background: var(--color-sv-gold);
+  border: none;
+  cursor: pointer;
+}
+
+.sv-search-close {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.55);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.sv-search-close:hover {
+  color: #fff;
 }
 
 /* ── Dropdown panel (stays dark always) ─────────────────────────────────── */
@@ -2261,10 +2380,16 @@ img {
 }
 
 /* ── Media area ──────────────────────────────────────────────────────────── */
+/* Constrained, centred image band (not full-bleed) — aligns to the same
+   container bounds as the content below, leaving side margins. */
+.sv-pcarousel__media-wrap {
+  padding-top: 40px;
+}
+
 .sv-pcarousel__media {
   position: relative;
   width: 100%;
-  height: clamp(360px, 47vw, 640px);
+  height: clamp(340px, 38vw, 560px);
   overflow: hidden;
   background-color: #1a1b1f;
 }
@@ -2321,7 +2446,8 @@ img {
   letter-spacing: -0.015em;
   color: #fff;
   margin: 0;
-  max-width: 12ch;
+  /* Fill the title column (matches reference 2-line wrap) rather than a tight 12ch cap */
+  max-width: 18ch;
 }
 
 .sv-pcarousel__col-body {
@@ -2336,7 +2462,9 @@ img {
   line-height: 1.8;
   color: rgba(255, 255, 255, 0.56);
   margin: 0;
-  max-width: 36ch;
+  /* Fill the body column so the paragraph's right edge aligns with the image edge.
+     The column is itself capped by the 1440px container, so no hard ch cap is needed. */
+  max-width: none;
 }
 
 .sv-pcarousel__cta {
@@ -2431,16 +2559,27 @@ img {
 
 /* Override existing hp-about rules */
 .hp-about__inner {
+  display: grid;
   grid-template-columns: 1fr 1fr !important;
   gap: 0 80px !important;
-  align-items: start !important;
+  align-items: stretch !important;
+}
+
+/* Left column: flex column so CTA is pushed to the bottom */
+.hp-about__col-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.hp-about__cta-arrow {
+  margin-top: auto;
 }
 
 .hp-about__eyebrow-row {
   display: flex;
   align-items: center;
   gap: 18px;
-  margin-bottom: 36px;
+  margin-bottom: 48px;
 }
 
 .hp-about__eyebrow-line {
@@ -2560,6 +2699,10 @@ img {
     gap: 32px;
   }
 
+  .sv-pcarousel__media-wrap {
+    padding-top: 20px;
+  }
+
   .sv-pcarousel__media {
     height: clamp(200px, 56vw, 360px);
   }
@@ -2586,12 +2729,12 @@ img {
   padding: 96px 0 104px;
 }
 
-/* ── Top: line + eyebrow + big heading — left-aligned editorial ─────────── */
+/* ── Top: line + eyebrow + big heading — centered (reference design) ──────── */
 .sv-why__top {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
+  align-items: center;
+  text-align: center;
   padding-bottom: 56px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   margin-bottom: 56px;

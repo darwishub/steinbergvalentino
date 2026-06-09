@@ -77,7 +77,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <Nav
           items={navigation}
           phone={globalSettings?.contact_phone}
-          tagline={globalSettings?.utility_bar_tagline}
+          searchPlaceholder={globalSettings?.search_placeholder}
         />
         <main className="flex-1">{children}</main>
         <Footer

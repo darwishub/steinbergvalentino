@@ -9,7 +9,6 @@ const data = {
   documentId: 'global-settings-default',
   siteName: 'SteinbergValentino Group',
   tagline: 'The Best IR Firm For Small & Mid-Cap Businesses',
-  utilityBarTagline: 'Strategic Investor Relations for Small & Mid-Cap Companies',
   footerBlurb: 'The premier investor relations firm for small and mid-cap public companies.',
   contactPhone: '(646) 535-3995',
   contactEmail: 'contact@steinbergvalentino.com',
@@ -96,6 +95,10 @@ const data = {
   sitemapIntro: 'A complete index of all pages on the SteinbergValentino Group website.',
   sitemapMetaTitle: 'Sitemap | SteinbergValentino Group',
   sitemapMetaDescription: 'Browse the full SteinbergValentino site structure, including firm pages, services, and exchange support pages.',
+  searchPlaceholder: 'Search services, exchanges, and insights…',
+  searchHeading: 'Search',
+  searchMetaTitle: 'Search | SteinbergValentino Group',
+  searchMetaDescription: 'Search across SteinbergValentino Group services, exchange coverage, and firm pages.',
   socialFacebook: 'https://www.facebook.com/SteinbergValentinoGroup/',
   socialTwitter: 'https://twitter.com/SV__Group',
   socialInstagram: 'https://www.instagram.com/steinbergvalentinogroup',
@@ -109,24 +112,30 @@ const upsert = db.transaction(() => {
   if (existing) {
     db.prepare(`
       UPDATE global_settings SET
-        document_id = ?, site_name = ?, tagline = ?, utility_bar_tagline = ?,
+        document_id = ?, site_name = ?, tagline = ?,
         footer_blurb = ?, contact_phone = ?, contact_email = ?, address = ?,
         footer_copyright = ?, primary_navigation = ?, footer_quick_links = ?,
         footer_service_links = ?, footer_exchange_links = ?, footer_legal_links = ?,
         sitemap_heading = ?, sitemap_intro = ?, sitemap_meta_title = ?,
-        sitemap_meta_description = ?, social_facebook = ?, social_twitter = ?,
+        sitemap_meta_description = ?,
+        search_placeholder = ?, search_heading = ?, search_meta_title = ?,
+        search_meta_description = ?,
+        social_facebook = ?, social_twitter = ?,
         social_instagram = ?, social_linkedin = ?, social_pinterest = ?,
         updated_at = ?, published_at = ?
       WHERE id = ?
     `).run(
-      data.documentId, data.siteName, data.tagline, data.utilityBarTagline,
+      data.documentId, data.siteName, data.tagline,
       data.footerBlurb, data.contactPhone, data.contactEmail, data.address,
       data.footerCopyright,
       JSON.stringify(data.primaryNavigation), JSON.stringify(data.footerQuickLinks),
       JSON.stringify(data.footerServiceLinks), JSON.stringify(data.footerExchangeLinks),
       JSON.stringify(data.footerLegalLinks),
       data.sitemapHeading, data.sitemapIntro, data.sitemapMetaTitle,
-      data.sitemapMetaDescription, data.socialFacebook, data.socialTwitter,
+      data.sitemapMetaDescription,
+      data.searchPlaceholder, data.searchHeading, data.searchMetaTitle,
+      data.searchMetaDescription,
+      data.socialFacebook, data.socialTwitter,
       data.socialInstagram, data.socialLinkedin, data.socialPinterest,
       now, now,
       existing.id
@@ -135,24 +144,30 @@ const upsert = db.transaction(() => {
   } else {
     const result = db.prepare(`
       INSERT INTO global_settings (
-        document_id, site_name, tagline, utility_bar_tagline,
+        document_id, site_name, tagline,
         footer_blurb, contact_phone, contact_email, address,
         footer_copyright, primary_navigation, footer_quick_links,
         footer_service_links, footer_exchange_links, footer_legal_links,
         sitemap_heading, sitemap_intro, sitemap_meta_title,
-        sitemap_meta_description, social_facebook, social_twitter,
+        sitemap_meta_description,
+        search_placeholder, search_heading, search_meta_title,
+        search_meta_description,
+        social_facebook, social_twitter,
         social_instagram, social_linkedin, social_pinterest,
         created_at, updated_at, published_at
-      ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+      ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     `).run(
-      data.documentId, data.siteName, data.tagline, data.utilityBarTagline,
+      data.documentId, data.siteName, data.tagline,
       data.footerBlurb, data.contactPhone, data.contactEmail, data.address,
       data.footerCopyright,
       JSON.stringify(data.primaryNavigation), JSON.stringify(data.footerQuickLinks),
       JSON.stringify(data.footerServiceLinks), JSON.stringify(data.footerExchangeLinks),
       JSON.stringify(data.footerLegalLinks),
       data.sitemapHeading, data.sitemapIntro, data.sitemapMetaTitle,
-      data.sitemapMetaDescription, data.socialFacebook, data.socialTwitter,
+      data.sitemapMetaDescription,
+      data.searchPlaceholder, data.searchHeading, data.searchMetaTitle,
+      data.searchMetaDescription,
+      data.socialFacebook, data.socialTwitter,
       data.socialInstagram, data.socialLinkedin, data.socialPinterest,
       now, now, now
     )

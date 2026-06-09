@@ -5,7 +5,6 @@ export const DEFAULT_GLOBAL_SETTINGS: GlobalSettings = {
   documentId: 'default-global-settings',
   site_name: 'SteinbergValentino Group',
   tagline: 'The Best IR Firm For Small & Mid-Cap Businesses',
-  utility_bar_tagline: 'Strategic Investor Relations for Small & Mid-Cap Companies',
   footer_blurb:
     'The premier investor relations firm for small and mid-cap public companies.',
   contact_phone: '(646) 535-3995',
@@ -95,6 +94,11 @@ export const DEFAULT_GLOBAL_SETTINGS: GlobalSettings = {
   sitemap_meta_title: 'Sitemap | SteinbergValentino Group',
   sitemap_meta_description:
     'Browse the full SteinbergValentino site structure, including firm pages, services, and exchange support pages.',
+  search_placeholder: 'Search services, exchanges, and insights…',
+  search_heading: 'Search',
+  search_meta_title: 'Search | SteinbergValentino Group',
+  search_meta_description:
+    'Search across SteinbergValentino Group services, exchange coverage, and firm pages.',
   social_facebook:  'https://www.facebook.com/SteinbergValentinoGroup/',
   social_twitter:   'https://twitter.com/SV__Group',
   social_instagram: 'https://www.instagram.com/steinbergvalentinogroup',

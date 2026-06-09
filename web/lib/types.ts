@@ -42,11 +42,6 @@ export interface Testimonial {
   quote: string
 }
 
-export interface HomepageStatItem {
-  value: string
-  label: string
-}
-
 export interface HomepageVideoConfig {
   src: string | null
   poster: string | null
@@ -54,7 +49,6 @@ export interface HomepageVideoConfig {
 
 export interface HomepageSectionsConfig {
   hero_video: HomepageVideoConfig | null
-  stats_items: HomepageStatItem[] | null
   offerings_eyebrow: string | null
   offerings_title: string | null
   offerings_cta_label: string | null
@@ -226,7 +220,6 @@ export interface GlobalSettings {
   documentId: string
   site_name: string | null
   tagline: string | null
-  utility_bar_tagline: string | null
   footer_blurb: string | null
   contact_phone: string | null
   contact_email: string | null
@@ -241,6 +234,10 @@ export interface GlobalSettings {
   sitemap_intro: string | null
   sitemap_meta_title: string | null
   sitemap_meta_description: string | null
+  search_placeholder: string | null
+  search_heading: string | null
+  search_meta_title: string | null
+  search_meta_description: string | null
   social_facebook: string | null
   social_twitter: string | null
   social_instagram: string | null

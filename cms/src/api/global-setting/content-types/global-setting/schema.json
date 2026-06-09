@@ -10,7 +10,6 @@
   "attributes": {
     "site_name": { "type": "string" },
     "tagline": { "type": "string" },
-    "utility_bar_tagline": { "type": "string" },
     "footer_blurb": { "type": "text" },
     "contact_phone": { "type": "string" },
     "contact_email": { "type": "email" },
@@ -25,6 +24,10 @@
     "sitemap_intro": { "type": "text" },
     "sitemap_meta_title": { "type": "string" },
     "sitemap_meta_description": { "type": "text" },
+    "search_placeholder": { "type": "string" },
+    "search_heading": { "type": "string" },
+    "search_meta_title": { "type": "string" },
+    "search_meta_description": { "type": "text" },
     "social_facebook":  { "type": "string" },
     "social_twitter":   { "type": "string" },
     "social_instagram": { "type": "string" },

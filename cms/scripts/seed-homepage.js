@@ -47,13 +47,6 @@ const homepageData = {
       src: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
       poster: '/fallbacks/office-tower.webp',
     },
-    // Stats reflect verifiable facts: 5 major exchanges listed, 20+ years in business (founded early 2000s),
-    // and the industry-leading retail investor distribution network
-    stats_items: [
-      { value: '5', label: 'Major Exchanges Covered' },
-      { value: 'Global', label: 'Capital Markets Reach' },
-      { value: '#1', label: 'Retail Investor Network' },
-    ],
     offerings_eyebrow: 'About The Firm',
     offerings_title: 'The Best IR Firm For Small & Mid-Cap Businesses',
     offerings_cta_label: 'About the Firm',

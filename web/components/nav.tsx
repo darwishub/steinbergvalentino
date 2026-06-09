@@ -2,46 +2,93 @@
 
 import { useState, useEffect, useRef, startTransition } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { DEFAULT_GLOBAL_SETTINGS } from '@/lib/defaults'
 import type { GlobalNavItem } from '@/lib/types'
 
 interface NavProps {
   items?: GlobalNavItem[] | null
   phone?: string | null
-  tagline?: string | null
+  searchPlaceholder?: string | null
 }
 
-export function Nav({ items, phone, tagline }: NavProps) {
+export function Nav({ items, phone, searchPlaceholder }: NavProps) {
   const pathname = usePathname()
+  const router = useRouter()
   const [scrolled, setScrolled] = useState(false)
+  const [hidden, setHidden] = useState(false)
   const [showScrollTop, setShowScrollTop] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
   const leaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const headerRef = useRef<HTMLElement>(null)
+  const lastScrollYRef = useRef(0)
+  const searchInputRef = useRef<HTMLInputElement>(null)
+  const placeholder = searchPlaceholder || 'Search the site…'
+
+  /* The CSS sets --sv-nav-h: 4.75rem and .sv-site-nav{height:var(--sv-nav-h)}.
+     The nav row's height is pinned to the base value via an inline style. */
+  const BASE_NAV_H = '4.75rem'
+  useEffect(() => {
+    document.documentElement.style.setProperty('--sv-nav-h', BASE_NAV_H)
+  }, [])
   const rawItems = items?.length ? items : (DEFAULT_GLOBAL_SETTINGS.primary_navigation ?? [])
   /* Strip any standalone "Contact Us" link — it's always shown as the CTA button */
   const navItems = rawItems.filter((i) => i.href !== '/contact' || !!i.children?.length)
 
-  /* scroll: shadow + nav grow + scroll-to-top visibility */
+  /* scroll: shadow + hide-on-scroll-down + scroll-to-top visibility */
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY
+      const prev = lastScrollYRef.current
+      lastScrollYRef.current = y
+
       setScrolled(y > 80)
       setShowScrollTop(y > 400)
+
+      // Only start auto-hiding after the user scrolls past 120px
+      if (y > 120) {
+        setHidden(y > prev)
+      } else {
+        setHidden(false)
+      }
     }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  /* close mobile on route change — startTransition avoids synchronous-setState-in-effect lint */
+  /* close mobile + search on route change — startTransition avoids synchronous-setState-in-effect lint */
   useEffect(() => {
     startTransition(() => {
       setMobileOpen(false)
       setMobileExpanded(null)
+      setSearchOpen(false)
     })
   }, [pathname])
+
+  /* search overlay: focus input on open, close on Escape */
+  useEffect(() => {
+    if (!searchOpen) return
+    searchInputRef.current?.focus()
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSearchOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [searchOpen])
+
+  function submitSearch(e: React.FormEvent) {
+    e.preventDefault()
+    const q = searchQuery.trim()
+    if (!q) return
+    setSearchOpen(false)
+    setMobileOpen(false)
+    setSearchQuery('')
+    router.push(`/search?q=${encodeURIComponent(q)}`)
+  }
 
   /* keep dropdown open briefly on mouse-leave */
   function handleMouseEnter(label: string) {
@@ -61,63 +108,15 @@ export function Nav({ items, phone, tagline }: NavProps) {
 
   return (
     <>
-      <header className="sv-site-header" data-scrolled={scrolled ? 'true' : undefined}>
-
-        {/* ── Utility bar (tagline + phone from Strapi) ───────────────── */}
-        {(tagline || phone) && (
-          <div
-            style={{
-              borderBottom: '1px solid rgba(255,255,255,0.07)',
-              background: 'rgba(10,10,12,0.6)',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)',
-              padding: '0.35rem 0',
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '1.25rem',
-                flexWrap: 'wrap',
-              }}
-            >
-              {tagline && (
-                <p
-                  style={{
-                    fontSize: '0.6875rem',
-                    letterSpacing: '0.12em',
-                    textTransform: 'uppercase',
-                    color: 'rgba(255,255,255,0.55)',
-                    margin: 0,
-                  }}
-                >
-                  {tagline}
-                </p>
-              )}
-              {tagline && phone && (
-                <span style={{ color: 'rgba(255,255,255,0.18)', fontSize: '0.625rem' }} aria-hidden="true">|</span>
-              )}
-              {phone && (
-                <a
-                  href={`tel:${phone.replace(/[^\d+]/g, '')}`}
-                  style={{
-                    fontSize: '0.6875rem',
-                    letterSpacing: '0.06em',
-                    color: 'rgba(255,255,255,0.55)',
-                    textDecoration: 'none',
-                  }}
-                >
-                  {phone}
-                </a>
-              )}
-            </div>
-          </div>
-        )}
+      <header
+        ref={headerRef}
+        className="sv-site-header"
+        data-scrolled={scrolled ? 'true' : undefined}
+        data-hidden={hidden && !mobileOpen && !searchOpen ? 'true' : undefined}
+      >
 
         {/* ── Main nav ─────────────────────────────────────────────────── */}
-        <div className="sv-container sv-site-nav" role="navigation">
+        <div className="sv-container sv-site-nav" role="navigation" style={{ height: BASE_NAV_H }}>
 
           {/* Logo box (Blackstone bordered wordmark style) */}
           <Link href="/" style={{ textDecoration: 'none', flexShrink: 0 }}>
@@ -228,6 +227,18 @@ export function Nav({ items, phone, tagline }: NavProps) {
             <Link href="/contact" className="sv-nav-cta">
               Contact Us
             </Link>
+
+            {/* ── Search trigger ── */}
+            <button
+              type="button"
+              aria-label="Search"
+              aria-haspopup="dialog"
+              aria-expanded={searchOpen}
+              onClick={() => setSearchOpen(true)}
+              className="sv-nav-search"
+            >
+              <SearchIcon />
+            </button>
           </nav>
 
           {/* Mobile hamburger */}
@@ -287,6 +298,49 @@ export function Nav({ items, phone, tagline }: NavProps) {
         </div>{/* /sv-site-nav */}
       </header>
 
+      {/* ── Search overlay ────────────────────────────────────────────── */}
+      {searchOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Site search"
+          className="sv-search-overlay"
+          onClick={() => setSearchOpen(false)}
+        >
+          <form
+            onSubmit={submitSearch}
+            onClick={(e) => e.stopPropagation()}
+            role="search"
+            className="sv-search-box"
+          >
+            <SearchIcon size={20} />
+            <input
+              ref={searchInputRef}
+              type="search"
+              name="q"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={placeholder}
+              aria-label="Search the site"
+              className="sv-search-input"
+            />
+            <button type="submit" className="sv-search-submit">
+              Search
+            </button>
+            <button
+              type="button"
+              aria-label="Close search"
+              onClick={() => setSearchOpen(false)}
+              className="sv-search-close"
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              </svg>
+            </button>
+          </form>
+        </div>
+      )}
+
       {/* ── Mobile drawer ─────────────────────────────────────────────── */}
       <div
         aria-hidden={!mobileOpen}
@@ -305,6 +359,54 @@ export function Nav({ items, phone, tagline }: NavProps) {
         }}
         className="mobile-drawer"
       >
+        {/* Search field (mobile) */}
+        <form
+          onSubmit={submitSearch}
+          role="search"
+          style={{
+            display: 'flex',
+            gap: '0.5rem',
+            padding: '0.75rem var(--sv-pad-sm) 1rem',
+            borderBottom: '1px solid rgba(255,255,255,0.06)',
+          }}
+        >
+          <input
+            type="search"
+            name="q"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={placeholder}
+            aria-label="Search the site"
+            style={{
+              flex: 1,
+              minWidth: 0,
+              padding: '0.7rem 0.9rem',
+              fontSize: '0.875rem',
+              color: '#fff',
+              background: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.12)',
+              outline: 'none',
+            }}
+          />
+          <button
+            type="submit"
+            aria-label="Search"
+            style={{
+              flexShrink: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '2.75rem',
+              border: 'none',
+              background: 'var(--color-sv-gold)',
+              color: 'var(--color-sv-dark)',
+              cursor: 'pointer',
+            }}
+          >
+            <SearchIcon size={18} />
+          </button>
+        </form>
+
         {navItems.map((item) => {
           const isActive = pathname === item.href || isParentActive(item)
           const isExpanded = mobileExpanded === item.label
@@ -487,5 +589,20 @@ export function Nav({ items, phone, tagline }: NavProps) {
       </button>
 
     </>
+  )
+}
+
+function SearchIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 20 20"
+      fill="none"
+      aria-hidden="true"
+    >
+      <circle cx="9" cy="9" r="6.25" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M13.6 13.6L17.5 17.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
   )
 }
