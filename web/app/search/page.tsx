@@ -37,12 +37,6 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   }
 }
 
-const TYPE_LABEL: Record<string, string> = {
-  Page: 'Page',
-  Service: 'Service',
-  Exchange: 'Exchange',
-}
-
 export default async function SearchPage({ searchParams }: Props) {
   const query = firstParam((await searchParams).q).trim()
 
@@ -52,22 +46,32 @@ export default async function SearchPage({ searchParams }: Props) {
   } catch {
     /* offline — fall back to defaults */
   }
+  const G = DEFAULT_GLOBAL_SETTINGS
+  const s = <K extends keyof typeof G>(k: K) => settings?.[k] ?? G[k]
 
-  const heading =
-    settings?.search_heading ?? DEFAULT_GLOBAL_SETTINGS.search_heading ?? 'Search'
-  const placeholder =
-    settings?.search_placeholder ??
-    DEFAULT_GLOBAL_SETTINGS.search_placeholder ??
-    'Search the site…'
+  const heading = s('search_heading')
+  const placeholder = s('search_placeholder')
+  const eyebrow = s('search_eyebrow')
+  const buttonLabel = s('search_button_label')
+  const emptyText = s('search_empty_text')
+  const resultSingular = s('search_results_singular')
+  const resultPlural = s('search_results_plural')
+  const TYPE_LABEL: Record<string, string | null> = {
+    Page: s('search_type_page'),
+    Service: s('search_type_service'),
+    Exchange: s('search_type_exchange'),
+  }
 
   const results = query ? runSearch(await getSearchIndex(), query) : []
 
   return (
     <section className="sv-section sv-bg-light">
       <div className="sv-container" style={{ maxWidth: '820px' }}>
-        <p className="sv-eyebrow" style={{ marginBottom: 'var(--sv-sp-16)' }}>
-          Site Search
-        </p>
+        {eyebrow && (
+          <p className="sv-eyebrow" style={{ marginBottom: 'var(--sv-sp-16)' }}>
+            {eyebrow}
+          </p>
+        )}
         <h1 className="sv-display" style={{ marginBottom: 'var(--sv-sp-24)' }}>
           {heading}
         </h1>
@@ -83,7 +87,7 @@ export default async function SearchPage({ searchParams }: Props) {
             type="search"
             name="q"
             defaultValue={query}
-            placeholder={placeholder}
+            placeholder={placeholder ?? undefined}
             aria-label="Search the site"
             autoFocus
             style={{
@@ -113,7 +117,7 @@ export default async function SearchPage({ searchParams }: Props) {
               cursor: 'pointer',
             }}
           >
-            Search
+            {buttonLabel}
           </button>
         </form>
 
@@ -126,14 +130,14 @@ export default async function SearchPage({ searchParams }: Props) {
             }}
           >
             {results.length > 0
-              ? `${results.length} result${results.length === 1 ? '' : 's'} for "${query}"`
-              : `No results for "${query}". Try a different term.`}
+              ? `${results.length} ${results.length === 1 ? resultSingular : resultPlural} for "${query}"`
+              : `No ${resultPlural} for "${query}". Try a different term.`}
           </p>
         )}
 
         {!query && (
           <p style={{ fontSize: '1.0625rem', color: 'var(--color-sv-slate)', lineHeight: 1.7 }}>
-            Enter a term above to search across our services, exchanges, and firm pages.
+            {emptyText}
           </p>
         )}
 

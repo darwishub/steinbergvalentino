@@ -119,9 +119,25 @@ export async function getAllServicePages(): Promise<ServicePage[]> {
 
 export async function getServicePage(slug: string): Promise<ServicePage | null> {
   const res = await fetchAPI<StrapiListResponse<ServicePage>>(
-    `/service-pages?filters[slug][$eq]=${slug}&populate[hero_image][fields][0]=url&populate[hero_image][fields][1]=width&populate[hero_image][fields][2]=height&populate[hero_image][fields][3]=alternativeText&populate[sections][populate]=image&populate[faq_items]=*`
+    `/service-pages?filters[slug][$eq]=${slug}&populate[hero_image][fields][0]=url&populate[hero_image][fields][1]=width&populate[hero_image][fields][2]=height&populate[hero_image][fields][3]=alternativeText&populate[overview_image][fields][0]=url&populate[overview_image][fields][1]=width&populate[overview_image][fields][2]=height&populate[overview_image][fields][3]=alternativeText&populate[media_band_image][fields][0]=url&populate[media_band_image][fields][1]=width&populate[media_band_image][fields][2]=height&populate[media_band_image][fields][3]=alternativeText&populate[quote_image][fields][0]=url&populate[quote_image][fields][1]=width&populate[quote_image][fields][2]=height&populate[quote_image][fields][3]=alternativeText&populate[stats]=*&populate[highlights]=*&populate[sections][populate]=image&populate[faq_items]=*`
   )
   return res.data[0] ?? null
+}
+
+// One article for the "News & Insights" card — prefer a category match, else newest.
+export async function getRelatedArticle(category?: string | null): Promise<Article | null> {
+  const base =
+    'populate[cover_image][fields][0]=url&populate[cover_image][fields][1]=width&populate[cover_image][fields][2]=height&populate[cover_image][fields][3]=alternativeText&fields[0]=title&fields[1]=slug&fields[2]=category&fields[3]=excerpt&sort=publishedAt:desc&pagination[pageSize]=1'
+
+  if (category) {
+    const matched = await fetchAPI<StrapiListResponse<Article>>(
+      `/articles?filters[category][$eqi]=${encodeURIComponent(category)}&${base}`
+    )
+    if (matched.data[0]) return matched.data[0]
+  }
+
+  const latest = await fetchAPI<StrapiListResponse<Article>>(`/articles?${base}`)
+  return latest.data[0] ?? null
 }
 
 export async function getAllExchangePages(): Promise<ExchangePage[]> {

@@ -273,15 +273,7 @@ export default async function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════
           1b · HOMEPAGE BODY CONTENT — optional rich-text block from Strapi
       ══════════════════════════════════════════════════════════════════════ */}
-      {page?.body_content && page.body_content.length > 0 && (
-        <section className="sv-section" style={{ background: 'var(--color-sv-white)' }}>
-          <div className="sv-container">
-            <div className="sv-rich-text" style={{ maxWidth: '760px' }}>
-              <BlocksContent blocks={page.body_content} />
-            </div>
-          </div>
-        </section>
-      )}
+      {/* Homepage body-content section removed per request */}
 
       {/* ══════════════════════════════════════════════════════════════════════
           2 · PROMO CAROUSEL — full-width image slider

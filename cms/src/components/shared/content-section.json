@@ -5,6 +5,7 @@
     "icon": "layout"
   },
   "attributes": {
+    "eyebrow": { "type": "string" },
     "heading": { "type": "string" },
     "subheading": { "type": "string" },
     "body": { "type": "blocks" },

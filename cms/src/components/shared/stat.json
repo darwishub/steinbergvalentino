@@ -1,0 +1,11 @@
+{
+  "collectionName": "components_shared_stats",
+  "info": {
+    "displayName": "Stat",
+    "icon": "chartCircle"
+  },
+  "attributes": {
+    "label": { "type": "string" },
+    "value": { "type": "string" }
+  }
+}

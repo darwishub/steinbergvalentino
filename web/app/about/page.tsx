@@ -70,7 +70,9 @@ export default async function AboutPage() {
         {/* Content inside sv-container — aligns with navbar logo and body sections */}
         <div className="sv-container ab-hero__inner">
           <div className="ab-hero__left">
-            <p className="sv-eyebrow ab-hero__eyebrow">About the Firm</p>
+            {page?.hero_eyebrow && (
+              <p className="sv-eyebrow ab-hero__eyebrow">{page.hero_eyebrow}</p>
+            )}
             <h1 className="ab-hero__title">{heroHeading}</h1>
             {heroSubheading && (
               <p className="ab-hero__deck">{heroSubheading}</p>

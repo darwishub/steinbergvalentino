@@ -1,0 +1,11 @@
+{
+  "collectionName": "components_shared_highlights",
+  "info": {
+    "displayName": "Highlight",
+    "icon": "bulletList"
+  },
+  "attributes": {
+    "heading": { "type": "string" },
+    "body": { "type": "text" }
+  }
+}

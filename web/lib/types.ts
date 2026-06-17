@@ -102,8 +102,21 @@ export interface Sector {
   icon: string | null
 }
 
+export interface Highlight {
+  id: number
+  heading: string | null
+  body: string | null
+}
+
+export interface Stat {
+  id: number
+  label: string | null
+  value: string | null
+}
+
 export interface ContentSection {
   id: number
+  eyebrow?: string | null
   heading: string | null
   subheading: string | null
   body: StrapiBlock[] | null
@@ -154,9 +167,19 @@ export interface AboutPage {
   show_contact_form: boolean | null
   contact_form_heading: string | null
   contact_form_subheading: string | null
+  hero_eyebrow: string | null
 }
 
-export interface HowItWorksPage {
+/** Shared microcopy fields present on the band-template single-type pages */
+interface PageMicrocopy {
+  hero_eyebrow: string | null
+  approach_title: string | null
+  cta_eyebrow: string | null
+  cta_heading: string | null
+  cta_label: string | null
+}
+
+export interface HowItWorksPage extends PageMicrocopy {
   id: number
   documentId: string
   hero_heading: string
@@ -168,7 +191,7 @@ export interface HowItWorksPage {
   meta_description: string | null
 }
 
-export interface CapabilitiesPage {
+export interface CapabilitiesPage extends PageMicrocopy {
   id: number
   documentId: string
   hero_heading: string
@@ -180,7 +203,7 @@ export interface CapabilitiesPage {
   meta_description: string | null
 }
 
-export interface IndustryExpertisePage {
+export interface IndustryExpertisePage extends PageMicrocopy {
   id: number
   documentId: string
   hero_heading: string
@@ -191,6 +214,7 @@ export interface IndustryExpertisePage {
   sectors: Sector[]
   meta_title: string | null
   meta_description: string | null
+  sectors_eyebrow: string | null
 }
 
 export interface ContactPage {
@@ -204,6 +228,8 @@ export interface ContactPage {
   email: string | null
   meta_title: string | null
   meta_description: string | null
+  hero_eyebrow: string | null
+  form_eyebrow: string | null
 }
 
 export interface ServicesListingPage {
@@ -215,6 +241,11 @@ export interface ServicesListingPage {
   approach_image: StrapiMedia | null
   meta_title: string | null
   meta_description: string | null
+  hero_eyebrow: string | null
+  card_cta_label: string | null
+  cta_eyebrow: string | null
+  cta_heading: string | null
+  cta_label: string | null
 }
 
 export interface GlobalSettings {
@@ -245,6 +276,56 @@ export interface GlobalSettings {
   social_instagram: string | null
   social_linkedin: string | null
   social_pinterest: string | null
+  /* ── UI microcopy (CMS-driven labels) ── */
+  nav_cta_label: string | null
+  footer_contact_heading: string | null
+  footer_email_label: string | null
+  footer_phone_label: string | null
+  footer_office_label: string | null
+  footer_firm_heading: string | null
+  footer_services_heading: string | null
+  footer_exchanges_heading: string | null
+  faq_eyebrow: string | null
+  faq_title: string | null
+  search_eyebrow: string | null
+  search_button_label: string | null
+  search_empty_text: string | null
+  search_type_page: string | null
+  search_type_service: string | null
+  search_type_exchange: string | null
+  search_results_singular: string | null
+  search_results_plural: string | null
+  form_first_name_label: string | null
+  form_last_name_label: string | null
+  form_email_label: string | null
+  form_message_label: string | null
+  form_submit_label: string | null
+  form_submitting_label: string | null
+  form_success_heading: string | null
+  form_success_body: string | null
+  label_read_more: string | null
+  label_all_services: string | null
+  label_view_details: string | null
+  service_overview_eyebrow: string | null
+  service_overview_band_eyebrow: string | null
+  service_engage_heading: string | null
+  service_engage_body: string | null
+  service_engage_cta_label: string | null
+  service_back_label: string | null
+  service_approach_title: string | null
+  service_cta_eyebrow: string | null
+  service_cta_heading: string | null
+  service_cta_label: string | null
+  service_news_eyebrow: string | null
+  service_news_heading: string | null
+  service_news_cta_label: string | null
+  exchange_hero_eyebrow: string | null
+  exchange_breadcrumb_label: string | null
+  exchange_approach_title: string | null
+  exchange_keyfacts_eyebrow: string | null
+  exchange_cta_eyebrow: string | null
+  exchange_cta_heading: string | null
+  exchange_cta_label: string | null
 }
 
 /* ─── Collection Types ───────────────────────────────────────────────────── */
@@ -257,7 +338,18 @@ export interface ServicePage {
   hero_heading: string
   hero_subheading: string | null
   hero_image: StrapiMedia | null
+  overview_image?: StrapiMedia | null
+  overview_heading?: string | null
   body_content: StrapiBlock[] | null
+  highlights?: Highlight[]
+  stat_headline_label?: string | null
+  stat_headline_value?: string | null
+  stats?: Stat[]
+  media_band_image?: StrapiMedia | null
+  quote_text?: string | null
+  quote_author?: string | null
+  quote_role?: string | null
+  quote_image?: StrapiMedia | null
   sections: ContentSection[]
   faq_items?: { id: number; question: string; answer: StrapiBlock[] }[]
   meta_title: string | null

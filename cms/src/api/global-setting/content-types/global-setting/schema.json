@@ -6,32 +6,231 @@
     "pluralName": "global-settings",
     "displayName": "Global Setting"
   },
-  "options": { "draftAndPublish": false },
+  "options": {
+    "draftAndPublish": false
+  },
   "attributes": {
-    "site_name": { "type": "string" },
-    "tagline": { "type": "string" },
-    "footer_blurb": { "type": "text" },
-    "contact_phone": { "type": "string" },
-    "contact_email": { "type": "email" },
-    "address": { "type": "text" },
-    "footer_copyright": { "type": "string" },
-    "primary_navigation": { "type": "json" },
-    "footer_quick_links": { "type": "json" },
-    "footer_service_links": { "type": "json" },
-    "footer_exchange_links": { "type": "json" },
-    "footer_legal_links": { "type": "json" },
-    "sitemap_heading": { "type": "string" },
-    "sitemap_intro": { "type": "text" },
-    "sitemap_meta_title": { "type": "string" },
-    "sitemap_meta_description": { "type": "text" },
-    "search_placeholder": { "type": "string" },
-    "search_heading": { "type": "string" },
-    "search_meta_title": { "type": "string" },
-    "search_meta_description": { "type": "text" },
-    "social_facebook":  { "type": "string" },
-    "social_twitter":   { "type": "string" },
-    "social_instagram": { "type": "string" },
-    "social_linkedin":  { "type": "string" },
-    "social_pinterest": { "type": "string" }
+    "site_name": {
+      "type": "string"
+    },
+    "tagline": {
+      "type": "string"
+    },
+    "footer_blurb": {
+      "type": "text"
+    },
+    "contact_phone": {
+      "type": "string"
+    },
+    "contact_email": {
+      "type": "email"
+    },
+    "address": {
+      "type": "text"
+    },
+    "footer_copyright": {
+      "type": "string"
+    },
+    "primary_navigation": {
+      "type": "json"
+    },
+    "footer_quick_links": {
+      "type": "json"
+    },
+    "footer_service_links": {
+      "type": "json"
+    },
+    "footer_exchange_links": {
+      "type": "json"
+    },
+    "footer_legal_links": {
+      "type": "json"
+    },
+    "sitemap_heading": {
+      "type": "string"
+    },
+    "sitemap_intro": {
+      "type": "text"
+    },
+    "sitemap_meta_title": {
+      "type": "string"
+    },
+    "sitemap_meta_description": {
+      "type": "text"
+    },
+    "search_placeholder": {
+      "type": "string"
+    },
+    "search_heading": {
+      "type": "string"
+    },
+    "search_meta_title": {
+      "type": "string"
+    },
+    "search_meta_description": {
+      "type": "text"
+    },
+    "social_facebook": {
+      "type": "string"
+    },
+    "social_twitter": {
+      "type": "string"
+    },
+    "social_instagram": {
+      "type": "string"
+    },
+    "social_linkedin": {
+      "type": "string"
+    },
+    "social_pinterest": {
+      "type": "string"
+    },
+    "nav_cta_label": {
+      "type": "string"
+    },
+    "footer_contact_heading": {
+      "type": "string"
+    },
+    "footer_email_label": {
+      "type": "string"
+    },
+    "footer_phone_label": {
+      "type": "string"
+    },
+    "footer_office_label": {
+      "type": "string"
+    },
+    "footer_firm_heading": {
+      "type": "string"
+    },
+    "footer_services_heading": {
+      "type": "string"
+    },
+    "footer_exchanges_heading": {
+      "type": "string"
+    },
+    "faq_eyebrow": {
+      "type": "string"
+    },
+    "faq_title": {
+      "type": "string"
+    },
+    "search_eyebrow": {
+      "type": "string"
+    },
+    "search_button_label": {
+      "type": "string"
+    },
+    "search_empty_text": {
+      "type": "text"
+    },
+    "search_type_page": {
+      "type": "string"
+    },
+    "search_type_service": {
+      "type": "string"
+    },
+    "search_type_exchange": {
+      "type": "string"
+    },
+    "search_results_singular": {
+      "type": "string"
+    },
+    "search_results_plural": {
+      "type": "string"
+    },
+    "form_first_name_label": {
+      "type": "string"
+    },
+    "form_last_name_label": {
+      "type": "string"
+    },
+    "form_email_label": {
+      "type": "string"
+    },
+    "form_message_label": {
+      "type": "string"
+    },
+    "form_submit_label": {
+      "type": "string"
+    },
+    "form_submitting_label": {
+      "type": "string"
+    },
+    "form_success_heading": {
+      "type": "string"
+    },
+    "form_success_body": {
+      "type": "text"
+    },
+    "label_read_more": {
+      "type": "string"
+    },
+    "label_all_services": {
+      "type": "string"
+    },
+    "label_view_details": {
+      "type": "string"
+    },
+    "service_overview_eyebrow": {
+      "type": "string"
+    },
+    "service_overview_band_eyebrow": {
+      "type": "string"
+    },
+    "service_engage_heading": {
+      "type": "string"
+    },
+    "service_engage_body": {
+      "type": "text"
+    },
+    "service_engage_cta_label": {
+      "type": "string"
+    },
+    "service_back_label": {
+      "type": "string"
+    },
+    "service_approach_title": {
+      "type": "string"
+    },
+    "service_cta_eyebrow": {
+      "type": "string"
+    },
+    "service_cta_heading": {
+      "type": "string"
+    },
+    "service_cta_label": {
+      "type": "string"
+    },
+    "service_news_eyebrow": {
+      "type": "string"
+    },
+    "service_news_heading": {
+      "type": "string"
+    },
+    "service_news_cta_label": {
+      "type": "string"
+    },
+    "exchange_hero_eyebrow": {
+      "type": "string"
+    },
+    "exchange_breadcrumb_label": {
+      "type": "string"
+    },
+    "exchange_approach_title": {
+      "type": "string"
+    },
+    "exchange_keyfacts_eyebrow": {
+      "type": "string"
+    },
+    "exchange_cta_eyebrow": {
+      "type": "string"
+    },
+    "exchange_cta_heading": {
+      "type": "string"
+    },
+    "exchange_cta_label": {
+      "type": "string"
+    }
   }
 }

@@ -46,22 +46,42 @@ export default async function ContactPage() {
         />
         <div className="sv-page-hero-overlay" />
         <div className="sv-container sv-page-hero-content">
-          <p className="sv-eyebrow" style={{ color: 'var(--color-sv-gold)', marginBottom: 'var(--sv-sp-16)' }}>
-            Get in Touch
-          </p>
-          <h1
-            className="sv-display"
-            style={{ color: 'var(--color-sv-white)', maxWidth: '600px', marginBottom: 'var(--sv-sp-16)' }}
-          >
-            {page?.hero_heading ?? 'Start a Confidential Consultation'}
-          </h1>
-          <p style={{ fontSize: '1.0625rem', color: 'rgba(255,255,255,0.72)', lineHeight: 1.72, maxWidth: '520px', fontWeight: 300 }}>
-            {page?.hero_subheading ?? 'Schedule a call to explore how SteinbergValentino Group can elevate your company\'s capital markets profile.'}
-          </p>
+          {page?.hero_eyebrow && (
+            <p className="sv-eyebrow" style={{ color: 'var(--color-sv-gold)', marginBottom: 'var(--sv-sp-16)' }}>
+              {page.hero_eyebrow}
+            </p>
+          )}
+          {page?.hero_heading && (
+            <h1
+              className="sv-display"
+              style={{ color: 'var(--color-sv-white)', maxWidth: '600px', marginBottom: 'var(--sv-sp-16)' }}
+            >
+              {page.hero_heading}
+            </h1>
+          )}
+          {page?.hero_subheading && (
+            <p style={{ fontSize: '1.0625rem', color: 'rgba(255,255,255,0.72)', lineHeight: 1.72, maxWidth: '520px', fontWeight: 300 }}>
+              {page.hero_subheading}
+            </p>
+          )}
         </div>
       </section>
 
-      <ContactForm address={address} phone={phone} email={email} />
+      <ContactForm
+        address={address}
+        phone={phone}
+        email={email}
+        labels={{
+          firstName: globalSettings?.form_first_name_label,
+          lastName: globalSettings?.form_last_name_label,
+          email: globalSettings?.form_email_label,
+          message: globalSettings?.form_message_label,
+          submit: globalSettings?.form_submit_label,
+          submitting: globalSettings?.form_submitting_label,
+          successHeading: globalSettings?.form_success_heading,
+          successBody: globalSettings?.form_success_body,
+        }}
+      />
     </>
   )
 }

@@ -1,6 +1,18 @@
 'use client'
 
 import { useState } from 'react'
+import { DEFAULT_GLOBAL_SETTINGS as G } from '@/lib/defaults'
+
+interface ContactFormLabels {
+  firstName?: string | null
+  lastName?: string | null
+  email?: string | null
+  message?: string | null
+  submit?: string | null
+  submitting?: string | null
+  successHeading?: string | null
+  successBody?: string | null
+}
 
 interface ContactFormProps {
   address?: string | null
@@ -8,9 +20,20 @@ interface ContactFormProps {
   email?: string | null
   heading?: string | null
   subheading?: string | null
+  labels?: ContactFormLabels
 }
 
-export function ContactForm({ address, phone, email, heading, subheading }: ContactFormProps) {
+export function ContactForm({ address, phone, email, heading, subheading, labels }: ContactFormProps) {
+  const L = {
+    firstName: labels?.firstName ?? G.form_first_name_label,
+    lastName: labels?.lastName ?? G.form_last_name_label,
+    email: labels?.email ?? G.form_email_label,
+    message: labels?.message ?? G.form_message_label,
+    submit: labels?.submit ?? G.form_submit_label,
+    submitting: labels?.submitting ?? G.form_submitting_label,
+    successHeading: labels?.successHeading ?? G.form_success_heading,
+    successBody: labels?.successBody ?? G.form_success_body,
+  }
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -135,9 +158,9 @@ export function ContactForm({ address, phone, email, heading, subheading }: Cont
             {submitted ? (
               <div style={{ padding: 'var(--sv-sp-56)', background: 'var(--color-sv-light)', textAlign: 'center' }}>
                 <h3 style={{ fontFamily: 'var(--font-serif)', fontWeight: 400, fontSize: '1.75rem', marginBottom: '1rem' }}>
-                  Thank you
+                  {L.successHeading}
                 </h3>
-                <p style={{ color: 'var(--color-sv-slate)', margin: 0 }}>Your message has been received.</p>
+                <p style={{ color: 'var(--color-sv-slate)', margin: 0 }}>{L.successBody}</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1rem' }}>
@@ -146,22 +169,22 @@ export function ContactForm({ address, phone, email, heading, subheading }: Cont
                   className="contact-form-row"
                 >
                   <div>
-                    <label htmlFor="first_name" style={labelStyle}>First Name</label>
+                    <label htmlFor="first_name" style={labelStyle}>{L.firstName}</label>
                     <input id="first_name" name="first_name" type="text" required value={formData.first_name} onChange={handleChange} style={inputStyle} />
                   </div>
                   <div>
-                    <label htmlFor="last_name" style={labelStyle}>Last Name</label>
+                    <label htmlFor="last_name" style={labelStyle}>{L.lastName}</label>
                     <input id="last_name" name="last_name" type="text" required value={formData.last_name} onChange={handleChange} style={inputStyle} />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="email" style={labelStyle}>Email</label>
+                  <label htmlFor="email" style={labelStyle}>{L.email}</label>
                   <input id="email" name="email" type="email" required value={formData.email} onChange={handleChange} style={inputStyle} />
                 </div>
 
                 <div>
-                  <label htmlFor="message" style={labelStyle}>Message</label>
+                  <label htmlFor="message" style={labelStyle}>{L.message}</label>
                   <textarea id="message" name="message" required value={formData.message} onChange={handleChange} rows={7} style={{ ...inputStyle, resize: 'vertical' }} />
                 </div>
 
@@ -169,7 +192,7 @@ export function ContactForm({ address, phone, email, heading, subheading }: Cont
                   <p style={{ fontSize: '0.875rem', color: '#b91c1c', margin: 0 }}>{error}</p>
                 )}
                 <button type="submit" disabled={submitting} className="sv-btn sv-btn-primary" style={{ justifySelf: 'start' }}>
-                  {submitting ? 'Sending...' : 'Submit'}
+                  {submitting ? L.submitting : L.submit}
                 </button>
               </form>
             )}

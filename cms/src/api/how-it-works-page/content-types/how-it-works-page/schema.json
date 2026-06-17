@@ -6,18 +6,51 @@
     "pluralName": "how-it-works-pages",
     "displayName": "How It Works Page"
   },
-  "options": { "draftAndPublish": false },
+  "options": {
+    "draftAndPublish": false
+  },
   "attributes": {
-    "hero_heading":    { "type": "string" },
-    "hero_subheading": { "type": "string" },
-    "hero_image":      { "type": "media", "multiple": false, "allowedTypes": ["images"] },
-    "body_content":    { "type": "blocks" },
+    "hero_heading": {
+      "type": "string"
+    },
+    "hero_subheading": {
+      "type": "string"
+    },
+    "hero_image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "body_content": {
+      "type": "blocks"
+    },
     "sections": {
       "type": "component",
       "repeatable": true,
       "component": "shared.content-section"
     },
-    "meta_title":       { "type": "string" },
-    "meta_description": { "type": "text" }
+    "hero_eyebrow": {
+      "type": "string"
+    },
+    "approach_title": {
+      "type": "string"
+    },
+    "cta_eyebrow": {
+      "type": "string"
+    },
+    "cta_heading": {
+      "type": "string"
+    },
+    "cta_label": {
+      "type": "string"
+    },
+    "meta_title": {
+      "type": "string"
+    },
+    "meta_description": {
+      "type": "text"
+    }
   }
 }

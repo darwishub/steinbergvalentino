@@ -6,15 +6,43 @@
     "pluralName": "contact-pages",
     "displayName": "Contact Page"
   },
-  "options": { "draftAndPublish": false },
+  "options": {
+    "draftAndPublish": false
+  },
   "attributes": {
-    "hero_heading":    { "type": "string" },
-    "hero_subheading": { "type": "string" },
-    "hero_image":      { "type": "media", "multiple": false, "allowedTypes": ["images"] },
-    "address":         { "type": "string" },
-    "phone":           { "type": "string" },
-    "email":           { "type": "email" },
-    "meta_title":       { "type": "string" },
-    "meta_description": { "type": "text" }
+    "hero_heading": {
+      "type": "string"
+    },
+    "hero_subheading": {
+      "type": "string"
+    },
+    "hero_image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "address": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "email"
+    },
+    "hero_eyebrow": {
+      "type": "string"
+    },
+    "form_eyebrow": {
+      "type": "string"
+    },
+    "meta_title": {
+      "type": "string"
+    },
+    "meta_description": {
+      "type": "text"
+    }
   }
 }

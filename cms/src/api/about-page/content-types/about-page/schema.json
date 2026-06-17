@@ -6,21 +6,49 @@
     "pluralName": "about-pages",
     "displayName": "About Page"
   },
-  "options": { "draftAndPublish": false },
+  "options": {
+    "draftAndPublish": false
+  },
   "attributes": {
-    "hero_heading":    { "type": "string" },
-    "hero_subheading": { "type": "string" },
-    "hero_image":      { "type": "media", "multiple": false, "allowedTypes": ["images"] },
-    "body_content":    { "type": "blocks" },
+    "hero_heading": {
+      "type": "string"
+    },
+    "hero_subheading": {
+      "type": "string"
+    },
+    "hero_image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "body_content": {
+      "type": "blocks"
+    },
     "sections": {
       "type": "component",
       "repeatable": true,
       "component": "shared.content-section"
     },
-    "meta_title":       { "type": "string" },
-    "meta_description": { "type": "text" },
-    "show_contact_form":      { "type": "boolean", "default": true },
-    "contact_form_heading":   { "type": "string" },
-    "contact_form_subheading":{ "type": "string" }
+    "hero_eyebrow": {
+      "type": "string"
+    },
+    "meta_title": {
+      "type": "string"
+    },
+    "meta_description": {
+      "type": "text"
+    },
+    "show_contact_form": {
+      "type": "boolean",
+      "default": true
+    },
+    "contact_form_heading": {
+      "type": "string"
+    },
+    "contact_form_subheading": {
+      "type": "string"
+    }
   }
 }

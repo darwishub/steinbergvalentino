@@ -6,13 +6,50 @@
     "pluralName": "services-listing-pages",
     "displayName": "Services Listing Page"
   },
-  "options": { "draftAndPublish": false },
+  "options": {
+    "draftAndPublish": false
+  },
   "attributes": {
-    "hero_heading":    { "type": "string" },
-    "hero_subheading": { "type": "string" },
-    "hero_image":      { "type": "media", "multiple": false, "allowedTypes": ["images"] },
-    "approach_image":  { "type": "media", "multiple": false, "allowedTypes": ["images"] },
-    "meta_title":       { "type": "string" },
-    "meta_description": { "type": "text" }
+    "hero_heading": {
+      "type": "string"
+    },
+    "hero_subheading": {
+      "type": "string"
+    },
+    "hero_image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "approach_image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "hero_eyebrow": {
+      "type": "string"
+    },
+    "card_cta_label": {
+      "type": "string"
+    },
+    "cta_eyebrow": {
+      "type": "string"
+    },
+    "cta_heading": {
+      "type": "string"
+    },
+    "cta_label": {
+      "type": "string"
+    },
+    "meta_title": {
+      "type": "string"
+    },
+    "meta_description": {
+      "type": "text"
+    }
   }
 }

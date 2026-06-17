@@ -10,9 +10,11 @@ interface NavProps {
   items?: GlobalNavItem[] | null
   phone?: string | null
   searchPlaceholder?: string | null
+  ctaLabel?: string | null
 }
 
-export function Nav({ items, phone, searchPlaceholder }: NavProps) {
+export function Nav({ items, phone, searchPlaceholder, ctaLabel }: NavProps) {
+  const resolvedCtaLabel = ctaLabel ?? DEFAULT_GLOBAL_SETTINGS.nav_cta_label
   const pathname = usePathname()
   const router = useRouter()
   const [scrolled, setScrolled] = useState(false)
@@ -225,7 +227,7 @@ export function Nav({ items, phone, searchPlaceholder }: NavProps) {
 
             {/* ── Blackstone-style CTA button ── */}
             <Link href="/contact" className="sv-nav-cta">
-              Contact Us
+              {resolvedCtaLabel}
             </Link>
 
             {/* ── Search trigger ── */}
@@ -532,7 +534,7 @@ export function Nav({ items, phone, searchPlaceholder }: NavProps) {
               background: 'var(--color-sv-gold)',
             }}
           >
-            Contact Us
+            {resolvedCtaLabel}
           </Link>
           {phone && (
             <a

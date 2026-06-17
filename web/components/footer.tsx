@@ -18,6 +18,13 @@ interface FooterProps {
   socialInstagram?: string | null
   socialLinkedin?: string | null
   socialPinterest?: string | null
+  contactHeading?: string | null
+  emailLabel?: string | null
+  phoneLabel?: string | null
+  officeLabel?: string | null
+  firmHeading?: string | null
+  servicesHeading?: string | null
+  exchangesHeading?: string | null
 }
 
 export function Footer({
@@ -36,7 +43,22 @@ export function Footer({
   socialInstagram,
   socialLinkedin,
   socialPinterest,
+  contactHeading,
+  emailLabel,
+  phoneLabel,
+  officeLabel,
+  firmHeading,
+  servicesHeading,
+  exchangesHeading,
 }: FooterProps) {
+  const G = DEFAULT_GLOBAL_SETTINGS
+  const lblContact = contactHeading ?? G.footer_contact_heading
+  const lblEmail = emailLabel ?? G.footer_email_label
+  const lblPhone = phoneLabel ?? G.footer_phone_label
+  const lblOffice = officeLabel ?? G.footer_office_label
+  const lblFirm = firmHeading ?? G.footer_firm_heading
+  const lblServices = servicesHeading ?? G.footer_services_heading
+  const lblExchanges = exchangesHeading ?? G.footer_exchanges_heading
   const resolvedQuickLinks    = quickLinks?.length    ? quickLinks    : (DEFAULT_GLOBAL_SETTINGS.footer_quick_links ?? [])
   const resolvedServiceLinks  = serviceLinks?.length  ? serviceLinks  : (DEFAULT_GLOBAL_SETTINGS.footer_service_links ?? [])
   const resolvedExchangeLinks = exchangeLinks?.length ? exchangeLinks : (DEFAULT_GLOBAL_SETTINGS.footer_exchange_links ?? [])
@@ -84,11 +106,11 @@ export function Footer({
 
           {/* ── Contact column ────────────────────────────────────────── */}
           <div className="sv-footer__contact-col">
-            <p className="sv-footer__section-title">Contact</p>
+            <p className="sv-footer__section-title">{lblContact}</p>
             <div className="sv-footer__contact">
               {resolvedEmail && (
                 <a href={`mailto:${resolvedEmail}`} className="sv-footer__contact-link">
-                  <span className="sv-footer__contact-label">Email</span>
+                  <span className="sv-footer__contact-label">{lblEmail}</span>
                   {resolvedEmail}
                 </a>
               )}
@@ -97,13 +119,13 @@ export function Footer({
                   href={`tel:${resolvedPhone.replace(/[^\d+]/g, '')}`}
                   className="sv-footer__contact-link"
                 >
-                  <span className="sv-footer__contact-label">Phone</span>
+                  <span className="sv-footer__contact-label">{lblPhone}</span>
                   {resolvedPhone}
                 </a>
               )}
               {resolvedAddress && (
                 <p className="sv-footer__address">
-                  <span className="sv-footer__contact-label">Office</span>
+                  <span className="sv-footer__contact-label">{lblOffice}</span>
                   {resolvedAddress}
                 </p>
               )}
@@ -158,7 +180,7 @@ export function Footer({
 
           {/* ── The Firm ──────────────────────────────────────────────── */}
           <div className="sv-footer__nav-col">
-            <p className="sv-footer__section-title">The Firm</p>
+            <p className="sv-footer__section-title">{lblFirm}</p>
             <ul className="sv-footer__list">
               {resolvedQuickLinks.map((link) => (
                 <li key={link.href}>
@@ -170,7 +192,7 @@ export function Footer({
 
           {/* ── Services A ────────────────────────────────────────────── */}
           <div className="sv-footer__nav-col">
-            <p className="sv-footer__section-title">Services</p>
+            <p className="sv-footer__section-title">{lblServices}</p>
             <ul className="sv-footer__list">
               {serviceLinksA.map((link) => (
                 <li key={link.href}>
@@ -197,7 +219,7 @@ export function Footer({
 
           {/* ── Exchanges ─────────────────────────────────────────────── */}
           <div className="sv-footer__nav-col">
-            <p className="sv-footer__section-title">Exchanges</p>
+            <p className="sv-footer__section-title">{lblExchanges}</p>
             <ul className="sv-footer__list">
               {resolvedExchangeLinks.map((link) => (
                 <li key={link.href}>

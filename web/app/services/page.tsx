@@ -60,140 +60,95 @@ export default async function ServicesIndexPage() {
 
   return (
     <>
-      {/* ── Hero ────────────────────────────────────────────────────────── */}
-      <section className="frm-cta-band" style={{ paddingBlock: 'var(--sv-sp-80)', position: 'relative', overflow: 'hidden' }}>
-        {heroImage && (
-          <div className="exc2-hero__bg" aria-hidden="true">
-            <Image
-              src={getStrapiMedia(heroImage.url) ?? heroImage.url}
-              alt=""
-              width={heroImage.width || 1920}
-              height={heroImage.height || 1080}
-              priority
-              sizes="100vw"
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            />
-            <div className="exc2-hero__overlay" />
+      {/* ── Intro header — white, eyebrow + title left / deck right ───────── */}
+      <section className="bsx-intro">
+        <div className="sv-container">
+          {listingPage?.hero_eyebrow && <p className="bsx-eyebrow">{listingPage.hero_eyebrow}</p>}
+          <div className="bsx-intro__grid">
+            {heroHeading && <h1 className="bsx-intro__title">{heroHeading}</h1>}
+            {heroSubheading && <p className="bsx-intro__deck">{heroSubheading}</p>}
           </div>
-        )}
-        <div className="sv-container" style={{ position: 'relative', zIndex: 1 }}>
-          <p className="sv-eyebrow frm-cta-band__eyebrow">Services</p>
-          {heroHeading && (
-            <h1 className="frm-cta-band__heading">{heroHeading}</h1>
-          )}
-          {heroSubheading && (
-            <p style={{ color: 'rgba(255,255,255,0.72)', fontSize: '1.0625rem', marginTop: 'var(--sv-sp-16)' }}>
-              {heroSubheading}
-            </p>
-          )}
         </div>
       </section>
 
-      {/* ── Service Grid ─────────────────────────────────────────────────── */}
-      <section className="sv-section">
+      {/* ── Full-bleed hero media ────────────────────────────────────────── */}
+      {heroImage && (
+        <section className="bsx-media">
+          <div className="sv-container">
+            <div className="bsx-media__frame">
+              <Image
+                src={getStrapiMedia(heroImage.url) ?? heroImage.url}
+                alt=""
+                width={heroImage.width || 1600}
+                height={heroImage.height || 900}
+                priority
+                sizes="100vw"
+              />
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── Services grid — monochrome hairline cards ────────────────────── */}
+      <section className="bsx-band">
         <div className="sv-container">
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: '1px',
-              background: 'var(--color-sv-gray200)',
-            }}
-            className="services-listing-grid"
-          >
-            {services.map((svc) => (
-              <Link
-                key={svc.slug}
-                href={`/services/${svc.slug}`}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  padding: '2rem',
-                  background: 'var(--color-sv-white)',
-                  textDecoration: 'none',
-                  color: 'inherit',
-                  borderTop: '2px solid transparent',
-                  transition: 'border-top-color 0.2s, background-color 0.2s',
-                  gap: '0.75rem',
-                }}
-                className="svc-listing-link"
-              >
-                <h3
-                  style={{
-                    fontFamily: 'var(--font-serif)',
-                    fontWeight: 400,
-                    fontSize: '1.25rem',
-                    lineHeight: 1.3,
-                    color: 'var(--color-sv-black)',
-                  }}
-                >
-                  {svc.title}
-                </h3>
-                {svc.hero_subheading && (
-                  <p
-                    style={{
-                      fontSize: '0.9375rem',
-                      color: 'var(--color-sv-slate)',
-                      lineHeight: 1.6,
-                    }}
-                  >
-                    {svc.hero_subheading}
-                  </p>
-                )}
-                <span
-                  style={{
-                    marginTop: 'auto',
-                    fontSize: '0.8125rem',
-                    fontWeight: 500,
-                    letterSpacing: '0.06em',
-                    textTransform: 'uppercase',
-                    color: 'var(--color-sv-gold)',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.375rem',
-                  }}
-                >
-                  Learn More →
+          <div className="svc-index">
+            {services.map((svc, i) => (
+              <Link key={svc.slug} href={`/services/${svc.slug}`} className="svc-index__item">
+                <span className="svc-index__num" aria-hidden="true">
+                  {String(i + 1).padStart(2, '0')}
                 </span>
+                <h3 className="svc-index__title">{svc.title}</h3>
+                {svc.hero_subheading && <p className="svc-index__desc">{svc.hero_subheading}</p>}
+                {listingPage?.card_cta_label && (
+                  <span className="svc-index__cta">
+                    {listingPage.card_cta_label.replace(/[→\s]+$/, '')}
+                    <span className="svc-index__cta-circle" aria-hidden="true">
+                      →
+                    </span>
+                  </span>
+                )}
               </Link>
             ))}
           </div>
         </div>
-        <style>{`
-          @media (max-width: 1024px) { .services-listing-grid { grid-template-columns: repeat(2, 1fr) !important; } }
-          @media (max-width: 640px)  { .services-listing-grid { grid-template-columns: 1fr !important; } }
-          .svc-listing-link:hover { border-top-color: var(--color-sv-gold) !important; background-color: var(--color-sv-light) !important; }
-        `}</style>
       </section>
 
-      {/* ── Approach image banner ────────────────────────────────────────── */}
+      {/* ── Approach image band ──────────────────────────────────────────── */}
       {approachImage && (
-        <section style={{ lineHeight: 0, overflow: 'hidden', maxHeight: '420px' }}>
-          <Image
-            src={getStrapiMedia(approachImage.url) ?? approachImage.url}
-            alt="SteinbergValentino Group approach"
-            width={approachImage.width || 1920}
-            height={approachImage.height || 1080}
-            sizes="100vw"
-            style={{ width: '100%', height: '420px', objectFit: 'cover', objectPosition: 'center 40%' }}
-          />
+        <section className="bsx-media bsx-media--tight">
+          <div className="sv-container">
+            <div className="bsx-media__frame">
+              <Image
+                src={getStrapiMedia(approachImage.url) ?? approachImage.url}
+                alt=""
+                width={approachImage.width || 1920}
+                height={approachImage.height || 1080}
+                sizes="100vw"
+              />
+            </div>
+          </div>
         </section>
       )}
 
-      {/* ── CTA ──────────────────────────────────────────────────────────── */}
-      <section className="frm-cta-band">
-        <div className="sv-container frm-cta-band__inner">
-          <div>
-            <p className="sv-eyebrow frm-cta-band__eyebrow">Work With Us</p>
-            <h2 className="frm-cta-band__heading">
-              Ready to build your investor relations program?
-            </h2>
+      {/* ── CTA — dark band ──────────────────────────────────────────────── */}
+      {(listingPage?.cta_eyebrow || listingPage?.cta_heading || listingPage?.cta_label) && (
+        <section className="bsx-band bsx-band--dark bsx-cta">
+          <div className="sv-container bsx-cta__grid">
+            <div>
+              {listingPage?.cta_eyebrow && <p className="bsx-eyebrow">{listingPage.cta_eyebrow}</p>}
+              {listingPage?.cta_heading && (
+                <h2 className="bsx-cta__heading">{listingPage.cta_heading}</h2>
+              )}
+            </div>
+            {listingPage?.cta_label && (
+              <Link href="/contact" className="bsx-btn">
+                {listingPage.cta_label}
+              </Link>
+            )}
           </div>
-          <Link href="/contact" className="sv-btn sv-btn-gold">
-            Contact the Firm
-          </Link>
-        </div>
-      </section>
+        </section>
+      )}
     </>
   )
 }

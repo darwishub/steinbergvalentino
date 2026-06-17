@@ -14,7 +14,26 @@
     "hero_heading":    { "type": "string" },
     "hero_subheading": { "type": "string" },
     "hero_image":      { "type": "media", "multiple": false, "allowedTypes": ["images"] },
+    "overview_image":  { "type": "media", "multiple": false, "allowedTypes": ["images"] },
+    "overview_heading": { "type": "text" },
     "body_content":    { "type": "blocks" },
+    "stat_headline_label": { "type": "string" },
+    "stat_headline_value": { "type": "string" },
+    "stats": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.stat"
+    },
+    "media_band_image": { "type": "media", "multiple": false, "allowedTypes": ["images"] },
+    "quote_text":   { "type": "text" },
+    "quote_author": { "type": "string" },
+    "quote_role":   { "type": "string" },
+    "quote_image":  { "type": "media", "multiple": false, "allowedTypes": ["images"] },
+    "highlights": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.highlight"
+    },
     "sections": {
       "type": "component",
       "repeatable": true,

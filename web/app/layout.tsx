@@ -78,6 +78,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           items={navigation}
           phone={globalSettings?.contact_phone}
           searchPlaceholder={globalSettings?.search_placeholder}
+          ctaLabel={globalSettings?.nav_cta_label ?? DEFAULT_GLOBAL_SETTINGS.nav_cta_label}
         />
         <main className="flex-1">{children}</main>
         <Footer
@@ -91,6 +92,13 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           phone={globalSettings?.contact_phone}
           address={globalSettings?.address}
           copyright={globalSettings?.footer_copyright}
+          contactHeading={globalSettings?.footer_contact_heading ?? DEFAULT_GLOBAL_SETTINGS.footer_contact_heading}
+          emailLabel={globalSettings?.footer_email_label ?? DEFAULT_GLOBAL_SETTINGS.footer_email_label}
+          phoneLabel={globalSettings?.footer_phone_label ?? DEFAULT_GLOBAL_SETTINGS.footer_phone_label}
+          officeLabel={globalSettings?.footer_office_label ?? DEFAULT_GLOBAL_SETTINGS.footer_office_label}
+          firmHeading={globalSettings?.footer_firm_heading ?? DEFAULT_GLOBAL_SETTINGS.footer_firm_heading}
+          servicesHeading={globalSettings?.footer_services_heading ?? DEFAULT_GLOBAL_SETTINGS.footer_services_heading}
+          exchangesHeading={globalSettings?.footer_exchanges_heading ?? DEFAULT_GLOBAL_SETTINGS.footer_exchanges_heading}
           socialFacebook={globalSettings?.social_facebook ?? DEFAULT_GLOBAL_SETTINGS.social_facebook}
           socialTwitter={globalSettings?.social_twitter ?? DEFAULT_GLOBAL_SETTINGS.social_twitter}
           socialInstagram={globalSettings?.social_instagram ?? DEFAULT_GLOBAL_SETTINGS.social_instagram}
