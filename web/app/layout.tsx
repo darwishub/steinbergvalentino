@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Manrope } from 'next/font/google'
 import './globals.css'
 import { Nav } from '@/components/nav'
 import { Footer } from '@/components/footer'
+import { ContactDrawer } from '@/components/contact-drawer'
 import { DEFAULT_GLOBAL_SETTINGS } from '@/lib/defaults'
 import { getGlobalSettings } from '@/lib/strapi'
 
@@ -83,9 +84,18 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           phone={globalSettings?.contact_phone}
           searchPlaceholder={globalSettings?.search_placeholder}
           searchHeading={globalSettings?.search_heading}
-          ctaLabel={globalSettings?.nav_cta_label ?? DEFAULT_GLOBAL_SETTINGS.nav_cta_label}
         />
         <main className="flex-1">{children}</main>
+        <ContactDrawer
+          email={globalSettings?.contact_email ?? DEFAULT_GLOBAL_SETTINGS.contact_email}
+          phone={globalSettings?.contact_phone ?? DEFAULT_GLOBAL_SETTINGS.contact_phone}
+          address={globalSettings?.address ?? DEFAULT_GLOBAL_SETTINGS.address}
+          contactLabel={globalSettings?.nav_cta_label ?? DEFAULT_GLOBAL_SETTINGS.nav_cta_label}
+          emailLabel={globalSettings?.footer_email_label ?? DEFAULT_GLOBAL_SETTINGS.footer_email_label}
+          phoneLabel={globalSettings?.footer_phone_label ?? DEFAULT_GLOBAL_SETTINGS.footer_phone_label}
+          officeLabel={globalSettings?.footer_office_label ?? DEFAULT_GLOBAL_SETTINGS.footer_office_label}
+          ctaLabel={globalSettings?.service_cta_label ?? DEFAULT_GLOBAL_SETTINGS.service_cta_label}
+        />
         <Footer
           quickLinks={globalSettings?.footer_quick_links}
           serviceLinks={globalSettings?.footer_service_links}

@@ -1894,6 +1894,19 @@ img {
   color: var(--color-sv-white);
   padding-left: 5px;
 }
+.footer-link--btn {
+  all: unset;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.46);
+  text-decoration: none;
+  display: inline-block;
+  transition: color 0.2s, padding-left 0.2s;
+}
+.footer-link--btn:hover {
+  color: var(--color-sv-white);
+  padding-left: 5px;
+}
 .footer-link--sm {
   font-size: 0.7rem;
   letter-spacing: 0.03em;
@@ -2911,8 +2924,19 @@ img {
 
 .sv-marquee {
   background: #0b0c0f;
-  padding: clamp(88px, 13vh, 176px) 0 clamp(40px, 6vh, 72px);
   overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: clamp(260px, 42vh, 560px);
+}
+
+.sv-marquee .sv-container {
+  position: absolute;
+  bottom: clamp(46px, 6.8vh, 93px);
+  left: 0;
+  right: 0;
 }
 
 .sv-marquee__viewport {
@@ -2963,7 +2987,11 @@ img {
 
 @media (max-width: 768px) {
   .sv-marquee {
-    padding: clamp(64px, 10vh, 110px) 0 32px;
+    min-height: clamp(190px, 36vh, 400px);
+  }
+
+  .sv-marquee .sv-container {
+    bottom: 24px;
   }
 
   .sv-marquee__track {
@@ -5158,6 +5186,189 @@ img {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   CONTACT DRAWER — Blackstone-style slide-in panel from right
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.sv-drawer-root {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: flex;
+  align-items: stretch;
+}
+
+/* Blurred dark backdrop (left side) */
+.sv-drawer-backdrop {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  cursor: pointer;
+  animation: sv-drawer-fade-in 0.28s ease;
+}
+
+/* White panel (right side) */
+.sv-drawer-panel {
+  width: min(480px, 100vw);
+  background: var(--color-sv-white);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-y: auto;
+  animation: sv-drawer-slide-in 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes sv-drawer-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes sv-drawer-slide-in {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+/* Close button — top right */
+.sv-drawer-close {
+  position: absolute;
+  top: var(--sv-sp-24);
+  right: var(--sv-sp-24);
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-sv-black);
+  transition: color 0.15s;
+  padding: 0;
+}
+
+.sv-drawer-close:hover {
+  color: var(--color-sv-gold);
+}
+
+/* Body */
+.sv-drawer-body {
+  padding: var(--sv-sp-80) var(--sv-sp-64) var(--sv-sp-64);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.sv-drawer-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--color-sv-black);
+  margin: 0 0 var(--sv-sp-48);
+}
+
+/* Info block */
+.sv-drawer-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sv-sp-32);
+  margin-bottom: var(--sv-sp-48);
+}
+
+.sv-drawer-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sv-sp-6);
+}
+
+.sv-drawer-label {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-sv-gold);
+}
+
+.sv-drawer-value {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--color-sv-black);
+  margin: 0;
+}
+
+.sv-drawer-link {
+  text-decoration: none;
+  color: var(--color-sv-black);
+  transition: color 0.15s;
+}
+
+.sv-drawer-link:hover {
+  color: var(--color-sv-gold);
+}
+
+/* CTA */
+.sv-drawer-actions {
+  margin-top: auto;
+  padding-top: var(--sv-sp-48);
+  border-top: 1px solid var(--color-sv-gray200);
+}
+
+.sv-drawer-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sv-sp-12);
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-sv-white);
+  background: var(--color-sv-black);
+  padding: var(--sv-sp-16) var(--sv-sp-32);
+  transition: background 0.18s;
+}
+
+.sv-drawer-cta:hover {
+  background: var(--color-sv-gold);
+  color: var(--color-sv-dark);
+}
+
+/* Footer trigger — "Contact" section title becomes a button */
+.sv-footer__contact-trigger {
+  all: unset;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-sv-white);
+  margin-bottom: var(--sv-sp-20);
+  display: block;
+  transition: color 0.15s;
+}
+
+.sv-footer__contact-trigger:hover {
+  color: var(--color-sv-gold);
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .sv-drawer-panel {
+    width: 100vw;
+  }
+
+  .sv-drawer-body {
+    padding: var(--sv-sp-64) var(--sv-sp-24) var(--sv-sp-40);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    EXCHANGE PAGES — Premium Profile Template with per-exchange imagery
    ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -7059,3 +7270,8 @@ img {
 @media (max-width: 600px) {
   .svc-news__grid { grid-template-columns: 1fr; }
 }
+
+
+
+
+

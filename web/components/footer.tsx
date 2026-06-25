@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { DEFAULT_GLOBAL_SETTINGS } from '@/lib/defaults'
 import type { SiteLink } from '@/lib/types'
+import { ContactTrigger } from '@/components/contact-drawer'
 
 interface FooterProps {
   quickLinks?: SiteLink[] | null
@@ -106,7 +107,9 @@ export function Footer({
 
           {/* ── Contact column ────────────────────────────────────────── */}
           <div className="sv-footer__contact-col">
-            <p className="sv-footer__section-title">{lblContact}</p>
+            <ContactTrigger className="sv-footer__contact-trigger">
+              {lblContact}
+            </ContactTrigger>
             <div className="sv-footer__contact">
               {resolvedEmail && (
                 <a href={`mailto:${resolvedEmail}`} className="sv-footer__contact-link">
@@ -182,11 +185,19 @@ export function Footer({
           <div className="sv-footer__nav-col">
             <p className="sv-footer__section-title">{lblFirm}</p>
             <ul className="sv-footer__list">
-              {resolvedQuickLinks.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className="footer-link">{link.label}</Link>
-                </li>
-              ))}
+              {resolvedQuickLinks.map((link) =>
+                link.href === '/contact' ? (
+                  <li key={link.href}>
+                    <ContactTrigger className="footer-link footer-link--btn">
+                      {link.label}
+                    </ContactTrigger>
+                  </li>
+                ) : (
+                  <li key={link.href}>
+                    <Link href={link.href} className="footer-link">{link.label}</Link>
+                  </li>
+                )
+              )}
             </ul>
           </div>
 

@@ -11,11 +11,9 @@ interface NavProps {
   phone?: string | null
   searchPlaceholder?: string | null
   searchHeading?: string | null
-  ctaLabel?: string | null
 }
 
-export function Nav({ items, phone, searchPlaceholder, searchHeading, ctaLabel }: NavProps) {
-  const resolvedCtaLabel = ctaLabel ?? DEFAULT_GLOBAL_SETTINGS.nav_cta_label
+export function Nav({ items, phone, searchPlaceholder, searchHeading }: NavProps) {
   const pathname = usePathname()
   const router = useRouter()
   const [scrolled, setScrolled] = useState(false)
@@ -225,11 +223,6 @@ export function Nav({ items, phone, searchPlaceholder, searchHeading, ctaLabel }
                 </div>
               )
             })}
-
-            {/* ── Blackstone-style CTA button ── */}
-            <Link href="/contact" className="sv-nav-cta">
-              {resolvedCtaLabel}
-            </Link>
 
             {/* ── Search trigger ── */}
             <button
@@ -524,24 +517,6 @@ export function Nav({ items, phone, searchPlaceholder, searchHeading, ctaLabel }
             gap: '0.75rem',
           }}
         >
-          <Link
-            href="/contact"
-            onClick={() => setMobileOpen(false)}
-            style={{
-              display: 'block',
-              textAlign: 'center',
-              padding: '0.9rem',
-              fontSize: '0.78rem',
-              fontWeight: 600,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              textDecoration: 'none',
-              color: 'var(--color-sv-dark)',
-              background: 'var(--color-sv-gold)',
-            }}
-          >
-            {resolvedCtaLabel}
-          </Link>
           {phone && (
             <a
               href={`tel:${phone.replace(/[^\d+]/g, '')}`}
