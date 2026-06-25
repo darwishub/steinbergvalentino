@@ -59,6 +59,12 @@ __pycache__/
 
 # ─── Analysis / migration output ──────────────────────────────────────────────
 output/
+outputs/
+.tmp/
+_staging_backup/
+SV-Blackstone-Page-Mapping.csv
+SV-Page-Blackstone-Mapping.xlsx
+SV-vs-Blackstone-Page-Mapping.xlsx
 
 # ─── Misc ─────────────────────────────────────────────────────────────────────
 coverage/
