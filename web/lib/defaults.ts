@@ -155,4 +155,9 @@ export const DEFAULT_GLOBAL_SETTINGS: GlobalSettings = {
   exchange_cta_eyebrow: 'Ready to List?',
   exchange_cta_heading: 'Let us guide your {exchange} listing journey.',
   exchange_cta_label: 'Contact the Firm',
+  service_breadcrumb_label: 'Services',
+  sitemap_eyebrow: 'Site Index',
+  sitemap_firm_heading: 'The Firm',
+  sitemap_services_heading: 'Services',
+  sitemap_exchanges_heading: 'Exchanges',
 }

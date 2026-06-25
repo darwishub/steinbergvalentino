@@ -13,6 +13,7 @@ import type {
   StrapiListResponse,
   StrapiSingleResponse,
 } from './types'
+import { DEFAULT_GLOBAL_SETTINGS } from './defaults'
 
 // Use 127.0.0.1 to avoid IPv6 localhost resolution issues in Node 18+
 const STRAPI_URL =
@@ -107,7 +108,10 @@ export async function getServicesListingPage(): Promise<ServicesListingPage> {
 
 export async function getGlobalSettings(): Promise<GlobalSettings> {
   const res = await fetchAPI<StrapiSingleResponse<GlobalSettings>>('/global-setting')
-  return res.data
+  return {
+    ...DEFAULT_GLOBAL_SETTINGS,
+    ...res.data,
+  }
 }
 
 export async function getAllServicePages(): Promise<ServicePage[]> {
@@ -118,9 +122,47 @@ export async function getAllServicePages(): Promise<ServicePage[]> {
 }
 
 export async function getServicePage(slug: string): Promise<ServicePage | null> {
-  const res = await fetchAPI<StrapiListResponse<ServicePage>>(
-    `/service-pages?filters[slug][$eq]=${slug}&populate[hero_image][fields][0]=url&populate[hero_image][fields][1]=width&populate[hero_image][fields][2]=height&populate[hero_image][fields][3]=alternativeText&populate[overview_image][fields][0]=url&populate[overview_image][fields][1]=width&populate[overview_image][fields][2]=height&populate[overview_image][fields][3]=alternativeText&populate[media_band_image][fields][0]=url&populate[media_band_image][fields][1]=width&populate[media_band_image][fields][2]=height&populate[media_band_image][fields][3]=alternativeText&populate[quote_image][fields][0]=url&populate[quote_image][fields][1]=width&populate[quote_image][fields][2]=height&populate[quote_image][fields][3]=alternativeText&populate[stats]=*&populate[highlights]=*&populate[sections][populate]=image&populate[faq_items]=*`
-  )
+  const fullPath =
+    `/service-pages?filters[slug][$eq]=${slug}` +
+    '&populate[hero_image][fields][0]=url' +
+    '&populate[hero_image][fields][1]=width' +
+    '&populate[hero_image][fields][2]=height' +
+    '&populate[hero_image][fields][3]=alternativeText' +
+    '&populate[overview_image][fields][0]=url' +
+    '&populate[overview_image][fields][1]=width' +
+    '&populate[overview_image][fields][2]=height' +
+    '&populate[overview_image][fields][3]=alternativeText' +
+    '&populate[media_band_image][fields][0]=url' +
+    '&populate[media_band_image][fields][1]=width' +
+    '&populate[media_band_image][fields][2]=height' +
+    '&populate[media_band_image][fields][3]=alternativeText' +
+    '&populate[quote_image][fields][0]=url' +
+    '&populate[quote_image][fields][1]=width' +
+    '&populate[quote_image][fields][2]=height' +
+    '&populate[quote_image][fields][3]=alternativeText' +
+    '&populate[stats]=*' +
+    '&populate[highlights]=*' +
+    '&populate[sections][populate]=image' +
+    '&populate[faq_items]=*'
+
+  try {
+    const res = await fetchAPI<StrapiListResponse<ServicePage>>(fullPath)
+    return res.data[0] ?? null
+  } catch {
+    // Older staging CMS schemas reject newer populate keys; retry with the
+    // compatible subset so pages still render with the images/sections they have.
+  }
+
+  const fallbackPath =
+    `/service-pages?filters[slug][$eq]=${slug}` +
+    '&populate[hero_image][fields][0]=url' +
+    '&populate[hero_image][fields][1]=width' +
+    '&populate[hero_image][fields][2]=height' +
+    '&populate[hero_image][fields][3]=alternativeText' +
+    '&populate[sections][populate]=image' +
+    '&populate[faq_items]=*'
+
+  const res = await fetchAPI<StrapiListResponse<ServicePage>>(fallbackPath)
   return res.data[0] ?? null
 }
 

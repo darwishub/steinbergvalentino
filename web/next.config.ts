@@ -138,6 +138,8 @@ const nextConfig: NextConfig = {
     ],
     formats: ['image/avif', 'image/webp'],
     qualities: [75, 80],
+    // Cache optimized images for 31 days → faster repeat loads, less optimizer recompute
+    minimumCacheTTL: 2678400,
   },
   async redirects() {
     return legacyRedirects

@@ -72,19 +72,23 @@ export default async function ServiceDetailPage({ params }: Props) {
     } catch {
       /* offline */
     }
-    return <BxmaService page={page} article={article} gs={gs} />
+    const enrichedPage = {
+      ...page,
+      hero_subheading: page.hero_subheading || scrapedPage?.heroSubheading || null,
+    }
+    return <BxmaService page={enrichedPage} article={article} gs={gs} />
   }
 
   const resolvedPage = page
     ? {
         hero_heading: page.hero_heading,
-        hero_subheading: page.hero_subheading,
+        hero_subheading: page.hero_subheading || scrapedPage?.heroSubheading || null,
         hero_image: page.hero_image,
         overview_image: page.overview_image ?? null,
         overview_heading: page.overview_heading ?? null,
-        body_content: page.body_content,
+        body_content: page.body_content?.length ? page.body_content : (scrapedPage?.bodyContent ?? null),
         highlights: page.highlights ?? [],
-        sections: page.sections,
+        sections: page.sections?.length ? page.sections : (scrapedPage?.sections ?? []),
         faq_items: page.faq_items,
         title: page.title,
       }

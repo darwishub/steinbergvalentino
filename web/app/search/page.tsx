@@ -6,8 +6,10 @@ import { getSearchIndex, runSearch } from '@/lib/search'
 
 export const revalidate = 3600
 
+const PER_PAGE = 10
+
 interface Props {
-  searchParams: Promise<{ q?: string | string[] }>
+  searchParams: Promise<{ q?: string | string[]; page?: string | string[] }>
 }
 
 function firstParam(value: string | string[] | undefined): string {
@@ -38,7 +40,9 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 }
 
 export default async function SearchPage({ searchParams }: Props) {
-  const query = firstParam((await searchParams).q).trim()
+  const sp = await searchParams
+  const query = firstParam(sp.q).trim()
+  const currentPage = Math.max(1, parseInt(firstParam(sp.page) || '1', 10))
 
   let settings = null
   try {
@@ -49,40 +53,33 @@ export default async function SearchPage({ searchParams }: Props) {
   const G = DEFAULT_GLOBAL_SETTINGS
   const s = <K extends keyof typeof G>(k: K) => settings?.[k] ?? G[k]
 
-  const heading = s('search_heading')
+  const heading   = s('search_heading')
   const placeholder = s('search_placeholder')
-  const eyebrow = s('search_eyebrow')
-  const buttonLabel = s('search_button_label')
   const emptyText = s('search_empty_text')
-  const resultSingular = s('search_results_singular')
-  const resultPlural = s('search_results_plural')
-  const TYPE_LABEL: Record<string, string | null> = {
-    Page: s('search_type_page'),
-    Service: s('search_type_service'),
-    Exchange: s('search_type_exchange'),
-  }
 
-  const results = query ? runSearch(await getSearchIndex(), query) : []
+  const allResults  = query ? runSearch(await getSearchIndex(), query) : []
+  const totalPages  = Math.ceil(allResults.length / PER_PAGE)
+  const safePage    = Math.min(currentPage, Math.max(totalPages, 1))
+  const results     = allResults.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE)
+
+  const pageUrl = (p: number) =>
+    `/search?q=${encodeURIComponent(query)}&page=${p}`
 
   return (
-    <section className="sv-section sv-bg-light">
-      <div className="sv-container" style={{ maxWidth: '820px' }}>
-        {eyebrow && (
-          <p className="sv-eyebrow" style={{ marginBottom: 'var(--sv-sp-16)' }}>
-            {eyebrow}
-          </p>
-        )}
-        <h1 className="sv-display" style={{ marginBottom: 'var(--sv-sp-24)' }}>
-          {heading}
-        </h1>
+    <section className="bsx-search__page">
+      <div className="sv-container">
 
-        {/* Self-contained GET form — works without JS and is shareable */}
-        <form
-          action="/search"
-          method="get"
-          role="search"
-          style={{ display: 'flex', gap: '0.75rem', marginBottom: 'var(--sv-sp-32)' }}
-        >
+        {/* Large "Search" heading */}
+        <h1 className="bsx-search__title">{heading}</h1>
+
+        {/* Full-width bordered input — search icon inside left */}
+        <form action="/search" method="get" role="search" className="bsx-search__form">
+          <span className="bsx-search__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="10.5" cy="10.5" r="6.5" />
+              <path d="M20 20l-4.5-4.5" />
+            </svg>
+          </span>
           <input
             type="search"
             name="q"
@@ -90,115 +87,74 @@ export default async function SearchPage({ searchParams }: Props) {
             placeholder={placeholder ?? undefined}
             aria-label="Search the site"
             autoFocus
-            style={{
-              flex: 1,
-              minWidth: 0,
-              padding: '0.85rem 1.1rem',
-              fontSize: '1rem',
-              fontFamily: 'var(--font-manrope), system-ui, sans-serif',
-              color: 'var(--color-sv-black)',
-              background: 'var(--color-sv-white)',
-              border: '1px solid var(--color-sv-gray200)',
-              outline: 'none',
-            }}
+            className="bsx-search__input"
           />
-          <button
-            type="submit"
-            style={{
-              flexShrink: 0,
-              padding: '0.85rem 1.6rem',
-              fontSize: '0.78rem',
-              fontWeight: 600,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              color: 'var(--color-sv-dark)',
-              background: 'var(--color-sv-gold)',
-              border: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            {buttonLabel}
-          </button>
         </form>
 
+        {/* "Results (N)" count */}
         {query && (
-          <p
-            style={{
-              fontSize: '0.95rem',
-              color: 'var(--color-sv-slate)',
-              marginBottom: 'var(--sv-sp-24)',
-            }}
-          >
-            {results.length > 0
-              ? `${results.length} ${results.length === 1 ? resultSingular : resultPlural} for "${query}"`
-              : `No ${resultPlural} for "${query}". Try a different term.`}
+          <p className="bsx-search__meta">
+            {allResults.length > 0
+              ? `Results (${allResults.length})`
+              : `No results for "${query}". Try a different term.`}
           </p>
         )}
 
-        {!query && (
-          <p style={{ fontSize: '1.0625rem', color: 'var(--color-sv-slate)', lineHeight: 1.7 }}>
-            {emptyText}
-          </p>
-        )}
+        {/* Empty-state hint */}
+        {!query && <p className="bsx-search__empty">{emptyText}</p>}
 
+        {/* Results list — hairline rows */}
         {results.length > 0 && (
-          <ul
-            style={{
-              listStyle: 'none',
-              margin: 0,
-              padding: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 'var(--sv-sp-16)',
-            }}
-          >
+          <ul className="bsx-search__list">
             {results.map((result) => (
-              <li key={result.url}>
-                <Link
-                  href={result.url}
-                  style={{
-                    display: 'block',
-                    padding: 'var(--sv-sp-24)',
-                    background: 'var(--color-sv-white)',
-                    border: '1px solid var(--color-sv-gray200)',
-                    textDecoration: 'none',
-                  }}
-                >
-                  <span
-                    className="sv-eyebrow"
-                    style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.65rem' }}
-                  >
-                    {TYPE_LABEL[result.type] ?? result.type}
-                  </span>
-                  <span
-                    style={{
-                      display: 'block',
-                      fontFamily: 'var(--font-cormorant), Georgia, serif',
-                      fontSize: '1.35rem',
-                      fontWeight: 600,
-                      color: 'var(--color-sv-black)',
-                      marginBottom: '0.4rem',
-                    }}
-                  >
-                    {result.title}
-                  </span>
+              <li key={result.url} className="bsx-search__item">
+                <Link href={result.url} className="bsx-search__link">
+                  <span className="bsx-search__headline">{result.title}</span>
                   {result.snippet && (
-                    <span
-                      style={{
-                        display: 'block',
-                        fontSize: '0.95rem',
-                        color: 'var(--color-sv-slate)',
-                        lineHeight: 1.6,
-                      }}
-                    >
-                      {result.snippet}
-                    </span>
+                    <span className="bsx-search__snippet">{result.snippet}</span>
                   )}
                 </Link>
               </li>
             ))}
           </ul>
         )}
+
+        {/* Pagination — only when multiple pages */}
+        {totalPages > 1 && (
+          <nav className="bsx-search__pagination" aria-label="Search results pages">
+            {/* Prev arrow */}
+            {safePage > 1 && (
+              <Link href={pageUrl(safePage - 1)} className="bsx-search__pag-arrow bsx-search__pag-arrow--prev" aria-label="Previous page">
+                <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                  <path d="M10 3L5 8l5 5" />
+                </svg>
+              </Link>
+            )}
+
+            {/* Page numbers */}
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) =>
+              p === safePage ? (
+                <span key={p} className="bsx-search__pag-item bsx-search__pag-item--active" aria-current="page">
+                  {p}
+                </span>
+              ) : (
+                <Link key={p} href={pageUrl(p)} className="bsx-search__pag-item">
+                  {p}
+                </Link>
+              )
+            )}
+
+            {/* Next arrow */}
+            {safePage < totalPages && (
+              <Link href={pageUrl(safePage + 1)} className="bsx-search__pag-arrow" aria-label="Next page">
+                <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                  <path d="M6 3l5 5-5 5" />
+                </svg>
+              </Link>
+            )}
+          </nav>
+        )}
+
       </div>
     </section>
   )

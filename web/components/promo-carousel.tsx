@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import { getStrapiMedia } from '@/lib/strapi'
+import { SafeImage } from '@/components/safe-image'
 
 interface Slide {
   image_url: string
@@ -15,10 +17,11 @@ interface Props {
   slides?: Slide[] | null
 }
 
+const STRAPI_BASE = process.env.NEXT_PUBLIC_STRAPI_URL ?? 'http://localhost:1337'
+
 const FALLBACK_SLIDES: Slide[] = [
   {
-    image_url:
-      'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1200&q=80&auto=format&fit=crop',
+    image_url: `${STRAPI_BASE}/uploads/pexels_carousel_city_224e96033f.jpg`,
     title: 'Premier Investor Relations for Public Companies',
     blurb:
       'SteinbergValentino Group delivers institutional-grade IR strategy and capital markets expertise to small and mid-cap public companies worldwide.',
@@ -45,34 +48,8 @@ const FALLBACK_SLIDES: Slide[] = [
   },
 ]
 
-/**
- * Build a responsive srcSet for Unsplash and Strapi image URLs.
- * Unsplash supports ?w= param; Strapi serves static files so we only
- * return the single URL as a srcset hint.
- */
-function buildSrcSet(url: string): string | undefined {
-  if (!url.includes('unsplash.com')) return undefined
-  try {
-    const u = new URL(url)
-    u.searchParams.delete('w')
-    u.searchParams.delete('q')
-    const base = u.toString()
-    // 750 closes the gap between 640→960 for mid-range mobile (720–900px viewport)
-    const widths = [640, 750, 960, 1200, 1600]
-    const qualities: Record<number, number> = { 640: 72, 750: 75, 960: 78, 1200: 80, 1600: 80 }
-    return widths
-      .map((w) => {
-        const variant = new URL(base)
-        variant.searchParams.set('w', String(w))
-        variant.searchParams.set('q', String(qualities[w]))
-        variant.searchParams.set('auto', 'format')
-        variant.searchParams.set('fit', 'crop')
-        return `${variant.toString()} ${w}w`
-      })
-      .join(', ')
-  } catch {
-    return undefined
-  }
+function resolveSlideImage(url: string): string {
+  return getStrapiMedia(url) ?? url
 }
 
 function ArrowIcon({ dir }: { dir: 'left' | 'right' }) {
@@ -118,19 +95,13 @@ export function PromoCarousel({ slides: slidesProp }: Props) {
       <div className="sv-container sv-pcarousel__media-wrap">
       <div className="sv-pcarousel__media">
         {slides.map((s, i) => (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <SafeImage
             key={i}
-            src={s.image_url}
-            srcSet={buildSrcSet(s.image_url)}
-            sizes="(min-width: 1469px) 1250px, (min-width: 1281px) calc(98vw - 190px), (min-width: 769px) calc(98vw - 100px), calc(98vw - 40px)"
+            src={resolveSlideImage(s.image_url)}
             alt=""
-            aria-hidden="true"
-            /* First slide is the LCP element — load eagerly with high priority.
-               All subsequent slides are hidden behind CSS; lazy-load them. */
-            loading={i === 0 ? 'eager' : 'lazy'}
-            fetchPriority={i === 0 ? 'high' : 'low'}
-            decoding={i === 0 ? 'sync' : 'async'}
+            fill
+            sizes="(min-width: 1469px) 1250px, (min-width: 1281px) calc(98vw - 190px), (min-width: 769px) calc(98vw - 100px), calc(98vw - 40px)"
+            priority={i === 0}
             className={`sv-pcarousel__img${i === current ? ' is-active' : ''}`}
           />
         ))}

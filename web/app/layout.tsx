@@ -31,6 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const siteName = globalSettings?.site_name ?? 'SteinbergValentino Group'
 
   return {
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.steinbergvalentino.com'),
     title: {
       /* No template — each page returns its own complete title from Strapi.
          The default applies only when a page has no generateMetadata at all. */
@@ -51,6 +52,9 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       type: 'website',
       siteName,
+    },
+    twitter: {
+      card: 'summary_large_image',
     },
   }
 }
@@ -78,6 +82,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           items={navigation}
           phone={globalSettings?.contact_phone}
           searchPlaceholder={globalSettings?.search_placeholder}
+          searchHeading={globalSettings?.search_heading}
           ctaLabel={globalSettings?.nav_cta_label ?? DEFAULT_GLOBAL_SETTINGS.nav_cta_label}
         />
         <main className="flex-1">{children}</main>

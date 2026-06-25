@@ -145,8 +145,8 @@ export default async function HomePage() {
   const heroLines = splitEditorialHeading(heroHeading)
 
   /* First carousel image — preload for LCP improvement on mobile */
-  const firstSlideUrl = hs?.carousel_slides?.[0]?.image_url
-    ?? 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=960&q=80&auto=format&fit=crop'
+  const firstSlideUrl = getStrapiMedia(hs?.carousel_slides?.[0]?.image_url)
+    ?? `${process.env.NEXT_PUBLIC_STRAPI_URL ?? 'http://localhost:1337'}/uploads/pexels_carousel_city_224e96033f.jpg`
 
   return (
     <>

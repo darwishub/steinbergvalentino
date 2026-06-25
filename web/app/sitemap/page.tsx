@@ -10,14 +10,6 @@ import type { ExchangePage, ServicePage, SiteLink } from '@/lib/types'
 
 export const revalidate = 3600
 
-const CORE_PAGES: SiteLink[] = [
-  { label: 'Home', href: '/' },
-  { label: 'About', href: '/about' },
-  { label: 'How It Works', href: '/how-it-works' },
-  { label: 'Capabilities', href: '/capabilities' },
-  { label: 'Industry Expertise', href: '/industry-expertise' },
-  { label: 'Contact Us', href: '/contact' },
-]
 
 export async function generateMetadata(): Promise<Metadata> {
   try {
@@ -93,6 +85,13 @@ export default async function SitemapPage() {
   ])
 
   const resolvedSettings = settings ?? DEFAULT_GLOBAL_SETTINGS
+  const G = DEFAULT_GLOBAL_SETTINGS
+
+  const firmItems =
+    resolvedSettings.footer_quick_links ??
+    G.footer_quick_links ??
+    []
+
   const serviceItems =
     services.length > 0
       ? services.map((service) => ({
@@ -117,7 +116,7 @@ export default async function SitemapPage() {
       <section className="sv-section sv-bg-light">
         <div className="sv-container" style={{ maxWidth: '960px' }}>
           <p className="sv-eyebrow" style={{ marginBottom: 'var(--sv-sp-16)' }}>
-            Site Index
+            {resolvedSettings.sitemap_eyebrow ?? G.sitemap_eyebrow}
           </p>
           <h1 className="sv-display" style={{ marginBottom: 'var(--sv-sp-24)' }}>
             {resolvedSettings.sitemap_heading ?? DEFAULT_GLOBAL_SETTINGS.sitemap_heading}
@@ -146,9 +145,9 @@ export default async function SitemapPage() {
             }}
             className="sitemap-grid"
           >
-            <PageColumn title="The Firm" items={CORE_PAGES} />
-            <PageColumn title="Services" items={serviceItems} />
-            <PageColumn title="Exchanges" items={exchangeItems} />
+            <PageColumn title={resolvedSettings.sitemap_firm_heading ?? G.sitemap_firm_heading!} items={firmItems} />
+            <PageColumn title={resolvedSettings.sitemap_services_heading ?? G.sitemap_services_heading!} items={serviceItems} />
+            <PageColumn title={resolvedSettings.sitemap_exchanges_heading ?? G.sitemap_exchanges_heading!} items={exchangeItems} />
           </div>
         </div>
         <style>{`

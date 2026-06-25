@@ -326,6 +326,11 @@ export interface GlobalSettings {
   exchange_cta_eyebrow: string | null
   exchange_cta_heading: string | null
   exchange_cta_label: string | null
+  service_breadcrumb_label: string | null
+  sitemap_eyebrow: string | null
+  sitemap_firm_heading: string | null
+  sitemap_services_heading: string | null
+  sitemap_exchanges_heading: string | null
 }
 
 /* ─── Collection Types ───────────────────────────────────────────────────── */

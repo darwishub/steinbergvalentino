@@ -1,6 +1,7 @@
 import React from 'react'
 import type { StrapiBlock, StrapiMedia } from '@/lib/types'
 import { getStrapiMedia } from '@/lib/strapi'
+import { SafeImage } from '@/components/safe-image'
 
 type InlineChild = {
   type: string
@@ -122,18 +123,13 @@ export function BlocksContent({ blocks, className }: BlocksContentProps) {
             if (!img?.url) return null
             const src = getStrapiMedia(img.url) ?? img.url
             return (
-              <figure
-                key={i}
-                style={{ margin: '1.5rem 0', lineHeight: 0 }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+              <figure key={i} style={{ margin: '1.5rem 0', lineHeight: 0 }}>
+                <SafeImage
                   src={src}
                   alt={img.alternativeText ?? ''}
-                  width={img.width || undefined}
-                  height={img.height || undefined}
+                  width={img.width || 1200}
+                  height={img.height || 800}
                   style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
-                  loading="lazy"
                 />
               </figure>
             )

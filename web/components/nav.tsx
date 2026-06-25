@@ -10,10 +10,11 @@ interface NavProps {
   items?: GlobalNavItem[] | null
   phone?: string | null
   searchPlaceholder?: string | null
+  searchHeading?: string | null
   ctaLabel?: string | null
 }
 
-export function Nav({ items, phone, searchPlaceholder, ctaLabel }: NavProps) {
+export function Nav({ items, phone, searchPlaceholder, searchHeading, ctaLabel }: NavProps) {
   const resolvedCtaLabel = ctaLabel ?? DEFAULT_GLOBAL_SETTINGS.nav_cta_label
   const pathname = usePathname()
   const router = useRouter()
@@ -307,39 +308,44 @@ export function Nav({ items, phone, searchPlaceholder, ctaLabel }: NavProps) {
           aria-modal="true"
           aria-label="Site search"
           className="sv-search-overlay"
-          onClick={() => setSearchOpen(false)}
         >
-          <form
-            onSubmit={submitSearch}
-            onClick={(e) => e.stopPropagation()}
-            role="search"
-            className="sv-search-box"
+          {/* Close — sits where the search icon lives in the nav */}
+          <button
+            type="button"
+            aria-label="Close search"
+            onClick={() => setSearchOpen(false)}
+            className="sv-search-close"
           >
-            <SearchIcon size={20} />
-            <input
-              ref={searchInputRef}
-              type="search"
-              name="q"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={placeholder}
-              aria-label="Search the site"
-              className="sv-search-input"
-            />
-            <button type="submit" className="sv-search-submit">
-              Search
-            </button>
-            <button
-              type="button"
-              aria-label="Close search"
-              onClick={() => setSearchOpen(false)}
-              className="sv-search-close"
-            >
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-              </svg>
-            </button>
-          </form>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </button>
+
+          {/* Content — matches /search page layout */}
+          <div className="sv-search-inner">
+            <div className="sv-container">
+              <h2 className="sv-search-heading">{searchHeading || 'Search'}</h2>
+              <form
+                onSubmit={submitSearch}
+                role="search"
+                className="sv-search-form"
+              >
+                <span className="sv-search-icon-wrap" aria-hidden="true">
+                  <SearchIcon size={22} />
+                </span>
+                <input
+                  ref={searchInputRef}
+                  type="search"
+                  name="q"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={placeholder}
+                  aria-label="Search the site"
+                  className="sv-search-input"
+                />
+              </form>
+            </div>
+          </div>
         </div>
       )}
 

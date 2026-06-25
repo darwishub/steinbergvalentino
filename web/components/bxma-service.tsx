@@ -10,6 +10,21 @@ import type { Article, ServicePage, GlobalSettings } from '@/lib/types'
  * keeps the standard layout in page.tsx.
  */
 export const BXMA_SLUGS = new Set([
+  'advisory',
+  'market-entry',
+  'media-relations',
+  'media-strategy',
+  'multicultural-engagement',
+  'strategic-advisory',
+  'transactional-advisory',
+  'capital-formation',
+  'strategic-communications',
+  'financial-marketing',
+  'crises-management',
+  'litigation-communications',
+])
+
+const MARKET_ENTRY_SLUGS = new Set([
   'market-entry',
   'media-relations',
   'media-strategy',
@@ -32,14 +47,15 @@ export function BxmaService({
   const stats = page.stats ?? []
   const highlights = page.highlights ?? []
   const sections = page.sections ?? []
+  const isDarkHero = MARKET_ENTRY_SLUGS.has(page.slug)
 
   return (
     <>
       {/* ── Intro header ─────────────────────────────────────────────────── */}
-      <section className="bsx-intro">
+      <section className={isDarkHero ? 'bsx-intro bsx-intro--dark' : 'bsx-intro'}>
         <div className="sv-container">
           <nav className="bsx-breadcrumb">
-            <Link href="/services">Services</Link>
+            <Link href="/services">{gs.service_breadcrumb_label ?? 'Services'}</Link>
             <span aria-hidden="true">›</span>
             <span>{page.title}</span>
           </nav>
@@ -53,7 +69,7 @@ export function BxmaService({
 
       {/* ── Full-bleed hero media ────────────────────────────────────────── */}
       {heroImg && (
-        <section className="bsx-media">
+        <section className={isDarkHero ? 'bsx-media bsx-media--dark' : 'bsx-media'}>
           <div className="sv-container">
             <div className="bsx-media__frame">
               <Image
@@ -259,6 +275,27 @@ export function BxmaService({
                 </figcaption>
               )}
             </figure>
+          </div>
+        </section>
+      )}
+
+      {/* ── Bottom CTA — black band (consistent with every other page) ────── */}
+      {(gs.service_cta_eyebrow || gs.service_cta_heading || gs.service_cta_label) && (
+        <section className="bsx-band bsx-band--dark bsx-cta">
+          <div className="sv-container bsx-cta__grid">
+            <div>
+              {gs.service_cta_eyebrow && <p className="bsx-eyebrow">{gs.service_cta_eyebrow}</p>}
+              {gs.service_cta_heading && (
+                <h2 className="bsx-cta__heading">
+                  {gs.service_cta_heading.replace('{service}', page.title)}
+                </h2>
+              )}
+            </div>
+            {gs.service_cta_label && (
+              <Link href="/contact" className="bsx-btn">
+                {gs.service_cta_label}
+              </Link>
+            )}
           </div>
         </section>
       )}

@@ -1,5 +1,13 @@
+import { SafeImage as Image } from '@/components/safe-image'
+import Link from 'next/link'
 import type { Metadata } from 'next'
-import { getAllExchangePages, getExchangePage, getGlobalSettings } from '@/lib/strapi'
+import {
+  getAllExchangePages,
+  getExchangePage,
+  getGlobalSettings,
+  getRelatedArticle,
+  getStrapiMedia,
+} from '@/lib/strapi'
 import { DEFAULT_GLOBAL_SETTINGS } from '@/lib/defaults'
 import { notFound } from 'next/navigation'
 import { getScrapedExchangeContent } from '@/lib/scraped-content'
@@ -60,6 +68,13 @@ export default async function ExchangeDetailPage({ params }: Props) {
     /* offline fallback */
   }
 
+  let article = null
+  try {
+    article = await getRelatedArticle(page?.exchange_name ?? page?.country)
+  } catch {
+    /* offline */
+  }
+
   const resolvedPage = page
     ? {
         hero_heading: page.hero_heading,
@@ -101,22 +116,73 @@ export default async function ExchangeDetailPage({ params }: Props) {
       faqEyebrow={gs.faq_eyebrow}
       faqTitle={gs.faq_title}
       extra={
-        keyFacts.length > 0 ? (
-          <section className="bsx-band bsx-band--dark">
-            <div className="sv-container">
-              {gs.exchange_keyfacts_eyebrow && (
-                <p className="bsx-eyebrow">{gs.exchange_keyfacts_eyebrow}</p>
-              )}
-              <ul className="bsx-keyfacts">
-                {keyFacts.map((fact) => (
-                  <li key={fact} className="bsx-keyfacts__item">
-                    {fact}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </section>
-        ) : null
+        <>
+          {keyFacts.length > 0 && (
+            <section className="bsx-band bsx-band--dark">
+              <div className="sv-container">
+                {gs.exchange_keyfacts_eyebrow && (
+                  <p className="bsx-eyebrow">{gs.exchange_keyfacts_eyebrow}</p>
+                )}
+                <ul className="bsx-keyfacts">
+                  {keyFacts.map((fact) => (
+                    <li key={fact} className="bsx-keyfacts__item">
+                      {fact}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+          )}
+
+          {/* ── News & Insights — matches the Figma "Insights" band ───────── */}
+          {article && (
+            <section className="bsx-band bxma-news">
+              <div className="sv-container">
+                {gs.service_news_eyebrow && <p className="bsx-eyebrow">{gs.service_news_eyebrow}</p>}
+                {gs.service_news_heading && (
+                  <h2 className="bxma-news__title">
+                    {gs.service_news_heading.replace(
+                      '{service}',
+                      resolvedPage.exchange_name ?? '',
+                    )}
+                  </h2>
+                )}
+
+                <Link
+                  href={`/search?q=${encodeURIComponent(article.title)}`}
+                  className="bxma-news__card"
+                >
+                  <div className="bxma-news__body">
+                    {article.category && <p className="bxma-news__cat">{article.category}</p>}
+                    <h3 className="bxma-news__headline">{article.title}</h3>
+                    {article.excerpt && <p className="bxma-news__excerpt">{article.excerpt}</p>}
+                    <span className="bxma-news__cta">
+                      {gs.service_news_cta_label}
+                      <span className="bsx-arrowlink__circle" aria-hidden="true">
+                        →
+                      </span>
+                    </span>
+                  </div>
+                  {(() => {
+                    const cover = article.cover_image ?? resolvedPage.hero_image
+                    if (!cover) return null
+                    return (
+                      <div className="bxma-news__media">
+                        <Image
+                          src={getStrapiMedia(cover.url) ?? cover.url}
+                          alt={article.cover_image?.alternativeText ?? article.title}
+                          width={cover.width || 800}
+                          height={cover.height || 600}
+                          sizes="(max-width: 1024px) 100vw, 50vw"
+                        />
+                      </div>
+                    )
+                  })()}
+                </Link>
+              </div>
+            </section>
+          )}
+        </>
       }
       cta={{
         eyebrow: gs.exchange_cta_eyebrow ?? '',
