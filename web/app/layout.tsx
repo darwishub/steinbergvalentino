@@ -30,9 +30,10 @@ const manrope = Manrope({
 export async function generateMetadata(): Promise<Metadata> {
   const globalSettings = await getGlobalSettings().catch(() => null)
   const siteName = globalSettings?.site_name ?? 'SteinbergValentino Group'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://www.steinbergvalentino.com'
 
   return {
-    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.steinbergvalentino.com'),
+    metadataBase: new URL(siteUrl),
     title: {
       /* No template — each page returns its own complete title from Strapi.
          The default applies only when a page has no generateMetadata at all. */
@@ -98,11 +99,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         />
         <Footer
           quickLinks={globalSettings?.footer_quick_links}
-          serviceLinks={globalSettings?.footer_service_links}
-          exchangeLinks={globalSettings?.footer_exchange_links}
           legalLinks={globalSettings?.footer_legal_links}
-          blurb={globalSettings?.footer_blurb}
-          tagline={globalSettings?.tagline}
           email={globalSettings?.contact_email}
           phone={globalSettings?.contact_phone}
           address={globalSettings?.address}
@@ -113,7 +110,6 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           officeLabel={globalSettings?.footer_office_label ?? DEFAULT_GLOBAL_SETTINGS.footer_office_label}
           firmHeading={globalSettings?.footer_firm_heading ?? DEFAULT_GLOBAL_SETTINGS.footer_firm_heading}
           servicesHeading={globalSettings?.footer_services_heading ?? DEFAULT_GLOBAL_SETTINGS.footer_services_heading}
-          exchangesHeading={globalSettings?.footer_exchanges_heading ?? DEFAULT_GLOBAL_SETTINGS.footer_exchanges_heading}
           socialFacebook={globalSettings?.social_facebook ?? DEFAULT_GLOBAL_SETTINGS.social_facebook}
           socialTwitter={globalSettings?.social_twitter ?? DEFAULT_GLOBAL_SETTINGS.social_twitter}
           socialInstagram={globalSettings?.social_instagram ?? DEFAULT_GLOBAL_SETTINGS.social_instagram}

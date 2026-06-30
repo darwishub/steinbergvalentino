@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { getAllServicePages, getAllExchangePages } from '@/lib/strapi'
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.steinbergvalentino.com'
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://www.steinbergvalentino.com'
 
 /* Static pages that always exist */
 const STATIC_ROUTES: MetadataRoute.Sitemap = [

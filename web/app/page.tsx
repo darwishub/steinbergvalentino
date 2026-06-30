@@ -5,13 +5,13 @@ import {
   getHomepage,
   getAllServicePages,
   getAllExchangePages,
-  getGlobalSettings,
   getStrapiMedia,
 } from '@/lib/strapi'
 import { BlocksContent } from '@/components/blocks-content'
 import { PromoCarousel } from '@/components/promo-carousel'
 import { TestimonialSlider } from '@/components/testimonial-slider'
 import { ScrollMarquee } from '@/components/scroll-marquee'
+import { NewsletterSignup } from '@/components/newsletter-signup'
 import { DEFAULT_GLOBAL_SETTINGS } from '@/lib/defaults'
 import type { ServicePage, ExchangePage } from '@/lib/types'
 
@@ -70,34 +70,11 @@ const FALLBACK_TESTIMONIALS = [
   },
 ]
 
-// Contact info: business data that rarely changes — from Strapi or DEFAULT_GLOBAL_SETTINGS
-const FALLBACK_EMAIL = DEFAULT_GLOBAL_SETTINGS.contact_email!
-const FALLBACK_PHONE = DEFAULT_GLOBAL_SETTINGS.contact_phone!
-
 // Services: used only when Strapi services collection is empty/offline
 const FALLBACK_SERVICES = DEFAULT_GLOBAL_SETTINGS.footer_service_links!.slice(0, 6).map((l) => ({
   slug: l.href.replace('/services/', ''),
   title: l.label,
 }))
-
-function splitEditorialHeading(heading: string) {
-  const words = heading.trim().split(/\s+/).filter(Boolean)
-
-  if (words.length <= 4) return [heading]
-  if (words.length <= 7) {
-    const midpoint = Math.ceil(words.length / 2)
-    return [words.slice(0, midpoint).join(' '), words.slice(midpoint).join(' ')]
-  }
-
-  const firstBreak = Math.ceil(words.length * 0.4)
-  const secondBreak = Math.ceil(words.length * 0.7)
-
-  return [
-    words.slice(0, firstBreak).join(' '),
-    words.slice(firstBreak, secondBreak).join(' '),
-    words.slice(secondBreak).join(' '),
-  ]
-}
 
 /* ─── Circle-arrow SVG (reused in several places) ───────────────────────── */
 function CircleArrow({ size = 36 }: { size?: number }) {
@@ -113,7 +90,6 @@ export default async function HomePage() {
   let page = null
   let services: ServicePage[] = []
   let exchanges: ExchangePage[] = []
-  let globalSettings = null
 
   try {
     ;[page, services, exchanges] = await Promise.all([
@@ -125,9 +101,6 @@ export default async function HomePage() {
     /* Strapi offline — render with fallbacks */
   }
 
-  /* Global settings: separate fetch for the same reason */
-  globalSettings = await getGlobalSettings().catch(() => null)
-
   /* Convenience shorthands */
   const sections = page?.sections ?? []
   const hs = page?.homepage_sections
@@ -136,13 +109,7 @@ export default async function HomePage() {
   /* Services: first 9 for a uniform 3×3 grid, first 5 for The Firm dark card */
   const featuredServices = services.slice(0, 9)
   const firmServices = services.length > 0 ? services.slice(0, 5) : FALLBACK_SERVICES
-
-  /* Contact: prefer Strapi global settings, fall back to defaults */
-  const contactEmail = globalSettings?.contact_email ?? FALLBACK_EMAIL
-  const contactPhone = globalSettings?.contact_phone ?? FALLBACK_PHONE
-  const ctaServices = services.length > 0 ? services.slice(0, 6) : FALLBACK_SERVICES
   const heroHeading = page?.hero_heading ?? 'Strategic investor relations for public companies'
-  const heroLines = splitEditorialHeading(heroHeading)
 
   /* First carousel image — preload for LCP improvement on mobile */
   const firstSlideUrl = getStrapiMedia(hs?.carousel_slides?.[0]?.image_url)
@@ -572,76 +539,9 @@ export default async function HomePage() {
       <ScrollMarquee text={hs?.marquee_text} disclaimer={hs?.marquee_disclaimer} />
 
       {/* ══════════════════════════════════════════════════════════════════════
-          8 · CONTACT CTA — all text + links from Strapi homepage_sections
+          8 · NEWSLETTER SIGNUP — insights & firm announcements subscription
       ══════════════════════════════════════════════════════════════════════ */}
-      <section className="hp-cta">
-        <div className="sv-container hp-cta__inner">
-          {/* Left */}
-          <div className="hp-cta__col-left">
-            {hs?.contact_eyebrow && (
-              <p className="sv-eyebrow hp-cta__eyebrow">{hs.contact_eyebrow}</p>
-            )}
-            {hs?.contact_title && (
-              <h2 className="sv-display hp-cta__headline">{hs.contact_title}</h2>
-            )}
-            {hs?.contact_body && (
-              <p className="hp-cta__body">{hs.contact_body}</p>
-            )}
-            <div className="hp-cta__actions">
-              {(hs?.contact_cta_label || hs?.contact_cta_url) && (
-                <Link
-                  href={hs?.contact_cta_url ?? '/contact'}
-                  className="sv-btn sv-btn-outline-white"
-                >
-                  {hs?.contact_cta_label ?? 'Contact Us'}
-                </Link>
-              )}
-              {(hs?.contact_secondary_cta_label || hs?.contact_secondary_cta_url) && (
-                <Link
-                  href={hs?.contact_secondary_cta_url ?? '/how-it-works'}
-                  className="sv-link-arrow sv-link-arrow-white"
-                >
-                  {hs?.contact_secondary_cta_label ?? 'How It Works'}
-                </Link>
-              )}
-            </div>
-          </div>
-
-          {/* Right — contact details (Strapi global settings) + service links */}
-          <div className="hp-cta__col-right">
-            <div className="hp-cta__contact-block">
-              {hs?.contact_lead_label && (
-                <p className="hp-cta__contact-label">{hs.contact_lead_label}</p>
-              )}
-              <a href={`mailto:${contactEmail}`} className="hp-cta__contact-link">
-                {contactEmail}
-              </a>
-              <a
-                href={`tel:${contactPhone.replace(/[^+\d]/g, '')}`}
-                className="hp-cta__contact-link"
-              >
-                {contactPhone}
-              </a>
-            </div>
-
-            <div className="hp-cta__svc-list">
-              {hs?.contact_services_label && (
-                <p className="hp-cta__svc-list-label">{hs.contact_services_label}</p>
-              )}
-              <ul className="hp-cta__svc-items">
-                {ctaServices.map((svc) => (
-                  <li key={svc.slug}>
-                    <Link href={`/services/${svc.slug}`} className="hp-cta__svc-link">
-                      <span className="hp-cta__svc-rule" />
-                      {svc.title}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
+      <NewsletterSignup heading={hs?.newsletter_heading} />
     </>
   )
 }

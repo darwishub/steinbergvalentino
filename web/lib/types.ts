@@ -94,6 +94,7 @@ export interface HomepageSectionsConfig {
   exchanges_item_link_label: string | null
   marquee_text: string | null
   marquee_disclaimer: string | null
+  newsletter_heading: string | null
 }
 
 export interface Sector {
