@@ -35,7 +35,7 @@ export default async function AboutPage() {
   }
 
   const heroHeading = page?.hero_heading ?? scrapedPage?.heroHeading ?? 'About SteinbergValentino Group'
-  const heroSubheading = page?.hero_subheading ?? scrapedPage?.heroSubheading ?? null
+  const heroSubheading = page?.hero_subheading ?? null
   const heroImage = page?.hero_image ?? null
   const sections = page?.sections?.length ? page.sections : (scrapedPage?.sections ?? [])
   const bodyContent = page?.body_content ?? scrapedPage?.bodyContent ?? null

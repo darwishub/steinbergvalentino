@@ -407,7 +407,7 @@ img {
 .sv-wordmark-title {
   font-family: var(--font-cormorant), 'Cormorant Garamond', Georgia, serif;
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -1743,6 +1743,14 @@ img {
   color: #fff;
 }
 
+.sv-newsletter__input:-webkit-autofill,
+.sv-newsletter__input:-webkit-autofill:hover,
+.sv-newsletter__input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #fff;
+  transition: background-color 9999s ease-in-out 0s;
+  box-shadow: 0 0 0 1000px transparent inset;
+}
+
 .sv-newsletter__select {
   cursor: pointer;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6l4 4 4-4' stroke='rgba(255,255,255,0.7)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
@@ -2224,7 +2232,7 @@ img {
 .sv-promo-header {
   background-color: #0c0d10;
   color: #fff;
-  padding-top: calc(var(--sv-nav-h) + 96px);
+  padding-top: calc(var(--sv-nav-h) + 32px);
   padding-bottom: 120px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
@@ -2693,7 +2701,7 @@ img {
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .sv-promo-header {
-    padding-top: calc(var(--sv-nav-h) + 40px);
+    padding-top: calc(var(--sv-nav-h) + 20px);
     padding-bottom: 48px;
   }
 
@@ -5672,7 +5680,7 @@ img {
 /* ── Intro header — white, title left / deck right ── */
 .bsx-intro {
   background: var(--color-sv-white);
-  padding: calc(var(--sv-nav-h) + var(--sv-sp-64)) 0 var(--sv-sp-80);
+  padding: calc(var(--sv-nav-h) + var(--sv-sp-24)) 0 var(--sv-sp-80);
 }
 
 .bsx-breadcrumb {
@@ -5709,7 +5717,7 @@ img {
   display: grid;
   grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
   gap: var(--sv-sp-64);
-  align-items: end;
+  align-items: start;
 }
 
 .bsx-intro__title {
@@ -5782,6 +5790,7 @@ img {
   height: auto;
   max-height: 72vh;
   object-fit: cover;
+  object-position: center top;
 }
 
 /* ── Generic band — white by default, black variant ── */
@@ -5789,6 +5798,13 @@ img {
   background: var(--color-sv-white);
   color: var(--color-sv-black);
   padding: var(--sv-sp-104) 0;
+}
+
+/* Two same-background bands stacked back-to-back double up their padding into a
+   dead gap — trim it. Bands that switch to the dark variant keep the full padding
+   so the color change always gets consistent breathing room across every page. */
+.bsx-band:not(.bsx-band--dark) + .bsx-band:not(.bsx-band--dark) {
+  padding-top: var(--sv-sp-32);
 }
 
 .bsx-band--dark {
@@ -5806,7 +5822,7 @@ img {
   display: grid;
   grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
   gap: var(--sv-sp-80);
-  align-items: start;
+  align-items: center;
 }
 
 .bsx-overview__media {
@@ -6276,7 +6292,7 @@ img {
   }
 
   .bsx-intro {
-    padding: calc(var(--sv-nav-h) + var(--sv-sp-40)) 0 var(--sv-sp-56);
+    padding: calc(var(--sv-nav-h) + var(--sv-sp-20)) 0 var(--sv-sp-56);
   }
 
   .bsx-media {
@@ -6922,7 +6938,7 @@ img {
 /* ── Search page — Blackstone style ── */
 .bsx-search__page {
   background: var(--color-sv-white);
-  padding: calc(var(--sv-nav-h) + 3.5rem) 0 5rem;
+  padding: calc(var(--sv-nav-h) + 1.5rem) 0 5rem;
 }
 
 /* Large heading — Blackstone Inter Light 66px → our Cormorant Garamond light */

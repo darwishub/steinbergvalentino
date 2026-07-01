@@ -118,6 +118,7 @@ export function ContactForm({ address, phone, email, heading, subheading, labels
                       fontWeight: 400,
                       fontSize: 'clamp(1.5rem, 2.5vw, 2.25rem)',
                       lineHeight: 1.25,
+                      marginTop: '-0.15em',
                       marginBottom: subheading ? '0.5rem' : 0,
                     }}
                   >
