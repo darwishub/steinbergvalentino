@@ -20,8 +20,6 @@ interface BsxTemplateProps {
   approachTitle?: string
   bodyContent?: StrapiBlock[] | null
   sections?: ContentSection[]
-  /** when true, sections render as open article content instead of a collapsed accordion */
-  expandSections?: boolean
   /** when true, tightens the gap between the hero media and the approach band */
   tightTop?: boolean
   /** extra bands rendered between the approach section and the FAQ/CTA */
@@ -41,7 +39,6 @@ export function BsxTemplate({
   approachTitle,
   bodyContent,
   sections,
-  expandSections = false,
   tightTop = false,
   extra,
   faqItems,
@@ -92,7 +89,7 @@ export function BsxTemplate({
         </section>
       )}
 
-      {/* ── Our Approach — intro prose + sections accordion ──────────────── */}
+      {/* ── Our Approach — intro prose + expanded article sections ───────── */}
       {(hasBody || hasSections) && (
         <section
           className={
@@ -108,33 +105,17 @@ export function BsxTemplate({
               </div>
             )}
 
-            {hasSections &&
-              (expandSections ? (
-                <div className="bsx-article">
-                  {sections!.map((s) => (
-                    <article key={s.id} className="bsx-article__item">
-                      {s.heading && <h3 className="bsx-article__heading">{s.heading}</h3>}
-                      {s.subheading && <p className="bsx-article__sub">{s.subheading}</p>}
-                      {s.body && <BlocksContent blocks={s.body} className="bsx-prose" />}
-                    </article>
-                  ))}
-                </div>
-              ) : (
-                <div className="bsx-faq__list bxma-accordion">
-                  {sections!.map((s) => (
-                    <details key={s.id} className="bsx-faq__item">
-                      <summary>
-                        {s.heading}
-                        <span className="bsx-faq__chev" aria-hidden="true" />
-                      </summary>
-                      <div className="bsx-faq__answer">
-                        {s.subheading && <p className="bxma-accordion__sub">{s.subheading}</p>}
-                        {s.body && <BlocksContent blocks={s.body} />}
-                      </div>
-                    </details>
-                  ))}
-                </div>
-              ))}
+            {hasSections && (
+              <div className="bsx-article">
+                {sections!.map((s) => (
+                  <article key={s.id} className="bsx-article__item">
+                    {s.heading && <h3 className="bsx-article__heading">{s.heading}</h3>}
+                    {s.subheading && <p className="bsx-article__sub">{s.subheading}</p>}
+                    {s.body && <BlocksContent blocks={s.body} className="bsx-prose" />}
+                  </article>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       )}

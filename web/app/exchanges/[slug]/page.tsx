@@ -110,7 +110,6 @@ export default async function ExchangeDetailPage({ params }: Props) {
       approachTitle={gs.exchange_approach_title ?? undefined}
       bodyContent={resolvedPage.body_content}
       sections={resolvedPage.sections}
-      expandSections
       tightTop
       faqItems={faqItems}
       faqEyebrow={gs.faq_eyebrow}

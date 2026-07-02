@@ -44,6 +44,7 @@ export default async function CapabilitiesPage() {
       title={heroHeading}
       deck={heroSubheading}
       heroImage={heroImage}
+      tightTop
       approachTitle={page?.approach_title ?? undefined}
       bodyContent={bodyContent}
       sections={sections}

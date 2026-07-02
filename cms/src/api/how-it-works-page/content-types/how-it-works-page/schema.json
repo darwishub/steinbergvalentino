@@ -37,6 +37,24 @@
     "approach_title": {
       "type": "string"
     },
+    "overview_eyebrow": {
+      "type": "string"
+    },
+    "overview_heading": {
+      "type": "text"
+    },
+    "overview_image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "highlights": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.highlight"
+    },
     "cta_eyebrow": {
       "type": "string"
     },

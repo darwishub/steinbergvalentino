@@ -188,6 +188,10 @@ export interface HowItWorksPage extends PageMicrocopy {
   hero_image: StrapiMedia | null
   body_content: StrapiBlock[] | null
   sections: ContentSection[]
+  overview_eyebrow: string | null
+  overview_heading: string | null
+  overview_image: StrapiMedia | null
+  highlights: Highlight[]
   meta_title: string | null
   meta_description: string | null
 }

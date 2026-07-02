@@ -73,7 +73,12 @@ export async function getAboutPage(): Promise<AboutPage> {
 
 export async function getHowItWorksPage(): Promise<HowItWorksPage> {
   const res = await fetchAPI<StrapiSingleResponse<HowItWorksPage>>(
-    '/how-it-works-page?populate[hero_image][fields][0]=url&populate[hero_image][fields][1]=width&populate[hero_image][fields][2]=height&populate[hero_image][fields][3]=alternativeText&populate[sections][populate]=image'
+    '/how-it-works-page?populate[hero_image][fields][0]=url&populate[hero_image][fields][1]=width&populate[hero_image][fields][2]=height&populate[hero_image][fields][3]=alternativeText&populate[sections][populate]=image' +
+      '&populate[overview_image][fields][0]=url' +
+      '&populate[overview_image][fields][1]=width' +
+      '&populate[overview_image][fields][2]=height' +
+      '&populate[overview_image][fields][3]=alternativeText' +
+      '&populate[highlights]=*'
   )
   return res.data
 }

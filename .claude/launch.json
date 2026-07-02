@@ -7,6 +7,12 @@
       "runtimeArgs": ["--prefix", "web", "run", "dev"],
       "port": 3000,
       "autoPort": true
+    },
+    {
+      "name": "sv-cms",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["/Users/darwis/Desktop/dev/steinbergvalentino/cms/run-local.sh"],
+      "port": 1337
     }
   ]
 }

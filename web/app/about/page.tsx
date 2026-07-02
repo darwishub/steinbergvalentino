@@ -55,9 +55,9 @@ export default async function AboutPage() {
         title={heroHeading}
         deck={heroSubheading}
         heroImage={heroImage}
+        tightTop
         bodyContent={bodyContent}
         sections={sections}
-        expandSections
         cta={{ eyebrow: '', heading: '', label: '', href: '/contact' }}
       />
 

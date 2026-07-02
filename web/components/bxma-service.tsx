@@ -48,6 +48,9 @@ export function BxmaService({
   const highlights = page.highlights ?? []
   const sections = page.sections ?? []
   const isDarkHero = MARKET_ENTRY_SLUGS.has(page.slug)
+  // When there's no stats band, the hero media is directly followed by the
+  // "What We Do" band — tighten both sides of that gap to match the rest of the site.
+  const hasStats = Boolean(page.stat_headline_value || stats.length > 0)
 
   return (
     <>
@@ -69,7 +72,15 @@ export function BxmaService({
 
       {/* ── Full-bleed hero media ────────────────────────────────────────── */}
       {heroImg && (
-        <section className={isDarkHero ? 'bsx-media bsx-media--dark' : 'bsx-media'}>
+        <section
+          className={[
+            'bsx-media',
+            isDarkHero ? 'bsx-media--dark' : '',
+            hasStats ? '' : 'bsx-media--tight',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+        >
           <div className="sv-container">
             <div className="bsx-media__frame">
               <Image
@@ -114,7 +125,11 @@ export function BxmaService({
 
       {/* ── What We Do — dark statement + image + highlights ─────────────── */}
       {(page.overview_heading || highlights.length > 0) && (
-        <section className="bsx-band bsx-band--dark">
+        <section
+          className={
+            hasStats ? 'bsx-band bsx-band--dark' : 'bsx-band bsx-band--dark bsx-band--tight-top'
+          }
+        >
           <div className="sv-container">
             {gs.service_overview_eyebrow && (
               <p className="bsx-eyebrow">{gs.service_overview_eyebrow}</p>
@@ -172,7 +187,7 @@ export function BxmaService({
         </section>
       )}
 
-      {/* ── Our Approach — intro prose + accordion of sections ───────────── */}
+      {/* ── Our Approach — intro prose + expanded article sections ───────── */}
       {(sections.length > 0 || (page.body_content && page.body_content.length > 0)) && (
         <section className="bsx-band bxma-approach">
           <div className="sv-container">
@@ -187,18 +202,13 @@ export function BxmaService({
             )}
 
             {sections.length > 0 && (
-              <div className="bsx-faq__list bxma-accordion">
+              <div className="bsx-article">
                 {sections.map((s) => (
-                  <details key={s.id} className="bsx-faq__item">
-                    <summary>
-                      {s.heading}
-                      <span className="bsx-faq__chev" aria-hidden="true" />
-                    </summary>
-                    <div className="bsx-faq__answer">
-                      {s.subheading && <p className="bxma-accordion__sub">{s.subheading}</p>}
-                      {s.body && <BlocksContent blocks={s.body} />}
-                    </div>
-                  </details>
+                  <article key={s.id} className="bsx-article__item">
+                    {s.heading && <h3 className="bsx-article__heading">{s.heading}</h3>}
+                    {s.subheading && <p className="bsx-article__sub">{s.subheading}</p>}
+                    {s.body && <BlocksContent blocks={s.body} className="bsx-prose" />}
+                  </article>
                 ))}
               </div>
             )}

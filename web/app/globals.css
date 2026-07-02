@@ -5807,6 +5807,18 @@ img {
   padding-top: var(--sv-sp-32);
 }
 
+/* "Our Approach" is the one section that sits between a dark band on either
+   side (e.g. the "What We Do" statement above, a keyfacts/CTA band below) on
+   some templates. Without this, it inherits full padding on the dark side but
+   the trimmed padding on the light side, leaving unequal breathing room above
+   vs. below. Tighten both dark-adjacent edges to match. */
+.bsx-band--dark + .bxma-approach {
+  padding-top: var(--sv-sp-32);
+}
+.bxma-approach + .bsx-band--dark {
+  padding-top: var(--sv-sp-32);
+}
+
 .bsx-band--dark {
   background: var(--color-sv-black);
   color: var(--color-sv-white);
@@ -6422,16 +6434,11 @@ img {
   margin-bottom: var(--sv-sp-56);
 }
 
-.bxma-accordion {
-  max-width: none;
-}
-
-.bxma-accordion__sub {
-  font-family: var(--font-serif);
-  font-size: 1.125rem;
-  font-weight: 500;
-  color: var(--color-sv-black);
-  margin: 0 0 var(--sv-sp-16);
+/* When there are no sections below it, the lead paragraph is the last thing
+   in the band — its own trailing margin would stack on top of the band's
+   bottom padding and throw off the top/bottom balance. */
+.bxma-approach__lead:last-child {
+  margin-bottom: 0;
 }
 
 /* ── News & Insights card ── */
@@ -6832,11 +6839,22 @@ img {
   margin: 0 0 var(--sv-sp-16);
 }
 
-/* ── Tighten the gap between hero media and the approach band (exchange pages) ── */
+/* ── Tighten the gap between hero media and the band directly below it ── */
 .bsx-media--tight {
   padding-bottom: var(--sv-sp-40);
 }
+.bxma-approach--tight,
+.bsx-band--tight-top {
+  padding-top: var(--sv-sp-48);
+}
+
+/* Mirror the same tight rhythm on the approach section's bottom edge, and on
+   the top of whatever dark band follows it, so the 88px gap it gets from the
+   hero image above is matched below instead of falling back to full padding. */
 .bxma-approach--tight {
+  padding-bottom: var(--sv-sp-40);
+}
+.bxma-approach--tight + .bsx-band--dark {
   padding-top: var(--sv-sp-48);
 }
 

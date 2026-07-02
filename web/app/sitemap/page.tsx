@@ -114,7 +114,7 @@ export default async function SitemapPage() {
   return (
     <>
       <section className="sv-section sv-bg-light">
-        <div className="sv-container" style={{ maxWidth: '960px' }}>
+        <div className="sv-container">
           <p className="sv-eyebrow" style={{ marginBottom: 'var(--sv-sp-16)' }}>
             {resolvedSettings.sitemap_eyebrow ?? G.sitemap_eyebrow}
           </p>
